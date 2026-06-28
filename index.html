@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ナンバーズ3 攻略システム</title>
+<style>
+  :root {
+    --bg:#0e1117; --surface:#181d27; --surface2:#1f2636; --border:#2a3347;
+    --accent:#4f8ef7; --accent2:#f7c04f; --accent3:#4ff7a0;
+    --danger:#f74f4f; --warn:#f7944f;
+    --text:#e4e8f0; --text2:#8a93a8;
+    --font-head:'Georgia',serif; --font-body:'Helvetica Neue',Arial,sans-serif; --font-mono:'Courier New',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.7;}
+
+  /* ナビ */
+  nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+  .nav-title{font-family:var(--font-mono);font-size:13px;color:var(--accent2);letter-spacing:2px;}
+  .nav-links{display:flex;gap:20px;}
+  .nav-links a{color:var(--text2);text-decoration:none;font-size:13px;transition:color 0.2s;}
+  .nav-links a:hover,.nav-links a.active{color:var(--accent);}
+
+  /* メインコンテナ */
+  .container{max-width:960px;margin:0 auto;padding:32px 20px;}
+
+  /* ページ */
+  .page{display:none;}
+  .page.active{display:block;}
+
+  /* セクションタイトル */
+  .section-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-family:var(--font-mono);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+  /* カード */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px;}
+  .card-title{font-size:13px;font-weight:bold;color:var(--accent2);margin-bottom:10px;}
+
+  /* 候補数字 大表示 */
+  .hero{text-align:center;padding:40px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:24px;}
+  .hero-label{font-size:11px;letter-spacing:3px;color:var(--accent2);font-family:var(--font-mono);margin-bottom:12px;}
+  .hero-round{font-size:13px;color:var(--text2);margin-bottom:16px;}
+  .digits{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+  .digit{width:72px;height:72px;border-radius:50%;background:var(--surface2);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:32px;color:var(--accent);}
+  .hero-combos{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+  .combo-tag{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 16px;font-family:var(--font-mono);font-size:16px;color:var(--accent2);}
+  .combo-tag .straight{font-size:10px;color:var(--text2);display:block;text-align:center;margin-top:2px;}
+
+  /* AI思考 */
+  .ai-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px;}
+  .ai-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .ai-icon{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .ai-name{font-size:13px;font-weight:bold;color:var(--accent);}
+  .ai-time{font-size:11px;color:var(--text2);}
+  .ai-text{color:var(--text);font-size:14px;line-height:1.8;white-space:pre-wrap;}
+
+  /* アラート */
+  .alert-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px;}
+  .alert-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center;}
+  .alert-item .digit-s{font-size:18px;font-weight:bold;margin-bottom:2px;}
+  .alert-item .alert-level{font-size:14px;}
+  .alert-item .alert-info{font-size:10px;color:var(--text2);}
+
+  /* スコアテーブル */
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{background:var(--surface2);color:var(--text2);font-weight:normal;font-size:11px;padding:8px 12px;text-align:center;border:1px solid var(--border);}
+  td{padding:8px 12px;border:1px solid var(--border);text-align:center;}
+  tr:nth-child(even) td{background:var(--surface2);}
+  .hl{color:var(--accent2);font-weight:bold;}
+  .good{color:var(--accent3);}
+  .bad{color:var(--danger);}
+  .warn{color:var(--warn);}
+
+  /* Bランク */
+  .combo-rank{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;}
+  .rank-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;}
+  .rank-num{font-size:11px;color:var(--text2);margin-bottom:4px;}
+  .rank-combo{font-size:22px;font-family:var(--font-mono);font-weight:bold;margin-bottom:4px;}
+  .rank-detail{font-size:11px;color:var(--text2);}
+
+  /* アーカイブ */
+  .archive-list{list-style:none;}
+  .archive-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color 0.2s;}
+  .archive-item:hover{border-color:var(--accent);}
+  .archive-date{font-size:13px;color:var(--text2);}
+  .archive-candidates{display:flex;gap:8px;}
+  .archive-digit{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--accent);}
+  .archive-detail{display:none;padding:16px;border-top:1px solid var(--border);margin-top:12px;}
+
+  /* タブ */
+  .tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);}
+  .tab{padding:8px 20px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;}
+  .tab.active{color:var(--accent2);border-bottom-color:var(--accent2);}
+  .tab-content{display:none;}
+  .tab-content.active{display:block;}
+
+  /* ローディング */
+  .loading{text-align:center;padding:60px;color:var(--text2);}
+  .loading-dot{display:inline-block;animation:blink 1.4s infinite both;}
+  .loading-dot:nth-child(2){animation-delay:0.2s;}
+  .loading-dot:nth-child(3){animation-delay:0.4s;}
+  @keyframes blink{0%,80%,100%{opacity:0;}40%{opacity:1;}}
+
+  hr{border:none;border-top:1px solid var(--border);margin:24px 0;}
+  .dim{color:var(--text2);}
+  .note{font-size:12px;color:var(--text2);margin-top:8px;padding-left:12px;border-left:2px solid var(--border);}
+  @media(max-width:600px){.combo-rank{grid-template-columns:1fr 1fr;}.alert-grid{grid-template-columns:repeat(5,1fr);}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-title">NUMBERS3 SYSTEM</div>
+  <div class="nav-links">
+    <a href="#" class="active" onclick="showPage('top',this)">今日の予想</a>
+    <a href="#" onclick="showPage('archive',this)">アーカイブ</a>
+    <a href="#" onclick="showPage('about',this)">システム説明</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ===== TOP PAGE ===== -->
+  <div id="page-top" class="page active">
+    <div id="top-content">
+      <div class="loading">
+        <div>データを読み込み中<span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ARCHIVE PAGE ===== -->
+  <div id="page-archive" class="page">
+    <div style="margin-bottom:24px;">
+      <div class="section-title">過去の予想アーカイブ</div>
+    </div>
+    <div id="archive-content">
+      <div class="loading">読み込み中<span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span></div>
+    </div>
+  </div>
+
+  <!-- ===== ABOUT PAGE ===== -->
+  <div id="page-about" class="page">
+    <div style="margin-bottom:24px;">
+      <div class="section-title">システム説明</div>
+    </div>
+    <div class="card">
+      <div class="card-title">候補数字調査A</div>
+      <p style="color:var(--text2);font-size:13px;line-height:1.8;">過去の当選番号データを5つの視点（ひっぱり系合計・出現頻度・勢い・直近ひっぱりスコア・連番パターン）でポイント化し、次回の当選番号に含まれる可能性が高い数字を4つ選出します。</p>
+      <table style="margin-top:12px;">
+        <tr><th>要素</th><th>参照期間</th><th>最大pt</th></tr>
+        <tr><td>①ひっぱり系合計</td><td>直近100回</td><td class="hl">5pt</td></tr>
+        <tr><td>②出現頻度</td><td>直近63回</td><td class="hl">4pt</td></tr>
+        <tr><td>③勢い</td><td>直近20回</td><td class="hl">4pt</td></tr>
+        <tr><td>④直近ひっぱりスコア</td><td>直近3回</td><td class="hl">3pt</td></tr>
+        <tr><td>⑤連番出現パターン</td><td>直近100回</td><td class="hl">4pt</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">候補数字調査B</div>
+      <p style="color:var(--text2);font-size:13px;line-height:1.8;">調査Aで選出した候補数字を3つの独立した視点で検証します。数字の変更が必要と判断した場合は候補の入れ替えも行います。</p>
+      <table style="margin-top:12px;">
+        <tr><th>項目</th><th>内容</th></tr>
+        <tr><td>①総和</td><td style="text-align:left;padding-left:12px;">3桁の合計値が出やすい帯（中ゾーン10〜17）に入っているか</td></tr>
+        <tr><td>②最大・最小値</td><td style="text-align:left;padding-left:12px;">当選番号の最大桁・最小桁の傾向と一致しているか</td></tr>
+        <tr><td>③桁別出現傾向</td><td style="text-align:left;padding-left:12px;">各数字がどの桁に出やすいかを分析しストレート順番を決定</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">出現間隔アラート</div>
+      <p style="color:var(--text2);font-size:13px;">候補数字の選出には直接影響しない補助情報。長期間出ていない数字を地震予測のように警戒情報として表示します。</p>
+      <table style="margin-top:12px;">
+        <tr><th>レベル</th><th>基準</th></tr>
+        <tr><td>🔴 要注意</td><td style="text-align:left;padding-left:12px;">平均間隔の1.5倍以上休止中</td></tr>
+        <tr><td>🟡 やや注意</td><td style="text-align:left;padding-left:12px;">平均間隔の1.0〜1.5倍休止中</td></tr>
+        <tr><td>🟢 正常</td><td style="text-align:left;padding-left:12px;">平均間隔の0.5〜1.0倍</td></tr>
+        <tr><td>⚪ 直近出現</td><td style="text-align:left;padding-left:12px;">直近で出現済み</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">免責事項</div>
+      <p style="color:var(--text2);font-size:13px;">本サイトはナンバーズ3を娯楽として楽しむための参考情報を提供するものです。当選を保証するものではありません。購入は自己責任でお願いします。</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ページ切り替え
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+
+  if (name === 'archive') loadArchive();
+}
+
+// タブ切り替え
+function showTab(tabId, btn) {
+  const parent = btn.closest('.card');
+  parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  parent.querySelector('#' + tabId).classList.add('active');
+}
+
+// アーカイブアイテムのトグル
+function toggleArchive(el) {
+  const detail = el.querySelector('.archive-detail');
+  detail.style.display = detail.style.display === 'block' ? 'none' : 'block';
+}
+
+// メインデータ読み込み
+async function loadMain() {
+  try {
+    const res = await fetch('data/latest.json?t=' + Date.now());
+    const data = await res.json();
+    renderTop(data);
+  } catch(e) {
+    document.getElementById('top-content').innerHTML =
+      '<div class="loading" style="color:var(--danger)">データの読み込みに失敗しました</div>';
+  }
+}
+
+// トップページ描画
+function renderTop(data) {
+  const a = data.analysis_a;
+  const b = data.analysis_b;
+  const alert = data.alert;
+
+  const rankColors = ['#f7c04f','#a0aab8','#c87941','#f74f4f'];
+  const rankLabels = ['1位','2位','3位','4位'];
+
+  let html = `
+    <!-- ヒーロー -->
+    <div class="hero">
+      <div class="hero-label">NEXT TARGET — 第${data.next_round}回</div>
+      <div class="hero-round">前回：第${data.latest_round}回 当選番号「${data.latest_number}」</div>
+      <div class="digits">
+        ${a.candidates.map(d => `<div class="digit">${d}</div>`).join('')}
+      </div>
+      <div class="hero-combos">
+        ${b.straight_orders.map(s => `
+          <div class="combo-tag">
+            ${s.straight}
+            <span class="straight">BOX: ${s.combo}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--text2);">セット購入 4口 = 800円</div>
+    </div>
+
+    <!-- AI思考 -->
+    <div class="ai-box">
+      <div class="ai-header">
+        <div class="ai-icon">🤖</div>
+        <div>
+          <div class="ai-name">Claude AI の分析思考</div>
+          <div class="ai-time">${data.date} 更新</div>
+        </div>
+      </div>
+      <div class="ai-text">${data.ai_thoughts}</div>
+    </div>
+
+    <!-- 出現間隔アラート -->
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-title">🔔 出現間隔アラート</div>
+      <div class="alert-grid">
+        ${Object.entries(alert).map(([d,v]) => `
+          <div class="alert-item">
+            <div class="digit-s">${d}</div>
+            <div class="alert-level">${v.level}</div>
+            <div class="alert-info">休止${v.current_rest}回<br>平均${v.avg_interval}回</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- タブ：調査A / 調査B -->
+    <div class="card">
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('tab-a',this)">候補数字調査 A</div>
+        <div class="tab" onclick="showTab('tab-b',this)">候補数字調査 B</div>
+      </div>
+
+      <!-- 調査A -->
+      <div id="tab-a" class="tab-content active">
+        <div style="margin-bottom:12px;font-size:13px;color:var(--text2);">ポイント集計結果（最大20pt）</div>
+        <table>
+          <tr>
+            <th>数字</th><th>ひっぱり(5)</th><th>頻度(4)</th>
+            <th>勢い(4)</th><th>直近pull(3)</th><th>連番(4)</th><th>合計</th>
+          </tr>
+          ${a.candidates.map((d,i) => `
+            <tr>
+              <td class="hl" style="font-size:18px;">${d}</td>
+              <td>${a.details.pull_total[d]}</td>
+              <td>${a.details.freq[d]}回</td>
+              <td>${a.details.ikioi[d] >= 0 ? '+' : ''}${a.details.ikioi[d]}</td>
+              <td>${a.details.pull_score[d]}pt</td>
+              <td>${a.details.renban[d]}pt</td>
+              <td class="hl">${a.scores[d]}pt</td>
+            </tr>
+          `).join('')}
+        </table>
+        <div style="margin-top:16px;font-size:13px;color:var(--text2);">直近5回との照合</div>
+        <table style="margin-top:8px;">
+          <tr><th>数字</th>${a.candidates.map(d=>`<th>${d}</th>`).join('')}</tr>
+          <tr>
+            <td class="dim">直近5回出現</td>
+            ${a.candidates.map(d=>`<td class="${a.last5_hit[d]>=2?'good':a.last5_hit[d]>=1?'warn':'dim'}">${a.last5_hit[d]}回</td>`).join('')}
+          </tr>
+          <tr>
+            <td class="dim">最新回(${data.latest_number})に含む</td>
+            ${a.candidates.map(d=>`<td>${a.in_latest.includes(d)?'<span class="good">✓</span>':'<span class="dim">—</span>'}</td>`).join('')}
+          </tr>
+        </table>
+      </div>
+
+      <!-- 調査B -->
+      <div id="tab-b" class="tab-content">
+        <div style="font-size:13px;font-weight:bold;color:var(--accent2);margin-bottom:12px;">① 総和による順位</div>
+        <div class="combo-rank">
+          ${b.combo_sum.map((c,i) => `
+            <div class="rank-box" style="border-color:${rankColors[i]};">
+              <div class="rank-num">${rankLabels[i]}</div>
+              <div class="rank-combo" style="color:${rankColors[i]};">${c.combo}</div>
+              <div class="rank-detail">総和${c.sum} / ${c.count}回<br><span class="${c.count===0?'bad':c.count>=10?'good':'dim'}">${c.zone}</span></div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="font-size:13px;font-weight:bold;color:var(--accent2);margin:20px 0 12px;">② 最大・最小値による順位</div>
+        <div class="combo-rank">
+          ${b.combo_maxmin.map((c,i) => `
+            <div class="rank-box" style="border-color:${rankColors[i]};">
+              <div class="rank-num">${rankLabels[i]}</div>
+              <div class="rank-combo" style="color:${rankColors[i]};">${c.combo}</div>
+              <div class="rank-detail">最大${c.max} / 最小${c.min}<br><span class="${c.min_rank<=2?'good':c.min_rank>=5?'bad':'warn'}">最小値ランク${c.min_rank}位</span></div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="font-size:13px;font-weight:bold;color:var(--accent2);margin:20px 0 12px;">③ 推奨ストレート順番</div>
+        <table>
+          <tr><th>組み合わせ</th><th>推奨順番</th><th>配置根拠</th></tr>
+          ${b.straight_orders.map(s => `
+            <tr>
+              <td>${s.combo}</td>
+              <td class="hl" style="font-size:16px;font-family:var(--font-mono);">${s.straight}</td>
+              <td style="text-align:left;padding-left:12px;font-size:12px;">${s.reason}</td>
+            </tr>
+          `).join('')}
+        </table>
+      </div>
+    </div>
+
+    <p style="text-align:center;color:var(--text2);font-size:12px;margin-top:24px;font-family:var(--font-mono);">
+      更新日時：${data.generated_at.replace('T',' ').substring(0,16)} JST<br>
+      ※本サイトは娯楽目的の分析です。当選を保証するものではありません。
+    </p>
+  `;
+
+  document.getElementById('top-content').innerHTML = html;
+}
+
+// アーカイブ読み込み
+async function loadArchive() {
+  const el = document.getElementById('archive-content');
+  el.innerHTML = '<div class="loading">読み込み中<span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span></div>';
+
+  try {
+    // まず最新データからアーカイブリストを生成
+    const res = await fetch('data/latest.json?t=' + Date.now());
+    const latest = await res.json();
+
+    // アーカイブインデックスを試みる
+    let archiveList = [];
+    try {
+      const idxRes = await fetch('data/archive/index.json?t=' + Date.now());
+      archiveList = await idxRes.json();
+    } catch {
+      archiveList = [{ date: latest.date, round: latest.latest_round, candidates: latest.analysis_a.candidates }];
+    }
+
+    if (archiveList.length === 0) {
+      el.innerHTML = '<div class="loading dim">アーカイブはまだありません</div>';
+      return;
+    }
+
+    let html = '<ul class="archive-list">';
+    for (const item of archiveList) {
+      html += `
+        <li class="archive-item" onclick="toggleArchive(this)">
+          <div>
+            <div style="font-size:13px;font-weight:bold;">${item.date}</div>
+            <div class="archive-date">第${item.round}回の翌回予想</div>
+          </div>
+          <div class="archive-candidates">
+            ${item.candidates.map(d => `<div class="archive-digit">${d}</div>`).join('')}
+          </div>
+          <div class="archive-detail" onclick="event.stopPropagation()">
+            <div style="color:var(--text2);font-size:13px;">詳細を読み込み中...</div>
+          </div>
+        </li>
+      `;
+    }
+    html += '</ul>';
+    el.innerHTML = html;
+
+    // アーカイブ詳細の遅延読み込み
+    document.querySelectorAll('.archive-item').forEach((item, i) => {
+      item.addEventListener('click', async function() {
+        const detail = this.querySelector('.archive-detail');
+        if (detail.dataset.loaded) return;
+        detail.dataset.loaded = '1';
+        try {
+          const date = archiveList[i].date;
+          const r = await fetch(`data/archive/${date}.json?t=` + Date.now());
+          const d = await r.json();
+          detail.innerHTML = `
+            <div class="ai-text" style="font-size:13px;">${d.ai_thoughts}</div>
+            <div style="margin-top:12px;color:var(--text2);font-size:12px;">
+              候補数字：${d.analysis_a.candidates.join('・')} ／
+              購入：${d.analysis_b.straight_orders.map(s=>s.straight).join('・')}
+            </div>
+          `;
+        } catch {
+          detail.innerHTML = '<div style="color:var(--danger);font-size:13px;">データの読み込みに失敗しました</div>';
+        }
+      });
+    });
+
+  } catch(e) {
+    el.innerHTML = '<div class="loading" style="color:var(--danger)">読み込みに失敗しました</div>';
+  }
+}
+
+// 初期読み込み
+loadMain();
+</script>
+</body>
+</html>
