@@ -15,139 +15,136 @@
   --font-head:'Georgia',serif;--font-body:'Helvetica Neue',Arial,sans-serif;--font-mono:'Courier New',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.8;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.7;}
 
 /* ログイン */
 #login-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;}
 .login-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:48px 40px;width:360px;text-align:center;}
-.login-title{font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--accent2);margin-bottom:10px;}
-.login-h{font-family:var(--font-head);font-size:24px;font-weight:normal;margin-bottom:6px;}
+.login-title{font-size:11px;letter-spacing:3px;color:var(--accent2);font-family:var(--font-mono);margin-bottom:10px;}
+.login-h{font-family:var(--font-head);font-size:26px;font-weight:normal;margin-bottom:6px;}
 .login-sub{font-size:13px;color:var(--text2);margin-bottom:28px;}
-.login-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:13px 16px;color:var(--text);font-size:15px;margin-bottom:12px;outline:none;transition:border-color 0.2s;}
+.login-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;color:var(--text);font-size:14px;margin-bottom:12px;outline:none;transition:border-color 0.2s;}
 .login-input:focus{border-color:var(--accent);}
-.login-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:13px;font-size:15px;cursor:pointer;letter-spacing:1px;}
+.login-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px;font-size:14px;cursor:pointer;letter-spacing:1px;}
 .login-btn:hover{opacity:0.85;}
-.login-error{color:var(--danger);font-size:13px;margin-top:10px;display:none;}
+.login-error{color:var(--danger);font-size:12px;margin-top:8px;display:none;}
 
 /* ナビ */
-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
-.nav-title{font-family:var(--font-mono);font-size:13px;color:var(--accent2);letter-spacing:3px;}
-.nav-links{display:flex;gap:24px;}
-.nav-links a{color:var(--text2);text-decoration:none;font-size:14px;cursor:pointer;transition:color 0.2s;padding-bottom:2px;}
-.nav-links a:hover,.nav-links a.active{color:var(--accent);border-bottom:2px solid var(--accent);}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.nav-title{font-family:var(--font-mono);font-size:13px;color:var(--accent2);letter-spacing:2px;}
+.nav-links{display:flex;gap:20px;}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:13px;cursor:pointer;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);}
 
-/* コンテナ */
-.container{max-width:960px;margin:0 auto;padding:40px 24px;}
+.container{max-width:940px;margin:0 auto;padding:40px 20px;}
 .page{display:none;}
 .page.active{display:block;}
 
-/* 共通：section, card, table */
-.section{margin-bottom:56px;}
-.section-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent2);font-family:var(--font-mono);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border);}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:14px;}
-.card-title{font-size:14px;font-weight:bold;color:var(--accent);margin-bottom:12px;}
-.card p{color:var(--text2);font-size:14px;line-height:1.8;}
-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;}
-th{background:var(--surface2);color:var(--text2);font-weight:normal;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:10px 14px;text-align:center;border:1px solid var(--border);}
-td{padding:10px 14px;border:1px solid var(--border);text-align:center;color:var(--text);}
+/* 調査A/Bそのままのスタイル */
+.header{border-left:4px solid var(--accent);padding-left:20px;margin-bottom:48px;}
+.header.b{border-left-color:var(--accent2);}
+.header .label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-family:var(--font-mono);margin-bottom:8px;}
+.header.b .label{color:var(--accent2);}
+.header h1{font-family:var(--font-head);font-size:32px;font-weight:normal;color:var(--text);margin-bottom:6px;}
+.header .sub{color:var(--text2);font-size:13px;}
+
+.section{margin-bottom:48px;}
+.section-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent2);font-family:var(--font-mono);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:12px;}
+.card-title{font-size:13px;font-weight:bold;color:var(--accent);margin-bottom:8px;}
+.card p{color:var(--text2);font-size:13px;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px;}
+th{background:var(--surface2);color:var(--text2);font-weight:normal;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:10px 12px;text-align:center;border:1px solid var(--border);}
+td{padding:9px 12px;border:1px solid var(--border);text-align:center;color:var(--text);}
 tr:nth-child(even) td{background:var(--surface2);}
-.hl{color:var(--accent2);font-weight:bold;}
-.good{color:var(--accent3);}
-.bad{color:var(--danger);}
-.warn{color:var(--warn);}
+.highlight{color:var(--accent2);font-weight:bold;}
 .dim{color:var(--text2);}
-.note{font-size:13px;color:var(--text2);margin-top:12px;padding-left:14px;border-left:2px solid var(--border);}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
-@media(max-width:640px){.two-col{grid-template-columns:1fr;}.four-col{grid-template-columns:1fr 1fr;}}
+.up{color:var(--accent3);}
+.down{color:var(--danger);}
+.warn{color:var(--warn);}
 
-/* ヘッダー（調査A/B スタイル） */
-.doc-header{border-left:4px solid var(--accent);padding-left:22px;margin-bottom:52px;}
-.doc-header.b{border-left-color:var(--accent2);}
-.doc-header .label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);font-family:var(--font-mono);margin-bottom:8px;}
-.doc-header.b .label{color:var(--accent2);}
-.doc-header h1{font-family:var(--font-head);font-size:34px;font-weight:normal;color:var(--text);margin-bottom:8px;}
-.doc-header .sub{color:var(--text2);font-size:14px;}
-
-/* 予想ヒーロー */
-.hero{background:var(--surface2);border:2px solid var(--accent3);border-radius:12px;padding:36px 24px;text-align:center;margin-bottom:32px;}
-.hero-label{font-size:11px;letter-spacing:3px;color:var(--accent3);font-family:var(--font-mono);margin-bottom:10px;}
-.hero-round{font-size:14px;color:var(--text2);margin-bottom:20px;}
-.digits{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-bottom:24px;}
-.digit{width:80px;height:80px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:36px;color:var(--accent);}
-.hero-combos{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
-.combo-tag{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-family:var(--font-mono);font-size:18px;color:var(--accent2);}
-.combo-tag .straight{font-size:11px;color:var(--text2);display:block;text-align:center;margin-top:4px;}
-
-/* AI思考 */
-.ai-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:32px;}
-.ai-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.ai-icon{width:40px;height:40px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.ai-name{font-size:15px;font-weight:bold;color:var(--accent);}
-.ai-time{font-size:12px;color:var(--text2);margin-top:2px;}
-.ai-text{color:var(--text);font-size:15px;line-height:1.9;white-space:pre-wrap;}
-
-/* アラート */
-.alert-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px;}
-.alert-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 8px;text-align:center;}
-.alert-digit{font-size:22px;font-weight:bold;margin-bottom:4px;}
-.alert-level{font-size:18px;}
-.alert-info{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4;}
-
-/* ランクボックス */
-.rank-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;}
-.rank-num{font-size:12px;color:var(--text2);margin-bottom:6px;}
-.rank-combo{font-size:28px;font-family:var(--font-mono);font-weight:bold;margin-bottom:8px;}
-.rank-detail{font-size:12px;color:var(--text2);line-height:1.6;}
-
-/* ストレートボックス */
-.straight-box{background:var(--surface2);border:2px solid var(--accent3);border-radius:10px;padding:24px;text-align:center;margin-top:18px;}
-.straight-label{font-size:11px;letter-spacing:3px;color:var(--accent3);font-family:var(--font-mono);margin-bottom:14px;}
-.straight-row{display:flex;justify-content:center;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
-.sdig-wrap{text-align:center;}
-.sdig{width:60px;height:60px;background:var(--surface);border:2px solid var(--accent2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;font-family:var(--font-head);color:var(--accent2);}
-.spos{font-size:11px;color:var(--text2);margin-top:6px;}
-.sarrow{font-size:22px;color:var(--text2);margin-top:18px;}
-
-/* チャート */
-.chart-wrap{position:relative;width:100%;}
-.chart-label{font-size:13px;color:var(--text2);margin-bottom:10px;margin-top:20px;}
-
-/* フロー */
 .flow{display:flex;flex-direction:column;gap:8px;}
-.flow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.fb{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:9px 16px;font-size:13px;color:var(--text);}
-.fb.ac{border-color:var(--accent2);color:var(--accent2);}
-.fb.rs{border-color:var(--accent3);color:var(--accent3);font-weight:bold;}
-.fa{color:var(--text2);font-size:18px;}
+.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.flow-box{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;color:var(--text);white-space:nowrap;}
+.flow-box.main{border-color:var(--accent);color:var(--accent);}
+.flow-box.sub{border-color:var(--accent2);color:var(--accent2);}
+.flow-box.result{border-color:var(--accent3);color:var(--accent3);font-weight:bold;}
+.flow-arrow{color:var(--text2);font-size:16px;}
 
-/* ポイントバー */
-.pt-bar{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
-.pt-label{width:220px;font-size:14px;color:var(--text);flex-shrink:0;}
+.pt-bar{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.pt-label{width:180px;font-size:13px;color:var(--text);flex-shrink:0;}
 .pt-track{flex:1;background:var(--surface2);border-radius:4px;height:10px;overflow:hidden;}
 .pt-fill{height:100%;border-radius:4px;background:var(--accent);}
-.pt-num{width:44px;text-align:right;color:var(--accent2);font-family:var(--font-mono);font-size:14px;}
+.pt-num{width:40px;text-align:right;color:var(--accent2);font-family:var(--font-mono);font-size:13px;}
 
-/* アーカイブ */
-.archive-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;cursor:pointer;transition:border-color 0.2s;}
+.alert-box{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:8px;font-size:13px;}
+.alert-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.alert-dot.red{background:var(--danger);}
+.alert-dot.yellow{background:var(--accent2);}
+.alert-dot.green{background:var(--accent3);}
+.alert-dot.gray{background:var(--text2);}
+
+.result-box{background:var(--surface);border:2px solid var(--accent3);border-radius:10px;padding:24px;text-align:center;}
+.result-label{font-size:11px;letter-spacing:3px;color:var(--accent3);font-family:var(--font-mono);margin-bottom:12px;}
+.digits{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}
+.digit{width:64px;height:64px;border-radius:50%;background:var(--surface2);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:28px;color:var(--accent);}
+
+.note{font-size:12px;color:var(--text2);margin-top:10px;padding-left:12px;border-left:2px solid var(--border);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:600px){.two-col{grid-template-columns:1fr;}.four-col{grid-template-columns:1fr 1fr;}}
+hr{border:none;border-top:1px solid var(--border);margin:32px 0;}
+
+/* 追加：チャートラッパー */
+.chart-wrap{position:relative;width:100%;margin-bottom:6px;}
+.chart-label{font-size:12px;color:var(--text2);margin-bottom:8px;margin-top:16px;}
+
+/* 追加：ランクボックス（調査B） */
+.rank-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;}
+.rank-num{font-size:11px;color:var(--text2);margin-bottom:4px;}
+.rank-combo{font-size:26px;font-family:var(--font-mono);font-weight:bold;margin-bottom:6px;}
+.rank-detail{font-size:11px;color:var(--text2);}
+
+/* 追加：ストレートボックス */
+.straight-box{background:var(--surface2);border:2px solid var(--accent3);border-radius:10px;padding:20px;text-align:center;margin-top:16px;}
+.straight-label{font-size:11px;letter-spacing:3px;color:var(--accent3);font-family:var(--font-mono);margin-bottom:12px;}
+.straight-row{display:flex;justify-content:center;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.sdig-wrap{text-align:center;}
+.sdig{width:56px;height:56px;background:var(--surface);border:2px solid var(--accent2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:26px;font-family:var(--font-head);color:var(--accent2);}
+.spos{font-size:10px;color:var(--text2);margin-top:4px;}
+.sarrow{font-size:20px;color:var(--text2);margin-top:18px;}
+
+/* 追加：AI思考 */
+.ai-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:32px;}
+.ai-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.ai-icon{width:38px;height:38px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ai-name{font-size:14px;font-weight:bold;color:var(--accent);}
+.ai-time{font-size:11px;color:var(--text2);margin-top:2px;}
+.ai-text{color:var(--text);font-size:14px;line-height:1.85;white-space:pre-wrap;}
+
+/* 追加：アーカイブ */
+.archive-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s;}
 .archive-item:hover{border-color:var(--accent);}
-.archive-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-.archive-meta{font-size:13px;color:var(--text2);margin-top:4px;}
-.archive-candidates{display:flex;gap:8px;}
-.archive-digit{width:34px;height:34px;border-radius:50%;background:var(--surface2);border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--accent);}
-.result-badge{font-size:12px;padding:3px 12px;border-radius:12px;font-weight:bold;}
+.archive-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.archive-meta{font-size:12px;color:var(--text2);margin-top:3px;}
+.archive-candidates{display:flex;gap:6px;}
+.archive-digit{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--accent);}
+.result-badge{font-size:11px;padding:2px 10px;border-radius:12px;font-weight:bold;}
 .result-badge.hit{background:rgba(79,247,160,0.15);color:var(--accent3);border:1px solid var(--accent3);}
 .result-badge.miss{background:rgba(247,79,79,0.15);color:var(--danger);border:1px solid var(--danger);}
 .result-badge.pending{background:rgba(138,147,168,0.15);color:var(--text2);border:1px solid var(--border);}
-.archive-detail{display:none;padding:18px 0 4px;border-top:1px solid var(--border);margin-top:14px;}
+.archive-detail{display:none;padding:16px 0 4px;border-top:1px solid var(--border);margin-top:12px;}
 
-/* ローディング */
-.loading{text-align:center;padding:70px;color:var(--text2);font-size:15px;}
+.loading{text-align:center;padding:60px;color:var(--text2);}
 .dot{display:inline-block;animation:blink 1.4s infinite both;}
-.dot:nth-child(2){animation-delay:.2s;}
-.dot:nth-child(3){animation-delay:.4s;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
 @keyframes blink{0%,80%,100%{opacity:0;}40%{opacity:1;}}
+
+/* 選外数字の薄い表示 */
+.row-out td{opacity:0.45;}
+.row-cut{border-top:2px dashed var(--accent2) !important;}
 </style>
 </head>
 <body>
@@ -160,7 +157,7 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
     <div class="login-sub">パスワードを入力してください</div>
     <input type="password" id="pw" class="login-input" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">LOGIN</button>
-    <div class="login-error" id="login-error">パスワードが違います</div>
+    <div class="login-error" id="lerr">パスワードが違います</div>
   </div>
 </div>
 
@@ -175,35 +172,21 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
 </nav>
 
 <div class="container">
-
-  <!-- TOP -->
   <div id="page-top" class="page active">
-    <div id="top-content">
-      <div class="loading">データを読み込み中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
-    </div>
+    <div id="top-content"><div class="loading">データを読み込み中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div></div>
   </div>
-
-  <!-- ARCHIVE -->
   <div id="page-archive" class="page">
     <div class="section-title" style="margin-bottom:20px;">過去の予想アーカイブ</div>
-    <div id="archive-content">
-      <div class="loading">読み込み中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
-    </div>
+    <div id="archive-content"><div class="loading">読み込み中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div></div>
   </div>
-
-  <!-- ABOUT -->
   <div id="page-about" class="page">
-    <div id="about-content">
-      <div class="loading">読み込み中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
-    </div>
+    <div id="about-content"><div class="loading">読み込み中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div></div>
   </div>
-
 </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ===== 認証 =====
 const PW='numbers3system';
 function doLogin(){
   if(document.getElementById('pw').value===PW){
@@ -211,16 +194,13 @@ function doLogin(){
     document.getElementById('main').style.display='block';
     sessionStorage.setItem('n3','1');
     loadMain();
-  }else{
-    document.getElementById('login-error').style.display='block';
-  }
+  }else{document.getElementById('lerr').style.display='block';}
 }
 if(sessionStorage.getItem('n3')==='1'){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('main').style.display='block';
 }
 
-// ===== ページ切替 =====
 function showPage(name,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
@@ -230,199 +210,233 @@ function showPage(name,el){
   if(name==='about')loadAbout();
 }
 
-// ===== チャートヘルパー =====
-const GC='rgba(255,255,255,0.07)',TC='#9aa0ad';
+const GC='rgba(255,255,255,0.06)',TC='#898781';
+
 function mkLine(id,datasets,ymin,ymax,ystep,labels){
   const c=document.getElementById(id);if(!c)return;
   new Chart(c,{type:'line',data:{labels,datasets},options:{
     responsive:true,maintainAspectRatio:false,
     interaction:{mode:'index',intersect:false},
-    plugins:{
-      legend:{display:datasets.length>1,labels:{color:TC,font:{size:11},boxWidth:14,padding:14}},
-      tooltip:{callbacks:{label:i=>i.dataset.label+': '+(i.raw!==null?Math.round(i.raw*10)/10:'-')}}
-    },
-    scales:{
-      x:{ticks:{color:TC,font:{size:10},maxRotation:0,autoSkip:false},grid:{color:GC}},
-      y:{min:ymin,max:ymax,ticks:{color:TC,font:{size:10},stepSize:ystep},grid:{color:GC}}
-    }
+    plugins:{legend:{display:datasets.length>1,labels:{color:TC,font:{size:10},boxWidth:12}},
+      tooltip:{callbacks:{label:i=>i.dataset.label+': '+(i.raw!==null?Math.round(i.raw*10)/10:'-')}}},
+    scales:{x:{ticks:{color:TC,font:{size:10},maxRotation:0,autoSkip:false},grid:{color:GC}},
+      y:{min:ymin,max:ymax,ticks:{color:TC,font:{size:10},stepSize:ystep},grid:{color:GC}}}
   }});
 }
 function mkBar(id,labels,datasets,max){
   const c=document.getElementById(id);if(!c)return;
   new Chart(c,{type:'bar',data:{labels,datasets},options:{
     responsive:true,maintainAspectRatio:false,
-    plugins:{
-      legend:{display:datasets.length>1,labels:{color:TC,font:{size:11},boxWidth:14}},
-      tooltip:{callbacks:{label:i=>(i.dataset.label?i.dataset.label+': ':'')+i.raw+'回'}}
-    },
-    scales:{
-      x:{ticks:{color:TC,font:{size:11}},grid:{display:false}},
-      y:{max,ticks:{color:TC,font:{size:10}},grid:{color:GC}}
-    }
+    plugins:{legend:{display:datasets.length>1,labels:{color:TC,font:{size:10},boxWidth:12}},
+      tooltip:{callbacks:{label:i=>(i.dataset.label?i.dataset.label+': ':'')+i.raw}}},
+    scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},
+      y:{max,ticks:{color:TC,font:{size:10}},grid:{color:GC}}}
   }});
 }
 
-// ===== TOP読み込み =====
 async function loadMain(){
   try{
     const res=await fetch('data/latest.json?t='+Date.now());
-    const data=await res.json();
-    renderTop(data);
+    const D=await res.json();
+    renderTop(D);
   }catch(e){
     document.getElementById('top-content').innerHTML='<div class="loading" style="color:var(--danger)">データの読み込みに失敗しました</div>';
   }
 }
 
 function renderTop(D){
-  const a=D.analysis_a,b=D.analysis_b,al=D.alert;
-  const cd=D.chart_data||{};
+  const a=D.analysis_a,b=D.analysis_b,al=D.alert,cd=D.chart_data||{};
   const RC=['#f7c04f','#a0aab8','#c87941','#f74f4f'];
   const RL=['1位','2位','3位','4位'];
+  const ALL_DIGITS=['0','1','2','3','4','5','6','7','8','9'];
+  const allScores=a.all_scores||{};
+  const sorted=ALL_DIGITS.slice().sort((x,y)=>(allScores[y]||0)-(allScores[x]||0));
 
   document.getElementById('top-content').innerHTML=`
-<!-- ===== 予想ヒーロー ===== -->
-<div class="hero">
-  <div class="hero-label">NEXT TARGET — 第${D.next_round}回</div>
-  <div class="hero-round">前回：第${D.latest_round}回 当選番号「${D.latest_number}」</div>
-  <div class="digits">${a.candidates.map(d=>`<div class="digit">${d}</div>`).join('')}</div>
-  <div class="hero-combos">
-    ${b.straight_orders.map(s=>`<div class="combo-tag">${s.straight}<span class="straight">BOX: ${s.combo}</span></div>`).join('')}
-  </div>
-  <div style="margin-top:14px;font-size:13px;color:var(--text2);">セット購入 4口 = 800円</div>
-</div>
 
 <!-- ===== AI思考 ===== -->
 <div class="ai-box">
   <div class="ai-header">
     <div class="ai-icon">🤖</div>
-    <div><div class="ai-name">Claude AI の分析思考</div><div class="ai-time">${D.date} 更新</div></div>
+    <div><div class="ai-name">Claude AI の分析思考</div><div class="ai-time">${D.date} 更新 — 第${D.next_round}回向け予想</div></div>
   </div>
   <div class="ai-text">${D.ai_thoughts}</div>
 </div>
 
-<!-- ===== 出現間隔アラート ===== -->
-<div class="section">
-  <div class="section-title">出現間隔アラート</div>
-  <div class="alert-grid">
-    ${Object.entries(al).map(([d,v])=>`
-      <div class="alert-item">
-        <div class="alert-digit">${d}</div>
-        <div class="alert-level">${v.level}</div>
-        <div class="alert-info">休止 ${v.current_rest}回<br>平均 ${v.avg_interval}回</div>
-      </div>`).join('')}
-  </div>
-  <p class="note" style="margin-top:14px;">🔴平均の1.5倍以上休止中 / 🟡1.0〜1.5倍 / 🟢0.5〜1.0倍 / ⚪直近出現済み</p>
-</div>
-
 <!-- ===== 候補数字調査A ===== -->
-<div class="doc-header">
-  <div class="label">Survey A</div>
+<div class="header">
+  <div class="label">Numbers3 Analysis System</div>
   <h1>候補数字調査 A</h1>
-  <div class="sub">過去の当選番号データから次回の当選番号に含まれる可能性が高い数字を4つ選出する</div>
+  <div class="sub">ナンバーズ3 次回当選数字の候補を導くための分析フレームワーク</div>
 </div>
 
 <div class="section">
-  <div class="section-title">01 — ポイント集計結果（最大20pt）</div>
+  <div class="section-title">01 — ポイント集計：全数字のランキング</div>
+  <p style="font-size:12px;color:var(--text2);margin-bottom:14px;">0〜9の全数字を5つの要素でポイント化。上位4つが候補数字として選出される。点線より下は選外。</p>
   <table>
-    <tr><th>順位</th><th>数字</th><th>ひっぱり系(5)</th><th>頻度(4)</th><th>勢い(4)</th><th>直近pull(3)</th><th>連番(4)</th><th>合計</th></tr>
-    ${a.candidates.map((d,i)=>`
+    <thead>
       <tr>
-        <td class="dim">${i+1}位</td>
-        <td class="hl" style="font-size:20px;">${d}</td>
-        <td>${a.details.pull_total[d]}</td>
-        <td>${a.details.freq[d]}回</td>
-        <td class="${a.details.ikioi[d]>0?'good':a.details.ikioi[d]<0?'bad':'dim'}">${a.details.ikioi[d]>=0?'+':''}${a.details.ikioi[d]}</td>
-        <td>${a.details.pull_score[d]}pt</td>
-        <td>${a.details.renban[d]}pt</td>
-        <td class="hl" style="font-size:16px;">${a.scores[d]}pt</td>
-      </tr>`).join('')}
+        <th>順位</th><th>数字</th>
+        <th>①ひっぱり系<br><span style="font-size:10px;">(最大5pt)</span></th>
+        <th>②頻度<br><span style="font-size:10px;">(最大4pt)</span></th>
+        <th>③勢い<br><span style="font-size:10px;">(最大4pt)</span></th>
+        <th>④直近pull<br><span style="font-size:10px;">(最大3pt)</span></th>
+        <th>⑤連番<br><span style="font-size:10px;">(最大4pt)</span></th>
+        <th>合計</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${sorted.map((d,i)=>{
+        const isCandidate=a.candidates.includes(d);
+        const isCutLine=i===3;
+        const score=allScores[d]||0;
+        const ik=cd.ikioi_all?cd.ikioi_all[d]:'-';
+        const pt=cd.pull_total_all?cd.pull_total_all[d]:'-';
+        return `<tr class="${!isCandidate?'row-out':''}${isCutLine?' style="border-bottom:2px dashed var(--accent2);"':''}">
+          <td class="${isCandidate?'highlight':'dim'}">${i+1}位</td>
+          <td class="${isCandidate?'highlight':'dim'}" style="font-size:${isCandidate?'18':'14'}px;">${d}${isCandidate?'':'　'}</td>
+          <td>${pt}</td>
+          <td>-</td>
+          <td class="${typeof ik==='number'&&ik>0?'up':typeof ik==='number'&&ik<0?'down':''}">${typeof ik==='number'?(ik>=0?'+':'')+ik:'-'}</td>
+          <td>-</td>
+          <td>-</td>
+          <td class="${isCandidate?'highlight':'dim'}">${score}pt</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
   </table>
+  <p class="note">※点線より上（1〜4位）が候補数字。5位以下は今回の選外。</p>
 </div>
 
 <div class="section">
-  <div class="section-title">02 — 勢い（直近20回の変化）</div>
-  <div class="chart-label">▼ 11〜20回前 vs 1〜10回前の出現数の差</div>
+  <div class="section-title">02 — 勢い分析（直近20回の変化）</div>
+  <div class="card">
+    <div class="card-title">勢いの定義</div>
+    <p>「11〜20回前」と「1〜10回前」の出現回数の差。プラスが大きいほど直近で出現頻度が上昇中＝勢いがある数字。</p>
+    <p style="margin-top:6px;font-family:var(--font-mono);font-size:12px;color:var(--accent2);">勢い ＝ 1〜10回前の出現数 − 11〜20回前の出現数</p>
+  </div>
+  <div class="chart-label">▼ 勢い（全数字）</div>
   <div class="chart-wrap" style="height:180px;"><canvas id="c-ikioi"></canvas></div>
 </div>
 
 <div class="section">
-  <div class="section-title">03 — ひっぱり系100回合計</div>
-  <div class="card">
-    <div class="card-title">ひっぱりとは</div>
-    <p>前回・2回前・3回前の当選番号の数字が次回にも登場する現象。直近100回での発生率はひっぱり73%・隔世62%・二世代68%。3種類の合計値が高いほど「いつも引っ張られやすい安定した数字」を意味する。</p>
+  <div class="section-title">03 — ひっぱり系分析（直近100回）</div>
+  <div class="two-col">
+    <div class="card"><div class="card-title">ひっぱり（1回前）</div><p>前回の当選番号に含まれる数字が今回の当選番号に再登場する現象。直近100回での発生率：<span style="color:var(--accent3)">73%</span></p></div>
+    <div class="card"><div class="card-title">隔世ひっぱり（2回前）</div><p>2回前の当選番号の数字が今回の当選番号に登場する現象。直近100回での発生率：<span style="color:var(--accent3)">62%</span></p></div>
+    <div class="card"><div class="card-title">二世代ひっぱり（3回前）</div><p>3回前の当選番号の数字が今回の当選番号に登場する現象。直近100回での発生率：<span style="color:var(--accent3)">68%</span></p></div>
+    <div class="card"><div class="card-title">合計スコアの意味</div><p>3種類のひっぱりで登場した合計回数。数値が高いほど「どのタイミングでも引っ張られやすい安定した数字」を意味する。</p></div>
   </div>
-  <div class="chart-label">▼ ひっぱり系100回 数字別合計</div>
+  <div class="chart-label">▼ ひっぱり系100回 数字別合計（全数字）</div>
   <div class="chart-wrap" style="height:180px;"><canvas id="c-pull"></canvas></div>
 </div>
 
 <div class="section">
-  <div class="section-title">04 — 直近5回との照合</div>
-  <table>
-    <tr><th>数字</th>${a.candidates.map(d=>`<th style="font-size:18px;">${d}</th>`).join('')}</tr>
-    <tr>
-      <td class="dim">直近5回出現</td>
-      ${a.candidates.map(d=>`<td class="${a.last5_hit[d]>=2?'good':a.last5_hit[d]>=1?'warn':'dim'}">${a.last5_hit[d]}回</td>`).join('')}
-    </tr>
-    <tr>
-      <td class="dim">最新回(${D.latest_number})に含む</td>
-      ${a.candidates.map(d=>`<td>${a.in_latest.includes(d)?'<span class="good" style="font-size:16px;">✓</span>':'<span class="dim">—</span>'}</td>`).join('')}
-    </tr>
-  </table>
-  <div style="margin-top:20px;background:var(--surface2);border:2px solid var(--accent);border-radius:10px;padding:24px;text-align:center;">
-    <div style="font-size:11px;letter-spacing:3px;color:var(--accent3);font-family:var(--font-mono);margin-bottom:14px;">候補数字（第${D.next_round}回）</div>
-    <div class="digits" style="margin-bottom:14px;">${a.candidates.map(d=>`<div class="digit">${d}</div>`).join('')}</div>
-    <div style="font-size:13px;color:var(--text2);">組み合わせ：${b.straight_orders.map(s=>s.combo).join(' / ')} → セット×4口 = <span style="color:var(--accent2);">800円</span></div>
+  <div class="section-title">04 — サブ分析：出現間隔アラート</div>
+  <div class="card">
+    <div class="card-title">位置づけ</div>
+    <p>候補数字の選出には直接影響しない補助情報。ひっぱり系と逆の発想（出た数字は休む）に基づき、「そろそろ出るかもしれない数字」を地震予測のように警戒情報として提示する。</p>
+  </div>
+  <div style="margin-top:12px;">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:8px;letter-spacing:1px">🔔 出現間隔アラート</div>
+    ${Object.entries(al).filter(([d,v])=>v.level==='🔴').map(([d,v])=>`
+      <div class="alert-box"><div class="alert-dot red"></div><strong style="color:var(--danger)">「${d}」要注意</strong><span style="color:var(--text2);margin-left:8px">平均間隔${v.avg_interval}回に対し${v.current_rest}回休止中（${v.ratio}倍）</span></div>`).join('')}
+    ${Object.entries(al).filter(([d,v])=>v.level==='🟡').map(([d,v])=>`
+      <div class="alert-box"><div class="alert-dot yellow"></div><strong style="color:var(--accent2)">「${d}」やや注意</strong><span style="color:var(--text2);margin-left:8px">平均間隔${v.avg_interval}回に対し${v.current_rest}回休止中（${v.ratio}倍）</span></div>`).join('')}
   </div>
 </div>
 
+<div class="section">
+  <div class="section-title">05 — ポイント制の運用方針</div>
+  <div class="card">
+    <div class="card-title">配点の修正ルール</div>
+    <p>各要素の配点は固定ではなく、毎回の当選データを蓄積した結果「この要素が特によく機能している」と判断した場合、その要素のポイント上限を随時引き上げる。逆に精度が低い要素は配点を下げる。データが蓄積されるほど精度が上がる設計。</p>
+  </div>
+  <div class="card" style="margin-top:0">
+    <div class="card-title">ポイント配分の現在のウェイト</div>
+    <div style="margin-top:12px">
+      <div class="pt-bar"><div class="pt-label">① ひっぱり系合計（100回）</div><div class="pt-track"><div class="pt-fill" style="width:100%"></div></div><div class="pt-num">5pt</div></div>
+      <div class="pt-bar"><div class="pt-label">② 出現頻度（63回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+      <div class="pt-bar"><div class="pt-label">③ 勢い（20回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+      <div class="pt-bar"><div class="pt-label">④ 直近ひっぱりスコア</div><div class="pt-track"><div class="pt-fill" style="width:60%"></div></div><div class="pt-num">3pt</div></div>
+      <div class="pt-bar"><div class="pt-label">⑤ 連番出現パターン</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">06 — 候補数字と直近5回の照合</div>
+  <table>
+    <tr><th>数字</th>${a.candidates.map(d=>`<th style="font-size:16px;">${d}</th>`).join('')}</tr>
+    <tr>
+      <td class="dim">直近5回出現</td>
+      ${a.candidates.map(d=>`<td class="${a.last5_hit[d]>=2?'up':a.last5_hit[d]>=1?'warn':'dim'}">${a.last5_hit[d]}回</td>`).join('')}
+    </tr>
+    <tr>
+      <td class="dim">最新回(${D.latest_number})に含む</td>
+      ${a.candidates.map(d=>`<td>${a.in_latest.includes(d)?'<span class="up" style="font-size:15px;">✓</span>':'<span class="dim">—</span>'}</td>`).join('')}
+    </tr>
+  </table>
+
+  <div class="result-box" style="margin-top:20px">
+    <div class="result-label">候補数字（第${D.next_round}回）</div>
+    <div class="digits">${a.candidates.map(d=>`<div class="digit">${d}</div>`).join('')}</div>
+    <p style="margin-top:16px;font-size:12px;color:var(--text2)">
+      組み合わせ：${b.straight_orders.map(s=>s.combo).join(' / ')} → セット×4口 = <span style="color:var(--accent2)">800円</span>
+    </p>
+  </div>
+</div>
+
+<hr>
+
 <!-- ===== 候補数字調査B ===== -->
-<div class="doc-header b" style="margin-top:56px;">
-  <div class="label">Survey B</div>
+<div class="header b" style="margin-top:48px;">
+  <div class="label">Numbers3 Analysis System</div>
   <h1>候補数字調査 B</h1>
-  <div class="sub">調査Aで選出した候補数字が統計的傾向に適合しているかを検証する</div>
+  <div class="sub">調査Aで選出した候補数字が統計的傾向に適合しているかを検証する評価フレームワーク</div>
 </div>
 
 <div class="section">
   <div class="section-title">01 — 調査Aと調査Bの関係</div>
   <div class="card">
     <div class="card-title">位置づけの整理</div>
-    <p>調査BはAで選んだ候補数字を独立した視点で評価するもの。Aの数字より適切な数字があると判断した場合は候補の入れ替えも提案する。各組み合わせの<strong style="color:var(--accent2);">信頼度の順位づけとストレート購入順番の決定</strong>にも使う。</p>
+    <p>調査BはAで選んだ候補数字を独立した視点で評価するもの。Aの数字より適切な数字があると判断した場合は候補の入れ替えも提案する。各組み合わせの<strong style="color:var(--accent2)">信頼度の順位づけとストレート購入順番の決定</strong>にも使う。</p>
   </div>
-  <div class="flow" style="margin-top:16px;">
-    <div class="flow-row"><div class="fb ac">調査A：候補数字「${a.candidates.join('・')}」を選出</div><div class="fa">→</div><div class="fb">4C3 = 4通りの組み合わせ</div></div>
-    <div class="fa" style="margin-left:20px;">↓</div>
+  <div class="flow" style="margin-top:14px;">
+    <div class="flow-row"><div class="flow-box sub">調査A：候補数字「${a.candidates.join('・')}」を選出</div><div class="flow-arrow">→</div><div class="flow-box">4C3 = 4通りの組み合わせ</div></div>
+    <div class="flow-arrow" style="margin-left:20px">↓</div>
     <div class="flow-row">
-      <div class="fb ac">B①：総和の傾向と照合</div><div class="fa">+</div>
-      <div class="fb ac">B②：最大・最小値の傾向と照合</div><div class="fa">+</div>
-      <div class="fb ac">B③：桁別出現傾向と照合</div>
+      <div class="flow-box sub">B①：総和の傾向と照合</div><div class="flow-arrow">+</div>
+      <div class="flow-box sub">B②：最大・最小値の傾向と照合</div><div class="flow-arrow">+</div>
+      <div class="flow-box sub">B③：桁別出現傾向と照合</div>
     </div>
-    <div class="fa" style="margin-left:20px;">↓</div>
-    <div class="flow-row"><div class="fb rs">組み合わせの順位づけ ＋ ストレート購入順番の決定</div></div>
+    <div class="flow-arrow" style="margin-left:20px">↓</div>
+    <div class="flow-row"><div class="flow-box result">組み合わせの順位づけ ＋ ストレート購入順番の決定</div></div>
   </div>
 </div>
 
 <div class="section">
   <div class="section-title">02 — 調査B① 総和（3桁の合計値）の傾向</div>
-  <div class="two-col" style="margin-bottom:16px;">
+  <div class="two-col" style="margin-bottom:14px;">
     <div class="card">
       <div class="card-title">直近100回 総和ゾーン分布</div>
       <table>
         <tr><th>ゾーン</th><th>範囲</th><th>出現回数</th><th>割合</th></tr>
         <tr><td class="dim">低</td><td class="dim">0〜9</td><td class="dim">22回</td><td class="dim">22%</td></tr>
-        <tr><td class="hl">中</td><td class="hl">10〜17</td><td class="hl">60回</td><td class="hl">60%</td></tr>
+        <tr><td class="highlight">中</td><td class="highlight">10〜17</td><td class="highlight">60回</td><td class="highlight">60%</td></tr>
         <tr><td class="dim">高</td><td class="dim">18〜27</td><td class="dim">18回</td><td class="dim">18%</td></tr>
       </table>
-      <p class="note">平均${cd.avg_sum||13.5} / 直近10回平均14.7 / 総和17が最多（13回）</p>
+      <p class="note">平均13.5 / 直近10回平均14.7 / 総和17が最多（13回）</p>
     </div>
     <div class="card">
       <div class="card-title">現在の波形位置</div>
       <p>移動平均（5回）は13〜15付近で安定推移。直近10回は14.7と「中ゾーン上部」に位置。</p>
-      <p style="margin-top:10px;">トレンド傾き：<span style="color:var(--accent3);">+0.12（横ばい〜微上昇）</span></p>
+      <p style="margin-top:8px;">トレンド傾き：<span style="color:var(--accent3)">+0.12（横ばい〜微上昇）</span></p>
     </div>
   </div>
   <div class="chart-label">▼ 直近100回 総和の推移（折れ線）</div>
   <div class="chart-wrap" style="height:220px;"><canvas id="c-sum-line"></canvas></div>
-  <div class="two-col" style="margin-top:16px;">
+  <div class="two-col" style="margin-top:14px;">
     <div>
       <div class="chart-label">▼ 総和ごとの出現分布（棒グラフ）</div>
       <div class="chart-wrap" style="height:180px;"><canvas id="c-sum-dist"></canvas></div>
@@ -432,12 +446,12 @@ function renderTop(D){
       <div class="chart-wrap" style="height:180px;"><canvas id="c-combo-sum"></canvas></div>
     </div>
   </div>
-  <div class="four-col" style="margin-top:18px;">
+  <div class="four-col" style="margin-top:16px;">
     ${b.combo_sum.map((c,i)=>`
       <div class="rank-box" style="border-color:${RC[i]};">
         <div class="rank-num">${RL[i]}</div>
         <div class="rank-combo" style="color:${RC[i]};">${c.combo}</div>
-        <div class="rank-detail">総和${c.sum} / ${c.count}回<br><span class="${c.count===0?'bad':c.count>=10?'good':'dim'}">${c.zone}</span></div>
+        <div class="rank-detail">総和${c.sum} / ${c.count}回<br><span class="${c.count===0?'down':c.count>=10?'up':'dim'}">${c.zone}</span></div>
       </div>`).join('')}
   </div>
 </div>
@@ -446,7 +460,7 @@ function renderTop(D){
   <div class="section-title">03 — 調査B② 最大値・最小値の傾向</div>
   <div class="chart-label">▼ 直近100回 最大値・最小値の推移（折れ線）</div>
   <div class="chart-wrap" style="height:220px;"><canvas id="c-maxmin"></canvas></div>
-  <div class="two-col" style="margin-top:16px;">
+  <div class="two-col" style="margin-top:14px;">
     <div>
       <div class="chart-label">▼ 最大値の分布（直近100回）</div>
       <div class="chart-wrap" style="height:160px;"><canvas id="c-max-dist"></canvas></div>
@@ -456,36 +470,36 @@ function renderTop(D){
       <div class="chart-wrap" style="height:160px;"><canvas id="c-min-dist"></canvas></div>
     </div>
   </div>
-  <div class="two-col" style="margin-top:16px;">
+  <div class="two-col" style="margin-top:14px;">
     <div class="card">
       <div class="card-title">最大値の傾向</div>
       <table>
         <tr><th>最大値</th><th>出現回数</th></tr>
-        <tr><td class="hl">9（最頻値）</td><td class="hl">31回</td></tr>
-        <tr><td class="hl">8</td><td class="hl">24回</td></tr>
+        <tr><td class="highlight">9（最頻値）</td><td class="highlight">31回</td></tr>
+        <tr><td class="highlight">8</td><td class="highlight">24回</td></tr>
         <tr><td>7</td><td>15回</td></tr>
         <tr><td class="dim">6以下</td><td class="dim">30回</td></tr>
       </table>
-      <p class="note">平均${cd.avg_max||7.2} /「9」か「8」が最大になるケースが55%</p>
+      <p class="note">平均7.2 /「9」か「8」が最大になるケースが55%</p>
     </div>
     <div class="card">
       <div class="card-title">最小値の傾向</div>
       <table>
         <tr><th>最小値</th><th>出現回数</th></tr>
-        <tr><td class="hl">1（最頻値）</td><td class="hl">32回</td></tr>
-        <tr><td class="hl">0</td><td class="hl">26回</td></tr>
+        <tr><td class="highlight">1（最頻値）</td><td class="highlight">32回</td></tr>
+        <tr><td class="highlight">0</td><td class="highlight">26回</td></tr>
         <tr><td>2</td><td>19回</td></tr>
         <tr><td class="dim">3以上</td><td class="dim">23回</td></tr>
       </table>
-      <p class="note">平均${cd.avg_min||1.6} /「0か1」が最小になる確率は58%</p>
+      <p class="note">平均1.6 /「0か1」が最小になる確率は58%</p>
     </div>
   </div>
-  <div class="four-col" style="margin-top:18px;">
+  <div class="four-col" style="margin-top:16px;">
     ${b.combo_maxmin.map((c,i)=>`
       <div class="rank-box" style="border-color:${RC[i]};">
         <div class="rank-num">${RL[i]}</div>
         <div class="rank-combo" style="color:${RC[i]};">${c.combo}</div>
-        <div class="rank-detail">最大${c.max}✓ / 最小${c.min}<br><span class="${c.min_rank<=2?'good':c.min_rank>=5?'bad':'warn'}">最小値ランク${c.min_rank}位</span></div>
+        <div class="rank-detail">最大${c.max}✓ / 最小${c.min}<br><span class="${c.min_rank<=2?'up':c.min_rank>=5?'down':'warn'}">最小値ランク${c.min_rank}位</span></div>
       </div>`).join('')}
   </div>
 </div>
@@ -495,10 +509,10 @@ function renderTop(D){
   <div class="chart-label">▼ 候補数字の桁別出現回数（直近100回）</div>
   <div class="chart-wrap" style="height:200px;"><canvas id="c-pos100"></canvas></div>
   <div class="chart-label">▼ 各数字の桁別推移（直近100回を10回ごとに分割）</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
     ${a.candidates.map(d=>`
       <div>
-        <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:6px;">数字「${d}」</div>
+        <div style="font-size:11px;color:var(--text2);text-align:center;margin-bottom:4px;">数字「${d}」</div>
         <div class="chart-wrap" style="height:130px;"><canvas id="c-trend-${d}"></canvas></div>
       </div>`).join('')}
   </div>
@@ -508,13 +522,13 @@ function renderTop(D){
       <tr><th>数字</th><th>百の位（100回）</th><th>十の位（100回）</th><th>一の位（100回）</th><th>最強桁</th></tr>
       ${a.candidates.map(d=>{
         const p=cd.pos_data&&cd.pos_data[d]||{h:'-',t:'-',u:'-'};
-        const best=p.h>p.t&&p.h>p.u?'百の位':p.t>p.u?'十の位':'一の位';
+        const best=typeof p.h==='number'?(p.h>p.t&&p.h>p.u?'百の位':p.t>p.u?'十の位':'一の位'):'均等';
         return `<tr>
-          <td class="hl" style="font-size:18px;">${d}</td>
-          <td${p.h>p.t&&p.h>p.u?' class="good"':''}>${p.h}回${p.h>p.t&&p.h>p.u?'★':''}</td>
-          <td${p.t>p.h&&p.t>p.u?' class="good"':''}>${p.t}回${p.t>p.h&&p.t>p.u?'★':''}</td>
-          <td${p.u>p.h&&p.u>p.t?' class="good"':''}>${p.u}回${p.u>p.h&&p.u>p.t?'★':''}</td>
-          <td class="good">${best}</td>
+          <td class="highlight" style="font-size:16px;">${d}</td>
+          <td${p.h>p.t&&p.h>p.u?' class="up"':''}>${p.h}回${p.h>p.t&&p.h>p.u?'★':''}</td>
+          <td${p.t>p.h&&p.t>p.u?' class="up"':''}>${p.t}回${p.t>p.h&&p.t>p.u?'★':''}</td>
+          <td${p.u>p.h&&p.u>p.t?' class="up"':''}>${p.u}回${p.u>p.h&&p.u>p.t?'★':''}</td>
+          <td class="up">${best}</td>
         </tr>`;}).join('')}
     </table>
   </div>
@@ -527,13 +541,14 @@ function renderTop(D){
       <div class="sarrow">→</div>
       <div class="sdig-wrap"><div class="sdig">${b.straight_orders[b.straight_orders.length-1]?.straight?.[2]||'7'}</div><div class="spos">一の位</div></div>
     </div>
-    <table style="max-width:600px;margin:0 auto;">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">「${a.candidates.find(d=>!b.straight_orders[b.straight_orders.length-1]?.straight?.includes(d))||'1'}」は全桁均等のため各組み合わせの残り桁に配置</div>
+    <table style="max-width:540px;margin:0 auto;">
       <tr><th>組み合わせ</th><th>推奨順番</th><th>配置根拠</th></tr>
       ${b.straight_orders.map(s=>`
         <tr>
           <td>${s.combo}</td>
-          <td class="hl" style="font-size:18px;font-family:var(--font-mono);">${s.straight}</td>
-          <td style="text-align:left;padding-left:14px;font-size:13px;">${s.reason}</td>
+          <td class="highlight" style="font-size:16px;font-family:var(--font-mono);">${s.straight}</td>
+          <td style="text-align:left;padding-left:12px;font-size:12px;">${s.reason}</td>
         </tr>`).join('')}
     </table>
   </div>
@@ -543,21 +558,22 @@ function renderTop(D){
   <div class="section-title">05 — 調査B 総合順位（3項目の統合評価）</div>
   <table>
     <tr><th>順位</th><th>組み合わせ</th><th>総和①</th><th>最大・最小②</th><th>桁別③</th><th>総合評価</th></tr>
-    <tr><td class="hl">1位</td><td class="hl" style="font-size:20px;">179</td><td class="good">1位</td><td class="good">1位</td><td class="good">適合</td><td class="good">3項目すべてで上位・最有力</td></tr>
-    <tr><td>2位</td><td class="hl" style="font-size:20px;">167</td><td class="good">2位</td><td class="warn">3位</td><td class="good">適合</td><td>総和・桁別は強い。最大値がやや低め</td></tr>
-    <tr><td>3位</td><td class="hl" style="font-size:20px;">169</td><td class="warn">3位</td><td class="good">1位</td><td class="good">適合</td><td>最大・最小は最適。総和出現回数はやや少なめ</td></tr>
-    <tr><td class="bad">4位</td><td class="bad" style="font-size:20px;">679</td><td class="bad">4位</td><td class="bad">4位</td><td class="warn">最大のみ</td><td class="bad">総和0回・最小値6は傾向に反する</td></tr>
+    <tr><td class="highlight">1位</td><td class="highlight" style="font-size:18px;">179</td><td class="up">1位</td><td class="up">1位</td><td class="up">適合</td><td class="up">3項目すべてで上位・最有力</td></tr>
+    <tr><td>2位</td><td class="highlight" style="font-size:18px;">167</td><td class="up">2位</td><td class="warn">3位</td><td class="up">適合</td><td>総和・桁別は強い。最大値がやや低め</td></tr>
+    <tr><td>3位</td><td class="highlight" style="font-size:18px;">169</td><td class="warn">3位</td><td class="up">1位</td><td class="up">適合</td><td>最大・最小は最適。総和出現回数はやや少なめ</td></tr>
+    <tr><td class="down">4位</td><td class="down" style="font-size:18px;">679</td><td class="down">4位</td><td class="down">4位</td><td class="warn">最大のみ適合</td><td class="down">総和0回・最小値6は傾向に反する</td></tr>
   </table>
   <p class="note">※調査Bはあくまで傾向の適合度評価。4通りすべてを購入（800円）する方針は変わらない。</p>
 </div>
 
-<p style="text-align:center;color:var(--text2);font-size:13px;margin-top:32px;font-family:var(--font-mono);">
+<hr>
+<div style="text-align:center;color:var(--text2);font-size:12px;font-family:var(--font-mono);padding-bottom:32px;">
   更新日時：${D.generated_at?.replace('T',' ').substring(0,16)||D.date} JST<br>
   ※本サイトは娯楽目的の分析です。当選を保証するものではありません。
-</p>`;
+</div>`;
 
   // ===== グラフ描画（DOM確定後） =====
-  requestAnimationFrame(()=>{
+  setTimeout(()=>{
     const rounds=cd.rounds||[];
     const sums=cd.sums||[];
     const maxs=cd.maxs||[];
@@ -569,45 +585,54 @@ function renderTop(D){
     const maxDist=cd.max_dist||[];
     const minDist=cd.min_dist||[];
     const pos=cd.pos_data||{};
+    const ikAll=cd.ikioi_all||{};
+    const ptAll=cd.pull_total_all||{};
     const ls=rounds.map((r,i)=>i%10===0?'第'+r+'回':'');
     const periodLbls=['1〜10','11〜20','21〜30','31〜40','41〜50','51〜60','61〜70','71〜80','81〜90','91〜100'].map(s=>s+'回前');
 
-    // 勢い棒グラフ
-    mkBar('c-ikioi',a.candidates,[{
-      data:a.candidates.map(d=>a.details.ikioi[d]),
-      backgroundColor:a.candidates.map(d=>a.details.ikioi[d]>=0?'#4ff7a0':'#f74f4f'),
-      borderRadius:4,borderSkipped:false
-    }],6);
+    // 勢い（全数字）
+    if(Object.keys(ikAll).length>0){
+      const ikVals=ALL_DIGITS.map(d=>ikAll[d]||0);
+      mkBar('c-ikioi',ALL_DIGITS,[{
+        data:ikVals,
+        backgroundColor:ikVals.map((v,i)=>a.candidates.includes(ALL_DIGITS[i])?
+          (v>=0?'#4ff7a0':'#f74f4f'):
+          (v>=0?'rgba(79,247,160,0.3)':'rgba(247,79,79,0.3)')),
+        borderRadius:4,borderSkipped:false
+      }],8);
+    }
 
-    // ひっぱり系棒グラフ
-    mkBar('c-pull',a.candidates,[{
-      label:'ひっぱり系100回合計',
-      data:a.candidates.map(d=>a.details.pull_total[d]),
-      backgroundColor:'#4f8ef7',borderRadius:4,borderSkipped:false
-    }],60);
+    // ひっぱり系合計（全数字）
+    if(Object.keys(ptAll).length>0){
+      const ptVals=ALL_DIGITS.map(d=>ptAll[d]||0);
+      mkBar('c-pull',ALL_DIGITS,[{
+        data:ptVals,
+        backgroundColor:ALL_DIGITS.map(d=>a.candidates.includes(d)?'#4f8ef7':'rgba(79,142,247,0.3)'),
+        borderRadius:4,borderSkipped:false
+      }],50);
+    }
 
     if(sums.length>0){
       // 総和折れ線
       mkLine('c-sum-line',[
         {label:'各回の総和',data:sums,borderColor:'#b4b2a9',borderWidth:1,pointRadius:0,tension:0.3,fill:false},
         {label:'移動平均（5回）',data:ma5s,borderColor:'#4f8ef7',borderWidth:2.5,pointRadius:0,tension:0.4,fill:false,spanGaps:true},
-        {label:'平均',data:sums.map(()=>cd.avg_sum||13.5),borderColor:'#f7c04f',borderWidth:1,borderDash:[3,4],pointRadius:0,fill:false},
+        {label:'平均13.5',data:sums.map(()=>13.5),borderColor:'#f7c04f',borderWidth:1,borderDash:[3,4],pointRadius:0,fill:false},
       ],0,27,5,ls);
 
       // 総和分布
       if(sumDist.length>0){
-        mkBar('c-sum-dist',[...Array(28).keys()].map(String),[{
-          data:sumDist,
-          backgroundColor:sumDist.map((_,i)=>i>=10&&i<=17?'#4f8ef7':i<=9?'#4ff7a0':'#f74f4f'),
-          borderRadius:2,borderSkipped:false
-        }],15);
+        const c=document.getElementById('c-sum-dist');
+        if(c)new Chart(c,{type:'bar',data:{
+          labels:[...Array(28).keys()].map(String),
+          datasets:[{data:sumDist,backgroundColor:sumDist.map((_,i)=>i>=10&&i<=17?'#4f8ef7':i<=9?'#4ff7a0':'#f74f4f'),borderRadius:3,borderSkipped:false}]
+        },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>i.raw+'回'}}},scales:{x:{ticks:{color:TC,font:{size:9}}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
       }
 
       // 組み合わせ総和
       mkBar('c-combo-sum',b.combo_sum.map(c=>c.combo+'('+c.sum+')'),[{
         data:b.combo_sum.map(c=>c.count),
-        backgroundColor:b.combo_sum.map((_,i)=>RC[i]),
-        borderRadius:4,borderSkipped:false
+        backgroundColor:RC,borderRadius:4,borderSkipped:false
       }],15);
 
       // 最大・最小折れ線
@@ -616,12 +641,16 @@ function renderTop(D){
         {label:'最大値MA5',data:ma5max,borderColor:'#b5d4f4',borderWidth:2.5,pointRadius:0,tension:0.4,fill:false,spanGaps:true},
         {label:'最小値',data:mins,borderColor:'#1baf7a',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false},
         {label:'最小値MA5',data:ma5min,borderColor:'#9fe1cb',borderWidth:2.5,pointRadius:0,tension:0.4,fill:false,spanGaps:true},
+        {label:'最大値平均',data:maxs.map(()=>7.2),borderColor:'#2a78d6',borderWidth:1,borderDash:[3,4],pointRadius:0,fill:false},
+        {label:'最小値平均',data:mins.map(()=>1.6),borderColor:'#1baf7a',borderWidth:1,borderDash:[3,4],pointRadius:0,fill:false},
       ],0,9,1,ls);
 
       // 最大・最小分布
       if(maxDist.length>0){
-        mkBar('c-max-dist',['0','1','2','3','4','5','6','7','8','9'],[{data:maxDist,backgroundColor:'#2a78d6',borderRadius:3,borderSkipped:false}],35);
-        mkBar('c-min-dist',['0','1','2','3','4','5','6','7','8','9'],[{data:minDist,backgroundColor:'#1baf7a',borderRadius:3,borderSkipped:false}],35);
+        const cm=document.getElementById('c-max-dist');
+        if(cm)new Chart(cm,{type:'bar',data:{labels:['0','1','2','3','4','5','6','7','8','9'],datasets:[{data:maxDist,backgroundColor:'#2a78d6',borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>i.raw+'回'}}},scales:{x:{ticks:{color:TC,font:{size:11}}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+        const cn=document.getElementById('c-min-dist');
+        if(cn)new Chart(cn,{type:'bar',data:{labels:['0','1','2','3','4','5','6','7','8','9'],datasets:[{data:minDist,backgroundColor:'#1baf7a',borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>i.raw+'回'}}},scales:{x:{ticks:{color:TC,font:{size:11}}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
       }
 
       // 桁別棒グラフ
@@ -644,10 +673,12 @@ function renderTop(D){
         });
       }
     }
-  });
+  },100);
 }
 
-// ===== アーカイブ =====
+const ALL_DIGITS=['0','1','2','3','4','5','6','7','8','9'];
+
+// アーカイブ
 async function loadArchive(){
   const el=document.getElementById('archive-content');
   el.innerHTML='<div class="loading">読み込み中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>';
@@ -656,23 +687,15 @@ async function loadArchive(){
     try{const r=await fetch('data/archive/index.json?t='+Date.now());list=await r.json();}
     catch{const r=await fetch('data/latest.json?t='+Date.now());const d=await r.json();list=[{date:d.date,round:d.latest_round,candidates:d.analysis_a.candidates,result_number:null,hit:null}];}
     if(!list.length){el.innerHTML='<div class="loading dim">アーカイブはまだありません</div>';return;}
-    el.innerHTML=list.map((item,i)=>{
-      const badge=item.hit===null
-        ?'<span class="result-badge pending">結果待ち</span>'
-        :item.hit?'<span class="result-badge hit">✓ 当選あり</span>':'<span class="result-badge miss">✗ 外れ</span>';
+    el.innerHTML=list.map(item=>{
+      const badge=item.hit===null?'<span class="result-badge pending">結果待ち</span>':item.hit?'<span class="result-badge hit">✓ 当選あり</span>':'<span class="result-badge miss">✗ 外れ</span>';
       const resultStr=item.result_number?` → 当選番号：${item.result_number}`:'';
       return `<div class="archive-item" onclick="toggleArchive(this,'${item.date}')">
         <div class="archive-header">
-          <div>
-            <div style="font-size:15px;font-weight:bold;">${item.date}${resultStr}</div>
-            <div class="archive-meta">第${item.round}回の翌回予想</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:14px;">
-            ${badge}
-            <div class="archive-candidates">${item.candidates.map(d=>`<div class="archive-digit">${d}</div>`).join('')}</div>
-          </div>
+          <div><div style="font-size:14px;font-weight:bold;">${item.date}${resultStr}</div><div class="archive-meta">第${item.round}回の翌回予想</div></div>
+          <div style="display:flex;align-items:center;gap:12px;">${badge}<div class="archive-candidates">${item.candidates.map(d=>`<div class="archive-digit">${d}</div>`).join('')}</div></div>
         </div>
-        <div class="archive-detail"><div style="color:var(--text2);font-size:14px;">▼ クリックで詳細を表示</div></div>
+        <div class="archive-detail"><div style="color:var(--text2);font-size:13px;">▼ クリックして詳細を表示</div></div>
       </div>`;
     }).join('');
   }catch{el.innerHTML='<div class="loading" style="color:var(--danger)">読み込みに失敗しました</div>';}
@@ -687,24 +710,23 @@ async function toggleArchive(el,date){
     try{
       const r=await fetch(`data/archive/${date}.json?t=`+Date.now());
       const j=await r.json();
-      d.innerHTML=`<div class="ai-text" style="font-size:14px;margin-bottom:14px;">${j.ai_thoughts}</div>
-        <div style="color:var(--text2);font-size:13px;">候補数字：${j.analysis_a.candidates.join('・')} ／ 購入：${j.analysis_b.straight_orders.map(s=>s.straight).join('・')}</div>`;
-    }catch{d.innerHTML='<div style="color:var(--danger);font-size:14px;">データの読み込みに失敗しました</div>';}
+      d.innerHTML=`<div class="ai-text" style="font-size:13px;margin-bottom:12px;">${j.ai_thoughts}</div>
+        <div style="color:var(--text2);font-size:12px;">候補数字：${j.analysis_a.candidates.join('・')} ／ 購入：${j.analysis_b.straight_orders.map(s=>s.straight).join('・')}</div>`;
+    }catch{d.innerHTML='<div style="color:var(--danger);font-size:13px;">データの読み込みに失敗しました</div>';}
   }
 }
 
-// ===== システム説明 =====
+// システム説明
 function loadAbout(){
   const el=document.getElementById('about-content');
   if(el.dataset.loaded)return;
   el.dataset.loaded='1';
   el.innerHTML=`
-<div class="doc-header">
-  <div class="label">Survey A</div>
+<div class="header">
+  <div class="label">Numbers3 Analysis System</div>
   <h1>候補数字調査 A</h1>
   <div class="sub">ナンバーズ3 次回当選数字の候補を導くための分析フレームワーク</div>
 </div>
-
 <div class="section">
   <div class="section-title">01 — システム概要</div>
   <div class="two-col">
@@ -712,132 +734,118 @@ function loadAbout(){
     <div class="card"><div class="card-title">大前提</div><p>ナンバーズ3は完全乱数抽選であり、数学的な必勝法は存在しない。本システムは過去データの傾向から「可能性が高い」数字を絞り込むものであり、当選を保証するものではない。分析はすべて実際の当選データのみを使用する。</p></div>
   </div>
 </div>
-
 <div class="section">
   <div class="section-title">02 — 分析の全体構造</div>
   <div class="flow">
-    <div class="flow-row"><div class="fb" style="border-color:var(--accent);color:var(--accent);">過去当選データ取得</div><div class="fa">→</div><div class="fb">直近100回・63回・20回</div></div>
-    <div class="fa" style="margin-left:20px;">↓</div>
-    <div class="flow-row"><div class="fb" style="border-color:var(--accent);color:var(--accent);">メイン分析（5要素）</div><div class="fa">→</div><div class="fb">各数字にポイント付与</div><div class="fa">→</div><div class="fb rs">候補数字4つ選出</div></div>
-    <div class="fa" style="margin-left:20px;">↓</div>
-    <div class="flow-row"><div class="fb" style="border-color:var(--accent2);color:var(--accent2);">サブ分析（出現間隔アラート）</div><div class="fa">→</div><div class="fb">候補数字に影響しない補助情報</div></div>
-    <div class="fa" style="margin-left:20px;">↓</div>
-    <div class="flow-row"><div class="fb">直近5回と照合</div><div class="fa">→</div><div class="fb rs">最終確認・購入へ</div></div>
+    <div class="flow-row"><div class="flow-box main">過去当選データ取得</div><div class="flow-arrow">→</div><div class="flow-box">直近100回・63回・20回</div></div>
+    <div class="flow-arrow" style="margin-left:20px">↓</div>
+    <div class="flow-row"><div class="flow-box main">メイン分析（5要素）</div><div class="flow-arrow">→</div><div class="flow-box">各数字にポイント付与</div><div class="flow-arrow">→</div><div class="flow-box result">候補数字4つ選出</div></div>
+    <div class="flow-arrow" style="margin-left:20px">↓</div>
+    <div class="flow-row"><div class="flow-box sub">サブ分析（出現間隔アラート）</div><div class="flow-arrow">→</div><div class="flow-box">候補数字に影響しない補助情報</div></div>
+    <div class="flow-arrow" style="margin-left:20px">↓</div>
+    <div class="flow-row"><div class="flow-box">直近5回と照合</div><div class="flow-arrow">→</div><div class="flow-box result">最終確認・購入へ</div></div>
   </div>
 </div>
-
 <div class="section">
   <div class="section-title">03 — メイン分析：5つの評価要素</div>
   <table>
-    <tr><th>要素</th><th>参照期間</th><th>最大pt</th><th>配点基準</th></tr>
-    <tr><td class="hl">①ひっぱり系合計</td><td>直近100回</td><td class="hl">5pt</td><td style="text-align:left;padding-left:14px;">1位:5pt / 2位:4pt / 3位:3pt / 4位:2pt / 5位:1pt</td></tr>
-    <tr><td class="hl">②出現頻度</td><td>直近63回</td><td class="hl">4pt</td><td style="text-align:left;padding-left:14px;">1位:4pt / 2位:3pt / 3位:2pt / 4〜5位:1pt</td></tr>
-    <tr><td class="hl">③勢い</td><td>直近20回</td><td class="hl">4pt</td><td style="text-align:left;padding-left:14px;">+3以上:4pt / +2:3pt / +1:2pt / 0:1pt / マイナス:0pt</td></tr>
-    <tr><td class="hl">④直近ひっぱりスコア</td><td>直近3回</td><td class="hl">3pt</td><td style="text-align:left;padding-left:14px;">1回前:3pt / 2回前:2pt / 3回前:1pt（重複加算）</td></tr>
-    <tr><td class="hl">⑤連番出現パターン</td><td>直近100回＋次回候補</td><td class="hl">4pt</td><td style="text-align:left;padding-left:14px;">count上位3位に3・2・1pt ＋ 次回連番候補なら+1pt</td></tr>
+    <thead><tr><th>要素</th><th>参照期間</th><th>最大pt</th><th>配点基準</th></tr></thead>
+    <tbody>
+      <tr><td class="highlight">① ひっぱり系合計</td><td>直近100回</td><td class="highlight">5pt</td><td style="text-align:left">1位:5pt / 2位:4pt / 3位:3pt / 4位:2pt / 5位:1pt</td></tr>
+      <tr><td class="highlight">② 出現頻度</td><td>直近63回</td><td class="highlight">4pt</td><td style="text-align:left">1位:4pt / 2位:3pt / 3位:2pt / 4〜5位:1pt</td></tr>
+      <tr><td class="highlight">③ 勢い</td><td>直近20回</td><td class="highlight">4pt</td><td style="text-align:left">+3以上:4pt / +2:3pt / +1:2pt / 0:1pt / マイナス:0pt</td></tr>
+      <tr><td class="highlight">④ 直近ひっぱりスコア</td><td>直近3回</td><td class="highlight">3pt</td><td style="text-align:left">1回前:3pt / 2回前:2pt / 3回前:1pt（重複加算）</td></tr>
+      <tr><td class="highlight">⑤ 連番出現パターン</td><td>直近100回＋次回候補</td><td class="highlight">4pt</td><td style="text-align:left">連番count上位3位に3・2・1pt ＋ 次回連番候補なら+1pt</td></tr>
+      <tr><td colspan="2" style="text-align:right;color:var(--text2)">合計最大</td><td class="highlight">20pt</td><td></td></tr>
+    </tbody>
   </table>
-  <div style="margin-top:20px;">
-    <div class="pt-bar"><div class="pt-label">①ひっぱり系合計（最重要）</div><div class="pt-track"><div class="pt-fill" style="width:100%"></div></div><div class="pt-num">5pt</div></div>
-    <div class="pt-bar"><div class="pt-label">②出現頻度</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
-    <div class="pt-bar"><div class="pt-label">③勢い</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
-    <div class="pt-bar"><div class="pt-label">④直近ひっぱりスコア</div><div class="pt-track"><div class="pt-fill" style="width:60%"></div></div><div class="pt-num">3pt</div></div>
-    <div class="pt-bar"><div class="pt-label">⑤連番出現パターン</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
-  </div>
-  <p class="note">※連続出現補正：3回連続中かつ過去の4回目出現率が50%以上の数字に+2pt</p>
+  <p class="note" style="margin-top:12px">※連続出現補正：3回連続中かつ過去の4回目出現率が50%以上の数字に+2pt（現状は0ptのケースが多い）</p>
 </div>
-
 <div class="section">
   <div class="section-title">04 — ひっぱり系分析の詳細（最重要要素）</div>
   <div class="two-col">
-    <div class="card"><div class="card-title">ひっぱり（1回前）</div><p>前回の当選番号に含まれる数字が、今回の当選番号に再登場する現象。直近100回での発生率：<span style="color:var(--accent3);">73%</span></p></div>
-    <div class="card"><div class="card-title">隔世ひっぱり（2回前）</div><p>2回前の当選番号の数字が、今回の当選番号に登場する現象。直近100回での発生率：<span style="color:var(--accent3);">62%</span></p></div>
-    <div class="card"><div class="card-title">二世代ひっぱり（3回前）</div><p>3回前の当選番号の数字が、今回の当選番号に登場する現象。直近100回での発生率：<span style="color:var(--accent3);">68%</span></p></div>
-    <div class="card"><div class="card-title">勢い（③）の定義</div><p>「11〜20回前」と「1〜10回前」の出現回数の差。プラスが大きいほど直近で上昇中＝勢いがある数字。</p><p style="margin-top:8px;font-family:var(--font-mono);font-size:13px;color:var(--accent2);">勢い = 1〜10回前 − 11〜20回前</p></div>
+    <div class="card"><div class="card-title">ひっぱり（1回前）</div><p>前回の当選番号に含まれる数字が、今回の当選番号に再登場する現象。直近100回での発生率：<span style="color:var(--accent3)">73%</span></p></div>
+    <div class="card"><div class="card-title">隔世ひっぱり（2回前）</div><p>2回前の当選番号の数字が、今回の当選番号に登場する現象。直近100回での発生率：<span style="color:var(--accent3)">62%</span></p></div>
+    <div class="card"><div class="card-title">二世代ひっぱり（3回前）</div><p>3回前の当選番号の数字が、今回の当選番号に登場する現象。直近100回での発生率：<span style="color:var(--accent3)">68%</span></p></div>
+    <div class="card"><div class="card-title">合計スコアの意味</div><p>3種類のひっぱりで登場した合計回数。数値が高いほど「どのタイミングでも引っ張られやすい安定した数字」を意味する。</p></div>
+  </div>
+  <div class="card" style="margin-top:4px"><div class="card-title">勢い（③）の定義</div><p>「11〜20回前」と「1〜10回前」の出現回数の差。プラスが大きいほど直近で出現頻度が上昇中＝勢いがある数字。</p><p style="margin-top:6px;font-family:var(--font-mono);font-size:12px;color:var(--accent2)">勢い ＝ 1〜10回前の出現数 − 11〜20回前の出現数</p></div>
+</div>
+<div class="section">
+  <div class="section-title">05 — サブ分析：出現間隔アラート（D）</div>
+  <div class="card"><div class="card-title">位置づけ</div><p>候補数字の選出には直接影響しない補助情報。ひっぱり系と逆の発想（出た数字は休む）に基づき、「そろそろ出るかもしれない数字」を地震予測のように警戒情報として提示する。</p></div>
+  <table style="margin-top:12px">
+    <thead><tr><th>アラートレベル</th><th>基準</th><th>意味</th></tr></thead>
+    <tbody>
+      <tr><td><span style="color:var(--danger)">🔴 要注意</span></td><td>休止回数 ≥ 平均間隔 × 1.5</td><td>かなり長期間出ていない・復活に注意</td></tr>
+      <tr><td><span style="color:var(--accent2)">🟡 やや注意</span></td><td>休止回数 ≥ 平均間隔 × 1.0</td><td>平均的に出待ち状態</td></tr>
+      <tr><td><span style="color:var(--accent3)">🟢 正常</span></td><td>休止回数 ≥ 平均間隔 × 0.5</td><td>特に問題なし</td></tr>
+      <tr><td class="dim">⚪ 直近出現</td><td>直近で出現済み</td><td>まだ出る可能性は低め</td></tr>
+    </tbody>
+  </table>
+  <p class="note">アラート🔴の数字がメイン分析でも上位浮上してきた場合、候補数字の入れ替えを検討するシグナルとして活用する。</p>
+</div>
+<div class="section">
+  <div class="section-title">06 — 直近5回との照合</div>
+  <div class="card"><div class="card-title">照合の目的</div><p>候補数字が直近5回の当選番号にどれだけ含まれているかを確認する。最新回の当選番号に含まれる候補数字は「ひっぱり直近候補」として次回に出る可能性が高い。直近5回に全く含まれていない候補数字は、ひっぱり視点では根拠が弱いことを確認する作業。</p></div>
+</div>
+<div class="section">
+  <div class="section-title">07 — ポイント制の運用方針</div>
+  <div class="card"><div class="card-title">配点の修正ルール</div><p>各要素の配点は固定ではなく、毎回の当選データを蓄積した結果「この要素が特によく機能している」と判断した場合、その要素のポイント上限を随時引き上げる。逆に精度が低い要素は配点を下げる。データが蓄積されるほど精度が上がる設計。</p></div>
+  <div class="card" style="margin-top:0">
+    <div class="card-title">ポイント配分の現在のウェイト</div>
+    <div style="margin-top:12px">
+      <div class="pt-bar"><div class="pt-label">① ひっぱり系合計（100回）</div><div class="pt-track"><div class="pt-fill" style="width:100%"></div></div><div class="pt-num">5pt</div></div>
+      <div class="pt-bar"><div class="pt-label">② 出現頻度（63回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+      <div class="pt-bar"><div class="pt-label">③ 勢い（20回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+      <div class="pt-bar"><div class="pt-label">④ 直近ひっぱりスコア</div><div class="pt-track"><div class="pt-fill" style="width:60%"></div></div><div class="pt-num">3pt</div></div>
+      <div class="pt-bar"><div class="pt-label">⑤ 連番出現パターン（B）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+    </div>
   </div>
 </div>
-
-<div class="section">
-  <div class="section-title">05 — サブ分析：出現間隔アラート</div>
-  <div class="card"><div class="card-title">位置づけ</div><p>候補数字の選出には直接影響しない補助情報。ひっぱり系と逆の発想（出た数字は休む）に基づき、「そろそろ出るかもしれない数字」を地震予測のように警戒情報として提示する。🔴の数字がメイン分析でも上位に浮上してきた場合、候補数字の入れ替えを検討するシグナルとして活用する。</p></div>
-  <table style="margin-top:14px;">
-    <tr><th>レベル</th><th>基準</th><th>意味</th></tr>
-    <tr><td style="color:var(--danger);">🔴 要注意</td><td>休止回数 ≥ 平均間隔 × 1.5</td><td>かなり長期間出ていない・復活に注意</td></tr>
-    <tr><td style="color:var(--warn);">🟡 やや注意</td><td>休止回数 ≥ 平均間隔 × 1.0</td><td>平均的に出待ち状態</td></tr>
-    <tr><td style="color:var(--accent3);">🟢 正常</td><td>休止回数 ≥ 平均間隔 × 0.5</td><td>特に問題なし</td></tr>
-    <tr><td class="dim">⚪ 直近出現</td><td>直近で出現済み</td><td>まだ出る可能性は低め</td></tr>
-  </table>
-</div>
-
-<div class="section">
-  <div class="section-title">06 — ポイント制の運用方針</div>
-  <div class="card"><div class="card-title">配点の修正ルール</div><p>各要素の配点は固定ではなく、毎週金曜日に週次検証を行い「この要素が特によく機能している」と判断した場合、その要素のポイント上限を随時引き上げる。逆に精度が低い要素は配点を下げる。データが蓄積されるほど精度が上がる設計。</p></div>
-</div>
-
 <hr>
-
-<div class="doc-header b" style="margin-top:48px;">
-  <div class="label">Survey B</div>
+<div class="header b" style="margin-top:48px;">
+  <div class="label">Numbers3 Analysis System</div>
   <h1>候補数字調査 B</h1>
   <div class="sub">調査Aで選出した候補数字が統計的傾向に適合しているかを検証する評価フレームワーク</div>
 </div>
-
 <div class="section">
   <div class="section-title">01 — 調査Aと調査Bの関係</div>
-  <div class="card"><div class="card-title">位置づけ</div><p>調査BはAで選んだ候補数字を独立した視点で評価するもの。Aの数字より適切な数字があると判断した場合は候補の入れ替えも提案する。各組み合わせの<strong style="color:var(--accent2);">信頼度の順位づけとストレート購入順番の決定</strong>にも使う。</p></div>
-  <div class="flow" style="margin-top:16px;">
-    <div class="flow-row"><div class="fb ac">調査A：候補数字を選出</div><div class="fa">→</div><div class="fb">4C3 = 4通りの組み合わせ</div></div>
-    <div class="fa" style="margin-left:20px;">↓</div>
-    <div class="flow-row">
-      <div class="fb ac">B①：総和の傾向と照合</div><div class="fa">+</div>
-      <div class="fb ac">B②：最大・最小値の傾向と照合</div><div class="fa">+</div>
-      <div class="fb ac">B③：桁別出現傾向と照合</div>
-    </div>
-    <div class="fa" style="margin-left:20px;">↓</div>
-    <div class="flow-row"><div class="fb rs">組み合わせの順位づけ ＋ ストレート購入順番の決定</div></div>
+  <div class="card"><div class="card-title">位置づけの整理</div><p>調査BはAで選んだ候補数字を独立した視点で評価するもの。Aの数字より適切な数字があると判断した場合は候補の入れ替えも提案する。各組み合わせの<strong style="color:var(--accent2)">信頼度の順位づけとストレート購入順番の決定</strong>にも使う。</p></div>
+  <div class="flow" style="margin-top:14px;">
+    <div class="flow-row"><div class="flow-box sub">調査A：候補数字を選出</div><div class="flow-arrow">→</div><div class="flow-box">4C3 = 4通りの組み合わせ</div></div>
+    <div class="flow-arrow" style="margin-left:20px">↓</div>
+    <div class="flow-row"><div class="flow-box sub">B①：総和の傾向と照合</div><div class="flow-arrow">+</div><div class="flow-box sub">B②：最大・最小値の傾向と照合</div><div class="flow-arrow">+</div><div class="flow-box sub">B③：桁別出現傾向と照合</div></div>
+    <div class="flow-arrow" style="margin-left:20px">↓</div>
+    <div class="flow-row"><div class="flow-box result">組み合わせの順位づけ ＋ ストレート購入順番の決定</div></div>
   </div>
 </div>
-
 <div class="section">
-  <div class="section-title">02 — 調査B① 総和の傾向</div>
-  <div class="card"><div class="card-title">総和とは</div><p>当選番号3桁の合計値（例：481 → 4+8+1=13）。直近100回で「中ゾーン（10〜17）」に60%が集中しており、候補数字の組み合わせ総和がこのゾーンに入っているかを確認する。また折れ線グラフで波形を分析し、現在の総和トレンドと候補数字の総和が整合しているかを検証する。</p></div>
-  <table style="margin-top:14px;">
-    <tr><th>ゾーン</th><th>範囲</th><th>出現割合</th><th>評価</th></tr>
-    <tr><td class="dim">低</td><td class="dim">0〜9</td><td class="dim">22%</td><td class="dim">やや少ない</td></tr>
-    <tr><td class="hl">中</td><td class="hl">10〜17</td><td class="hl">60%</td><td class="good">最も多い（最有力ゾーン）</td></tr>
-    <tr><td class="dim">高</td><td class="dim">18〜27</td><td class="dim">18%</td><td class="dim">少ない</td></tr>
-  </table>
+  <div class="section-title">02 — 調査B① 総和（3桁の合計値）の傾向</div>
+  <div class="two-col">
+    <div class="card"><div class="card-title">直近100回 総和ゾーン分布</div><table><tr><th>ゾーン</th><th>範囲</th><th>出現回数</th><th>割合</th></tr><tr><td class="dim">低</td><td class="dim">0〜9</td><td class="dim">22回</td><td class="dim">22%</td></tr><tr><td class="highlight">中</td><td class="highlight">10〜17</td><td class="highlight">60回</td><td class="highlight">60%</td></tr><tr><td class="dim">高</td><td class="dim">18〜27</td><td class="dim">18回</td><td class="dim">18%</td></tr></table><p class="note">平均13.5 / 直近10回平均14.7 / 総和17が最多（13回）</p></div>
+    <div class="card"><div class="card-title">現在の波形位置</div><p>移動平均（5回）は13〜15付近で安定推移。直近10回は14.7と「中ゾーン上部」に位置。</p><p style="margin-top:8px;">トレンド傾き：<span style="color:var(--accent3)">+0.12（横ばい〜微上昇）</span></p></div>
+  </div>
 </div>
-
 <div class="section">
   <div class="section-title">03 — 調査B② 最大値・最小値の傾向</div>
-  <div class="card"><div class="card-title">最大値・最小値とは</div><p>当選番号3桁のうち最も大きい数字（最大値）と最も小さい数字（最小値）。直近100回の分析から、最大値は「9」が最頻（31回）、最小値は「1」が最頻（32回）という傾向がある。候補数字の組み合わせがこの傾向に合致しているかを確認する。最小値が5以上になる組み合わせは傾向に反するため評価が下がる。</p></div>
+  <div class="two-col">
+    <div class="card"><div class="card-title">最大値の傾向</div><table><tr><th>最大値</th><th>出現回数</th></tr><tr><td class="highlight">9（最頻値）</td><td class="highlight">31回</td></tr><tr><td class="highlight">8</td><td class="highlight">24回</td></tr><tr><td>7</td><td>15回</td></tr><tr><td class="dim">6以下</td><td class="dim">30回</td></tr></table><p class="note">平均7.2 /「9」か「8」が最大になるケースが55%</p></div>
+    <div class="card"><div class="card-title">最小値の傾向</div><table><tr><th>最小値</th><th>出現回数</th></tr><tr><td class="highlight">1（最頻値）</td><td class="highlight">32回</td></tr><tr><td class="highlight">0</td><td class="highlight">26回</td></tr><tr><td>2</td><td>19回</td></tr><tr><td class="dim">3以上</td><td class="dim">23回</td></tr></table><p class="note">平均1.6 /「0か1」が最小になる確率は58%</p></div>
+  </div>
 </div>
-
 <div class="section">
-  <div class="section-title">04 — 調査B③ 桁別出現傾向</div>
-  <div class="card"><div class="card-title">桁別分析とは</div><p>各候補数字（0〜9）が百の位・十の位・一の位のどの桁に出やすいかを直近100回で分析する。最も出やすい桁に各数字を配置することで、ストレート当選の可能性を高めることが目的。均等型の数字（例：「1」は全桁12回ずつ）は残りの桁に配置する。</p></div>
-  <table style="margin-top:14px;">
-    <tr><th>数字例</th><th>最強桁</th><th>根拠例</th></tr>
-    <tr><td class="hl">6</td><td class="good">百の位</td><td style="text-align:left;padding-left:14px;">百の位への出現が最多（例：15回）</td></tr>
-    <tr><td class="hl">9</td><td class="good">十の位</td><td style="text-align:left;padding-left:14px;">十の位への出現が最多（例：13回）</td></tr>
-    <tr><td class="hl">7</td><td class="good">一の位</td><td style="text-align:left;padding-left:14px;">一の位への出現が最多（例：13回）</td></tr>
-    <tr><td class="hl">1</td><td class="dim">均等</td><td style="text-align:left;padding-left:14px;">全桁均等のため残り桁に配置</td></tr>
-  </table>
+  <div class="section-title">04 — 調査B③ 桁別出現頻度の傾向</div>
+  <div class="card"><div class="card-title">桁別分析の目的</div><p>各候補数字が百の位・十の位・一の位のどの桁に出やすいかを分析し、最も出やすい桁に配置することでストレート当選の可能性を高める。</p></div>
 </div>
-
 <div class="section">
   <div class="section-title">05 — 週次検証ルーティン</div>
-  <div class="card"><div class="card-title">毎回（月〜金）の流れ</div><p>① 当選番号発表（18:45）→ ② 前回の候補数字と照合（当たり・外れの確認）→ ③ 新しい当選番号をデータに追加 → ④ 次回用の候補数字を自動算出・表示</p></div>
-  <div class="card"><div class="card-title">毎週金曜日の追加検証</div><p>① 月〜金の全結果をまとめて振り返り → ② 予想 vs 結果の週次集計 → ③ 外れた回があれば「何の要素があれば拾えたか」を分析 → ④ ポイント配点の修正要否を判断（理由付き）→ ⑤ 必要であれば翌週からシステムをバージョンアップ</p></div>
+  <div class="card"><div class="card-title">毎回（月〜金）の流れ</div><p>① 当選番号発表（18:45）→ ② 前回の候補数字と照合 → ③ 新しい当選番号をデータに追加 → ④ 次回用の候補数字を自動算出・表示</p></div>
+  <div class="card"><div class="card-title">毎週金曜日の追加検証</div><p>① 月〜金の全結果を振り返り → ② 外れた回があれば「何の要素があれば拾えたか」を分析 → ③ ポイント配点の修正要否を判断（理由付き）→ ④ 必要であれば翌週からシステムをバージョンアップ</p></div>
 </div>
-
-<div class="card" style="margin-top:16px;">
-  <div class="card-title">免責事項</div>
-  <p>本サイトはナンバーズ3を娯楽として楽しむための参考情報を提供するものです。当選を保証するものではありません。購入は自己責任でお願いします。</p>
-</div>`;
+<div class="card"><div class="card-title">免責事項</div><p>本サイトはナンバーズ3を娯楽として楽しむための参考情報を提供するものです。当選を保証するものではありません。購入は自己責任でお願いします。</p></div>`;
 }
 
-// ===== 初期化 =====
 if(sessionStorage.getItem('n3')==='1') loadMain();
 </script>
 </body>
