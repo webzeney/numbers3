@@ -29,32 +29,37 @@ def get_latest_numbers():
         results = []
         seen_rounds = set()
 
-        # テーブルから回号と番号を探す
+        # ナンバーズ3の回号は現実的に4桁（6000〜9999）の範囲に限定
+        def is_valid_round(s):
+            return s.isdigit() and len(s) == 4 and 6000 <= int(s) <= 9999
+
+        def is_valid_number(s):
+            return s.isdigit() and len(s) == 3
+
+        # テーブルから回号と番号を探す（同じ行内のペアのみ採用）
         tables = soup.find_all('table')
         for table in tables:
             rows = table.find_all('tr')
             for row in rows:
                 cells = row.find_all(['td', 'th'])
-                texts = [c.get_text(strip=True) for c in cells]
-                # 回号らしき4〜5桁の数字と3桁の当選番号を探す
+                texts = [re.sub(r'[^\d]', '', c.get_text(strip=True)) for c in cells]
                 round_num = None
                 number = None
                 for t in texts:
-                    t_clean = re.sub(r'[^\d]', '', t)
-                    if len(t_clean) >= 4 and len(t_clean) <= 5 and t_clean.isdigit():
-                        round_num = t_clean
-                    elif len(t_clean) == 3 and t_clean.isdigit():
-                        number = t_clean
+                    if is_valid_round(t) and round_num is None:
+                        round_num = t
+                    elif is_valid_number(t) and number is None:
+                        number = t
                 if round_num and number and round_num not in seen_rounds:
                     results.append({"round": round_num, "number": number})
                     seen_rounds.add(round_num)
 
-        # テーブルで見つからない場合はテキストから抽出
+        # テーブルで見つからない場合はテキストから「第XXXX回」パターンのみ厳密に抽出
         if not results:
             text = soup.get_text()
-            pattern = re.findall(r'第?\s*(\d{4,5})\s*回[^\d]{0,20}?(\d{3})', text)
+            pattern = re.findall(r'第\s*(\d{4})\s*回[^\d]{0,15}?(\d{3})(?!\d)', text)
             for round_num, number in pattern:
-                if round_num not in seen_rounds:
+                if is_valid_round(round_num) and round_num not in seen_rounds:
                     results.append({"round": round_num, "number": number})
                     seen_rounds.add(round_num)
                     if len(results) >= 30:
@@ -187,7 +192,15 @@ def get_latest_numbers():
 def load_history():
     try:
         with open('data/history.json', 'r', encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
+        # 不正なデータ（回号が4桁以外、6000-9999範囲外）を除外
+        cleaned = []
+        for h in data:
+            r = h.get('round', '')
+            n = h.get('number', '')
+            if r.isdigit() and len(r) == 4 and 6000 <= int(r) <= 9999 and n.isdigit() and len(n) == 3:
+                cleaned.append(h)
+        return cleaned
     except:
         return []
 
@@ -555,7 +568,12 @@ def main():
     # 履歴の更新
     history = load_history()
     existing_rounds = {h['round'] for h in history}
-    new_entries = [e for e in latest if e['round'] not in existing_rounds]
+
+    def is_valid_entry(e):
+        r, n = e.get('round', ''), e.get('number', '')
+        return r.isdigit() and len(r) == 4 and 6000 <= int(r) <= 9999 and n.isdigit() and len(n) == 3
+
+    new_entries = [e for e in latest if is_valid_entry(e) and e['round'] not in existing_rounds]
 
     if new_entries:
         history = new_entries + history
