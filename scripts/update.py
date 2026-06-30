@@ -15,106 +15,169 @@ today = datetime.now(JST).strftime('%Y-%m-%d')
 # ===== 当選番号の取得 =====
 def get_latest_numbers():
 
-    headers_list = [
-        {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-        },
-        {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml',
-            'Accept-Language': 'ja,en;q=0.9',
-        },
-        {
-            'User-Agent': 'python-requests/2.31.0',
-        }
-    ]
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+    }
 
-    scrapers = [
-        {
-            'name': 'numbers-renban',
-            'url': 'https://numbers-renban.tokyo/numbers3/result_all',
-            'method': 'renban',
-        },
-        {
-            'name': 'みずほ銀行',
-            'url': 'https://www.mizuhobank.co.jp/takarakuji/check/numbers/numbers3/index.html',
-            'method': 'generic',
-        },
-        {
-            'name': 'PayPay銀行',
-            'url': 'https://www.paypay-bank.co.jp/lottery/numbers/n3recent.html',
-            'method': 'generic',
-        },
-        {
-            'name': '楽天宝くじ',
-            'url': 'https://takarakuji.rakuten.co.jp/backnumber/numbers3/',
-            'method': 'generic',
-        },
-    ]
-
-    def parse_renban(html):
+    def parse_rakuten(html):
+        """楽天宝くじ専用パーサー"""
         soup = BeautifulSoup(html, 'html.parser')
-        results = []
-        rows = soup.find_all('tr')
-        for row in rows[:15]:
-            cells = row.find_all('td')
-            if len(cells) >= 2:
-                round_num = cells[0].get_text(strip=True)
-                number = cells[1].get_text(strip=True)
-                if round_num.isdigit() and len(number) == 3 and number.isdigit():
-                    results.append({"round": round_num, "number": number})
-        return results
-
-    def parse_generic(html):
-        soup = BeautifulSoup(html, 'html.parser')
-        text = soup.get_text()
-        pattern = re.findall(r'第\s*(\d{4,5})\s*回[^\d]*?(\d{3})', text)
         results = []
         seen_rounds = set()
-        for round_num, number in pattern:
-            if round_num not in seen_rounds and len(number) == 3:
-                results.append({"round": round_num, "number": number})
-                seen_rounds.add(round_num)
-                if len(results) >= 10:
-                    break
+
+        # テーブルから回号と番号を探す
+        tables = soup.find_all('table')
+        for table in tables:
+            rows = table.find_all('tr')
+            for row in rows:
+                cells = row.find_all(['td', 'th'])
+                texts = [c.get_text(strip=True) for c in cells]
+                # 回号らしき4〜5桁の数字と3桁の当選番号を探す
+                round_num = None
+                number = None
+                for t in texts:
+                    t_clean = re.sub(r'[^\d]', '', t)
+                    if len(t_clean) >= 4 and len(t_clean) <= 5 and t_clean.isdigit():
+                        round_num = t_clean
+                    elif len(t_clean) == 3 and t_clean.isdigit():
+                        number = t_clean
+                if round_num and number and round_num not in seen_rounds:
+                    results.append({"round": round_num, "number": number})
+                    seen_rounds.add(round_num)
+
+        # テーブルで見つからない場合はテキストから抽出
+        if not results:
+            text = soup.get_text()
+            pattern = re.findall(r'第?\s*(\d{4,5})\s*回[^\d]{0,20}?(\d{3})', text)
+            for round_num, number in pattern:
+                if round_num not in seen_rounds:
+                    results.append({"round": round_num, "number": number})
+                    seen_rounds.add(round_num)
+                    if len(results) >= 30:
+                        break
+
         return results
 
-    for scraper in scrapers:
-        for headers in headers_list:
-            try:
-                print(f"試行中: {scraper['name']} ...")
-                r = requests.get(
-                    scraper['url'],
-                    headers=headers,
-                    timeout=20,
-                    allow_redirects=True
-                )
-                print(f"  ステータス: {r.status_code}")
+    def parse_renban(html):
+        """numbers-renban専用パーサー"""
+        soup = BeautifulSoup(html, 'html.parser')
+        results = []
+        seen_rounds = set()
 
-                if r.status_code != 200:
-                    continue
+        # すべてのtr要素を確認
+        for row in soup.find_all('tr'):
+            cells = row.find_all('td')
+            if len(cells) >= 2:
+                for i in range(len(cells)-1):
+                    t1 = cells[i].get_text(strip=True)
+                    t2 = cells[i+1].get_text(strip=True)
+                    if t1.isdigit() and len(t1) >= 4 and t2.isdigit() and len(t2) == 3:
+                        if t1 not in seen_rounds:
+                            results.append({"round": t1, "number": t2})
+                            seen_rounds.add(t1)
 
-                if scraper['method'] == 'renban':
-                    results = parse_renban(r.text)
+        # aタグからも探す
+        if not results:
+            text = soup.get_text()
+            nums_pattern = re.findall(r'(\d{4,5})[^\d]{1,10}(\d{3})', text)
+            for round_num, number in nums_pattern:
+                if round_num not in seen_rounds and len(number) == 3:
+                    results.append({"round": round_num, "number": number})
+                    seen_rounds.add(round_num)
+                    if len(results) >= 30:
+                        break
+
+        return results
+
+    all_results = {}
+
+    # ===== 楽天宝くじ：月別ページを複数取得 =====
+    print("楽天宝くじ（月別）から取得を試みます...")
+    now_jst = datetime.now(JST)
+    for month_offset in range(6):  # 直近6ヶ月分
+        target = now_jst - timedelta(days=30*month_offset)
+        year = target.year
+        month = target.month
+        url = f"https://takarakuji.rakuten.co.jp/backnumber/numbers3/{year}{month:02d}/"
+        try:
+            r = requests.get(url, headers=headers, timeout=15)
+            if r.status_code == 200:
+                results = parse_rakuten(r.text)
+                if results:
+                    for item in results:
+                        if item['round'] not in all_results:
+                            all_results[item['round']] = item['number']
+                    print(f"  {year}/{month:02d}: {len(results)}件取得（累計{len(all_results)}件）")
                 else:
-                    results = parse_generic(r.text)
+                    print(f"  {year}/{month:02d}: データなし")
+            else:
+                print(f"  {year}/{month:02d}: {r.status_code}")
+        except Exception as e:
+            print(f"  {year}/{month:02d}: エラー {e}")
 
-                if results and len(results) >= 3:
-                    print(f"  ✓ {scraper['name']}から{len(results)}件取得成功")
-                    print(f"  最新: 第{results[0]['round']}回 {results[0]['number']}")
-                    return results
+    if len(all_results) >= 20:
+        sorted_results = sorted(
+            [{"round": r, "number": n} for r,n in all_results.items()],
+            key=lambda x: -int(x['round'])
+        )
+        print(f"楽天宝くじから合計{len(sorted_results)}件取得成功")
+        print(f"最新: 第{sorted_results[0]['round']}回 {sorted_results[0]['number']}")
+        return sorted_results
 
-                print(f"  データが少ない（{len(results)}件）、次を試します")
-                break
+    # ===== numbers-renban =====
+    print("numbers-renban から取得を試みます...")
+    try:
+        r = requests.get(
+            "https://numbers-renban.tokyo/numbers3/result_all",
+            headers=headers, timeout=15
+        )
+        if r.status_code == 200:
+            results = parse_renban(r.text)
+            if results and len(results) >= 10:
+                for item in results:
+                    if item['round'] not in all_results:
+                        all_results[item['round']] = item['number']
+                print(f"  numbers-renban: {len(results)}件取得")
+    except Exception as e:
+        print(f"  numbers-renban エラー: {e}")
 
-            except Exception as e:
-                print(f"  エラー: {e}")
-                continue
+    if len(all_results) >= 20:
+        sorted_results = sorted(
+            [{"round": r, "number": n} for r,n in all_results.items()],
+            key=lambda x: -int(x['round'])
+        )
+        print(f"合計{len(sorted_results)}件取得成功")
+        return sorted_results
+
+    # ===== PayPay銀行 =====
+    print("PayPay銀行から取得を試みます...")
+    try:
+        r = requests.get(
+            "https://www.paypay-bank.co.jp/lottery/numbers/n3recent.html",
+            headers=headers, timeout=15
+        )
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, 'html.parser')
+            text = soup.get_text()
+            pattern = re.findall(r'第?\s*(\d{4,5})\s*回[^\d]{0,20}?(\d{3})', text)
+            for round_num, number in pattern:
+                if round_num not in all_results:
+                    all_results[round_num] = number
+            print(f"  PayPay銀行: {len(pattern)}件取得")
+    except Exception as e:
+        print(f"  PayPay銀行 エラー: {e}")
+
+    if all_results:
+        sorted_results = sorted(
+            [{"round": r, "number": n} for r,n in all_results.items()],
+            key=lambda x: -int(x['round'])
+        )
+        print(f"合計{len(sorted_results)}件取得")
+        return sorted_results
 
     print("全サイトの取得に失敗しました")
     return []
@@ -165,13 +228,9 @@ def calc_chart_data(history):
             "trend_u": u_vals,
         }
 
-    # 勢い（全数字）
     g1 = nums[:10]
     g2 = nums[10:20] if len(nums) >= 20 else nums
-    ikioi_all = {}
-    pull_total_all = {}
-    for d in '0123456789':
-        ikioi_all[d] = sum(d in n for n in g1) - sum(d in n for n in g2)
+    ikioi_all = {d: sum(d in n for n in g1) - sum(d in n for n in g2) for d in '0123456789'}
 
     pull_total = {d: 0 for d in '0123456789'}
     for gap in [1, 2, 3]:
@@ -183,13 +242,13 @@ def calc_chart_data(history):
     pull_total_all = dict(pull_total)
 
     return {
-        "rounds": list(reversed(rounds)),
-        "sums":   list(reversed(sums)),
-        "maxs":   list(reversed(maxs)),
-        "mins":   list(reversed(mins)),
-        "ma5s":   list(reversed(ma5s)),
-        "ma5max": list(reversed(ma5mx)),
-        "ma5min": list(reversed(ma5mn)),
+        "rounds":   list(reversed(rounds)),
+        "sums":     list(reversed(sums)),
+        "maxs":     list(reversed(maxs)),
+        "mins":     list(reversed(mins)),
+        "ma5s":     list(reversed(ma5s)),
+        "ma5max":   list(reversed(ma5mx)),
+        "ma5min":   list(reversed(ma5mn)),
         "sum_dist": [sc.get(i, 0) for i in range(28)],
         "max_dist": [mc.get(i, 0) for i in range(10)],
         "min_dist": [nc.get(i, 0) for i in range(10)],
@@ -268,23 +327,17 @@ def analyze_A(history):
     in_latest = [d for d in candidates if d in set(nums[0])]
 
     # ひっぱり連続状況
-    pull_history = []
-    for i in range(1, min(len(nums), 20)):
-        pull_history.append(bool(set(nums[i-1]) & set(nums[i])))
-    pull_history.reverse()
-
-    current_streak = 0
-    for p in reversed(pull_history):
-        if p:
-            current_streak += 1
-        else:
-            break
-
-    # N連続後の継続確率
     all_pull = []
     for i in range(1, len(nums)):
         all_pull.append(bool(set(nums[i-1]) & set(nums[i])))
     all_pull.reverse()
+
+    current_streak = 0
+    for p in reversed(all_pull):
+        if p:
+            current_streak += 1
+        else:
+            break
 
     continued = 0
     total_cases = 0
@@ -476,7 +529,6 @@ def update_archive_index(archive_data, history):
             "hit": None
         })
 
-    # 過去のエントリに結果を記録
     round_map = {h['round']: h['number'] for h in history}
     for item in index:
         if item['result_number'] is None:
@@ -507,15 +559,17 @@ def main():
 
     if new_entries:
         history = new_entries + history
+        # 回号でソート（新しい順）
+        history = sorted(history, key=lambda x: -int(x['round']))
         os.makedirs('data', exist_ok=True)
         with open('data/history.json', 'w', encoding='utf-8') as f:
             json.dump(history, f, ensure_ascii=False, indent=2)
-        print(f"新規データ追加: {len(new_entries)}件")
+        print(f"新規データ追加: {len(new_entries)}件 / 累計: {len(history)}件")
     else:
-        print("新規データなし（既存データで分析継続）")
+        print(f"新規データなし / 累計: {len(history)}件")
 
     if len(history) < 20:
-        print("データ不足（最低20回必要）")
+        print(f"データ不足（{len(history)}件 / 最低20回必要）")
         return
 
     # 分析実行
