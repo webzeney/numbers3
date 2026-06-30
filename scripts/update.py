@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
+import re
 from datetime import datetime, timezone, timedelta
 import anthropic
 from itertools import combinations
@@ -10,15 +11,57 @@ from collections import Counter
 JST = timezone(timedelta(hours=9))
 today = datetime.now(JST).strftime('%Y-%m-%d')
 
+
+# ===== 当選番号の取得 =====
 def get_latest_numbers():
-    try:
-        url = "https://numbers-renban.tokyo/numbers3/result_all"
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        r = requests.get(url, headers=headers, timeout=15)
-        soup = BeautifulSoup(r.text, 'html.parser')
+
+    headers_list = [
+        {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+        },
+        {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml',
+            'Accept-Language': 'ja,en;q=0.9',
+        },
+        {
+            'User-Agent': 'python-requests/2.31.0',
+        }
+    ]
+
+    scrapers = [
+        {
+            'name': 'numbers-renban',
+            'url': 'https://numbers-renban.tokyo/numbers3/result_all',
+            'method': 'renban',
+        },
+        {
+            'name': 'みずほ銀行',
+            'url': 'https://www.mizuhobank.co.jp/takarakuji/check/numbers/numbers3/index.html',
+            'method': 'generic',
+        },
+        {
+            'name': 'PayPay銀行',
+            'url': 'https://www.paypay-bank.co.jp/lottery/numbers/n3recent.html',
+            'method': 'generic',
+        },
+        {
+            'name': '楽天宝くじ',
+            'url': 'https://takarakuji.rakuten.co.jp/backnumber/numbers3/',
+            'method': 'generic',
+        },
+    ]
+
+    def parse_renban(html):
+        soup = BeautifulSoup(html, 'html.parser')
         results = []
         rows = soup.find_all('tr')
-        for row in rows[:10]:
+        for row in rows[:15]:
             cells = row.find_all('td')
             if len(cells) >= 2:
                 round_num = cells[0].get_text(strip=True)
@@ -26,10 +69,58 @@ def get_latest_numbers():
                 if round_num.isdigit() and len(number) == 3 and number.isdigit():
                     results.append({"round": round_num, "number": number})
         return results
-    except Exception as e:
-        print(f"取得エラー: {e}")
-        return []
 
+    def parse_generic(html):
+        soup = BeautifulSoup(html, 'html.parser')
+        text = soup.get_text()
+        pattern = re.findall(r'第\s*(\d{4,5})\s*回[^\d]*?(\d{3})', text)
+        results = []
+        seen_rounds = set()
+        for round_num, number in pattern:
+            if round_num not in seen_rounds and len(number) == 3:
+                results.append({"round": round_num, "number": number})
+                seen_rounds.add(round_num)
+                if len(results) >= 10:
+                    break
+        return results
+
+    for scraper in scrapers:
+        for headers in headers_list:
+            try:
+                print(f"試行中: {scraper['name']} ...")
+                r = requests.get(
+                    scraper['url'],
+                    headers=headers,
+                    timeout=20,
+                    allow_redirects=True
+                )
+                print(f"  ステータス: {r.status_code}")
+
+                if r.status_code != 200:
+                    continue
+
+                if scraper['method'] == 'renban':
+                    results = parse_renban(r.text)
+                else:
+                    results = parse_generic(r.text)
+
+                if results and len(results) >= 3:
+                    print(f"  ✓ {scraper['name']}から{len(results)}件取得成功")
+                    print(f"  最新: 第{results[0]['round']}回 {results[0]['number']}")
+                    return results
+
+                print(f"  データが少ない（{len(results)}件）、次を試します")
+                break
+
+            except Exception as e:
+                print(f"  エラー: {e}")
+                continue
+
+    print("全サイトの取得に失敗しました")
+    return []
+
+
+# ===== 過去データの読み込み =====
 def load_history():
     try:
         with open('data/history.json', 'r', encoding='utf-8') as f:
@@ -37,17 +128,21 @@ def load_history():
     except:
         return []
 
+
+# ===== 移動平均 =====
 def moving_avg(data, w):
     return [round(sum(data[i-w+1:i+1])/w, 1) if i >= w-1 else None for i in range(len(data))]
 
+
+# ===== グラフ用チャートデータ生成 =====
 def calc_chart_data(history):
     nums = [h['number'] for h in history]
     r100 = nums[:100] if len(nums) >= 100 else nums
     rounds = [h['round'] for h in history[:len(r100)]]
 
-    sums  = [int(n[0])+int(n[1])+int(n[2]) for n in r100]
-    maxs  = [max(int(d) for d in n) for n in r100]
-    mins  = [min(int(d) for d in n) for n in r100]
+    sums = [int(n[0])+int(n[1])+int(n[2]) for n in r100]
+    maxs = [max(int(d) for d in n) for n in r100]
+    mins = [min(int(d) for d in n) for n in r100]
     ma5s  = moving_avg(sums, 5)
     ma5mx = moving_avg(maxs, 5)
     ma5mn = moving_avg(mins, 5)
@@ -56,12 +151,11 @@ def calc_chart_data(history):
     mc = Counter(maxs)
     nc = Counter(mins)
 
-    # 桁別データ（10回ごと×10期間）
     pos_data = {}
     for d in '0123456789':
-        h_vals = [sum(1 for _,n in zip(range(10), r100[i:i+10]) if n[0]==d) for i in range(0,100,10)]
-        t_vals = [sum(1 for _,n in zip(range(10), r100[i:i+10]) if n[1]==d) for i in range(0,100,10)]
-        u_vals = [sum(1 for _,n in zip(range(10), r100[i:i+10]) if n[2]==d) for i in range(0,100,10)]
+        h_vals = [sum(1 for n in r100[i:i+10] if n[0]==d) for i in range(0, 100, 10)]
+        t_vals = [sum(1 for n in r100[i:i+10] if n[1]==d) for i in range(0, 100, 10)]
+        u_vals = [sum(1 for n in r100[i:i+10] if n[2]==d) for i in range(0, 100, 10)]
         pos_data[d] = {
             "h": sum(1 for n in r100 if n[0]==d),
             "t": sum(1 for n in r100 if n[1]==d),
@@ -71,6 +165,23 @@ def calc_chart_data(history):
             "trend_u": u_vals,
         }
 
+    # 勢い（全数字）
+    g1 = nums[:10]
+    g2 = nums[10:20] if len(nums) >= 20 else nums
+    ikioi_all = {}
+    pull_total_all = {}
+    for d in '0123456789':
+        ikioi_all[d] = sum(d in n for n in g1) - sum(d in n for n in g2)
+
+    pull_total = {d: 0 for d in '0123456789'}
+    for gap in [1, 2, 3]:
+        for i in range(gap, len(r100)):
+            ps = set(r100[i-gap])
+            for d in r100[i]:
+                if d in ps:
+                    pull_total[d] += 1
+    pull_total_all = dict(pull_total)
+
     return {
         "rounds": list(reversed(rounds)),
         "sums":   list(reversed(sums)),
@@ -79,266 +190,374 @@ def calc_chart_data(history):
         "ma5s":   list(reversed(ma5s)),
         "ma5max": list(reversed(ma5mx)),
         "ma5min": list(reversed(ma5mn)),
-        "sum_dist": [sc.get(i,0) for i in range(28)],
-        "max_dist": [mc.get(i,0) for i in range(10)],
-        "min_dist": [nc.get(i,0) for i in range(10)],
-        "avg_sum":  round(sum(sums)/len(sums),1),
-        "avg_max":  round(sum(maxs)/len(maxs),1),
-        "avg_min":  round(sum(mins)/len(mins),1),
+        "sum_dist": [sc.get(i, 0) for i in range(28)],
+        "max_dist": [mc.get(i, 0) for i in range(10)],
+        "min_dist": [nc.get(i, 0) for i in range(10)],
+        "avg_sum":  round(sum(sums)/len(sums), 1),
+        "avg_max":  round(sum(maxs)/len(maxs), 1),
+        "avg_min":  round(sum(mins)/len(mins), 1),
         "pos_data": pos_data,
+        "ikioi_all": ikioi_all,
+        "pull_total_all": pull_total_all,
     }
 
+
+# ===== 候補数字調査A =====
 def analyze_A(history):
     if len(history) < 20:
         return None
     nums = [h['number'] for h in history]
-    g1 = nums[:10]; g2 = nums[10:20]
-    ikioi = {d: sum(d in n for n in g1)-sum(d in n for n in g2) for d in '0123456789'}
-    r63 = nums[:63] if len(nums)>=63 else nums
+
+    g1 = nums[:10]
+    g2 = nums[10:20]
+    ikioi = {d: sum(d in n for n in g1) - sum(d in n for n in g2) for d in '0123456789'}
+
+    r63 = nums[:63] if len(nums) >= 63 else nums
     freq = {d: sum(d in n for n in r63) for d in '0123456789'}
-    r100 = nums[:100] if len(nums)>=100 else nums
-    pull_total = {d:0 for d in '0123456789'}
-    for gap in [1,2,3]:
+
+    r100 = nums[:100] if len(nums) >= 100 else nums
+    pull_total = {d: 0 for d in '0123456789'}
+    for gap in [1, 2, 3]:
         for i in range(gap, len(r100)):
             ps = set(r100[i-gap])
             for d in r100[i]:
-                if d in ps: pull_total[d]+=1
+                if d in ps:
+                    pull_total[d] += 1
+
     pull_score = {}
     for d in '0123456789':
-        s=0
-        if len(nums)>=1 and d in set(nums[0]): s+=3
-        if len(nums)>=2 and d in set(nums[1]): s+=2
-        if len(nums)>=3 and d in set(nums[2]): s+=1
-        pull_score[d]=s
-    renban_count={d:0 for d in '0123456789'}
-    for i in range(1,len(r100)):
-        prev_adj=set()
+        s = 0
+        if len(nums) >= 1 and d in set(nums[0]): s += 3
+        if len(nums) >= 2 and d in set(nums[1]): s += 2
+        if len(nums) >= 3 and d in set(nums[2]): s += 1
+        pull_score[d] = s
+
+    renban_count = {d: 0 for d in '0123456789'}
+    for i in range(1, len(r100)):
+        prev_adj = set()
         for pd in r100[i-1]:
-            prev_adj.add(str((int(pd)+1)%10))
-            prev_adj.add(str((int(pd)-1)%10))
+            prev_adj.add(str((int(pd)+1) % 10))
+            prev_adj.add(str((int(pd)-1) % 10))
         for d in r100[i]:
-            if d in prev_adj: renban_count[d]+=1
-    renban_next=set()
+            if d in prev_adj:
+                renban_count[d] += 1
+
+    renban_next = set()
     for pd in nums[0]:
-        renban_next.add(str((int(pd)+1)%10))
-        renban_next.add(str((int(pd)-1)%10))
+        renban_next.add(str((int(pd)+1) % 10))
+        renban_next.add(str((int(pd)-1) % 10))
 
-    def rank_pt(scores,pts):
-        sd=sorted(scores.keys(),key=lambda x:-scores[x])
-        return {d:pts[i] if i<len(pts) else 0 for i,d in enumerate(sd)}
+    def rank_pt(scores, pts):
+        sd = sorted(scores.keys(), key=lambda x: -scores[x])
+        return {d: pts[i] if i < len(pts) else 0 for i, d in enumerate(sd)}
 
-    pt_pull  = rank_pt(pull_total,[5,4,3,2,1,0,0,0,0,0])
-    pt_freq  = rank_pt(freq,      [4,3,2,1,1,0,0,0,0,0])
-    pt_ikioi = {d:(4 if ikioi[d]>=3 else 3 if ikioi[d]>=2 else 2 if ikioi[d]>=1 else 1 if ikioi[d]==0 else 0) for d in '0123456789'}
-    pt_ps    = {d:(3 if pull_score[d]>=3 else 2 if pull_score[d]==2 else 1 if pull_score[d]==1 else 0) for d in '0123456789'}
-    rn_sorted=sorted(renban_count.keys(),key=lambda x:-renban_count[x])
-    rn_rank={rn_sorted[i]:[3,2,1][i] if i<3 else 0 for i in range(10)}
-    pt_renban={d:rn_rank[d]+(1 if d in renban_next else 0) for d in '0123456789'}
-    total={d:pt_pull[d]+pt_freq[d]+pt_ikioi[d]+pt_ps[d]+pt_renban[d] for d in '0123456789'}
-    ranking=sorted(total.keys(),key=lambda x:-total[x])
-    candidates=ranking[:4]
-    last5=nums[:5]
-    hit_check={d:sum(d in n for n in last5) for d in candidates}
-    in_latest=[d for d in candidates if d in set(nums[0])]
+    pt_pull  = rank_pt(pull_total, [5, 4, 3, 2, 1, 0, 0, 0, 0, 0])
+    pt_freq  = rank_pt(freq,       [4, 3, 2, 1, 1, 0, 0, 0, 0, 0])
+    pt_ikioi = {d: (4 if ikioi[d] >= 3 else 3 if ikioi[d] >= 2 else 2 if ikioi[d] >= 1 else 1 if ikioi[d] == 0 else 0) for d in '0123456789'}
+    pt_ps    = {d: (3 if pull_score[d] >= 3 else 2 if pull_score[d] == 2 else 1 if pull_score[d] == 1 else 0) for d in '0123456789'}
+    rn_sorted = sorted(renban_count.keys(), key=lambda x: -renban_count[x])
+    rn_rank = {rn_sorted[i]: [3, 2, 1][i] if i < 3 else 0 for i in range(10)}
+    pt_renban = {d: rn_rank[d] + (1 if d in renban_next else 0) for d in '0123456789'}
+
+    total = {d: pt_pull[d]+pt_freq[d]+pt_ikioi[d]+pt_ps[d]+pt_renban[d] for d in '0123456789'}
+    ranking = sorted(total.keys(), key=lambda x: -total[x])
+    candidates = ranking[:4]
+
+    last5 = nums[:5]
+    hit_check = {d: sum(d in n for n in last5) for d in candidates}
+    in_latest = [d for d in candidates if d in set(nums[0])]
+
+    # ひっぱり連続状況
+    pull_history = []
+    for i in range(1, min(len(nums), 20)):
+        pull_history.append(bool(set(nums[i-1]) & set(nums[i])))
+    pull_history.reverse()
+
+    current_streak = 0
+    for p in reversed(pull_history):
+        if p:
+            current_streak += 1
+        else:
+            break
+
+    # N連続後の継続確率
+    all_pull = []
+    for i in range(1, len(nums)):
+        all_pull.append(bool(set(nums[i-1]) & set(nums[i])))
+    all_pull.reverse()
+
+    continued = 0
+    total_cases = 0
+    if current_streak > 0:
+        for i in range(current_streak, len(all_pull)):
+            if all(all_pull[i-current_streak:i]):
+                total_cases += 1
+                if all_pull[i]:
+                    continued += 1
+
+    pull_continue_prob = round(continued/total_cases*100, 1) if total_cases > 0 else 0
+
     return {
-        "candidates":candidates,
-        "scores":{d:total[d] for d in candidates},
-        "details":{
-            "ikioi":{d:ikioi[d] for d in candidates},
-            "freq":{d:freq[d] for d in candidates},
-            "pull_total":{d:pull_total[d] for d in candidates},
-            "pull_score":{d:pull_score[d] for d in candidates},
-            "renban":{d:pt_renban[d] for d in candidates},
+        "candidates": candidates,
+        "scores": {d: total[d] for d in candidates},
+        "all_scores": total,
+        "details": {
+            "ikioi":      {d: ikioi[d]      for d in candidates},
+            "freq":       {d: freq[d]        for d in candidates},
+            "pull_total": {d: pull_total[d]  for d in candidates},
+            "pull_score": {d: pull_score[d]  for d in candidates},
+            "renban":     {d: pt_renban[d]   for d in candidates},
         },
-        "last5_hit":hit_check,
-        "in_latest":in_latest,
-        "latest_number":nums[0],
+        "last5_hit": hit_check,
+        "in_latest": in_latest,
+        "latest_number": nums[0],
+        "pull_streak": {
+            "current": current_streak,
+            "continue_prob": pull_continue_prob,
+            "total_cases": total_cases,
+        }
     }
 
+
+# ===== 候補数字調査B =====
 def analyze_B(history, candidates, chart_data):
-    nums=[h['number'] for h in history]
-    r100=nums[:100] if len(nums)>=100 else nums
-    cands_int=[int(d) for d in candidates]
-    combos=list(combinations(sorted(cands_int),3))
-    sums_list=[int(n[0])+int(n[1])+int(n[2]) for n in r100]
-    sum_count=Counter(sums_list)
-    avg_sum=sum(sums_list)/len(sums_list)
-    combo_sum_eval=[]
+    nums = [h['number'] for h in history]
+    r100 = nums[:100] if len(nums) >= 100 else nums
+    cands_int = [int(d) for d in candidates]
+    combos = list(combinations(sorted(cands_int), 3))
+
+    sums_list = [int(n[0])+int(n[1])+int(n[2]) for n in r100]
+    sum_count = Counter(sums_list)
+    avg_sum = sum(sums_list) / len(sums_list)
+
+    combo_sum_eval = []
     for c in combos:
-        s=sum(c); cnt=sum_count.get(s,0)
-        zone='中(10-17)' if 10<=s<=17 else '低(0-9)' if s<=9 else '高(18-27)'
-        combo_sum_eval.append({"combo":''.join(map(str,c)),"sum":s,"count":cnt,"zone":zone})
-    combo_sum_eval.sort(key=lambda x:-x['count'])
-    maxs=[max(int(d) for d in n) for n in r100]
-    mins=[min(int(d) for d in n) for n in r100]
-    mc=Counter(maxs); nc=Counter(mins)
-    combo_maxmin_eval=[]
+        s = sum(c)
+        cnt = sum_count.get(s, 0)
+        zone = '中(10-17)' if 10 <= s <= 17 else '低(0-9)' if s <= 9 else '高(18-27)'
+        combo_sum_eval.append({"combo": ''.join(map(str, c)), "sum": s, "count": cnt, "zone": zone})
+    combo_sum_eval.sort(key=lambda x: -x['count'])
+
+    maxs = [max(int(d) for d in n) for n in r100]
+    mins = [min(int(d) for d in n) for n in r100]
+    mc = Counter(maxs)
+    nc = Counter(mins)
+
+    combo_maxmin_eval = []
     for c in combos:
-        mx=max(c); mn=min(c)
-        mx_rank=sorted(mc.keys(),key=lambda x:-mc[x]).index(mx)+1 if mx in mc else 99
-        mn_rank=sorted(nc.keys(),key=lambda x:-nc[x]).index(mn)+1 if mn in nc else 99
-        combo_maxmin_eval.append({"combo":''.join(map(str,c)),"max":mx,"min":mn,"max_rank":mx_rank,"min_rank":mn_rank})
-    combo_maxmin_eval.sort(key=lambda x:x['max_rank']+x['min_rank'])
-    pos=chart_data['pos_data']
-    straight_orders=[]
+        mx = max(c)
+        mn = min(c)
+        mx_rank = sorted(mc.keys(), key=lambda x: -mc[x]).index(mx)+1 if mx in mc else 99
+        mn_rank = sorted(nc.keys(), key=lambda x: -nc[x]).index(mn)+1 if mn in nc else 99
+        combo_maxmin_eval.append({"combo": ''.join(map(str, c)), "max": mx, "min": mn, "max_rank": mx_rank, "min_rank": mn_rank})
+    combo_maxmin_eval.sort(key=lambda x: x['max_rank']+x['min_rank'])
+
+    pos = chart_data['pos_data']
+    straight_orders = []
     for c in combos:
-        digits=list(map(str,c))
-        h=max(digits,key=lambda d:pos[d]["h"])
-        remaining=[d for d in digits if d!=h]
-        t=max(remaining,key=lambda d:pos[d]["t"])
-        u=[d for d in remaining if d!=t][0]
-        # 配置根拠を詳細に記述
-        reason=f"{h}→百(100回{pos[h]['h']}回) / {t}→十(100回{pos[t]['t']}回) / {u}→一(100回{pos[u]['u']}回)"
-        straight_orders.append({"combo":''.join(map(str,c)),"straight":h+t+u,"reason":reason})
+        digits = list(map(str, c))
+        h = max(digits, key=lambda d: pos[d]["h"])
+        remaining = [d for d in digits if d != h]
+        t = max(remaining, key=lambda d: pos[d]["t"])
+        u = [d for d in remaining if d != t][0]
+        reason = f"{h}→百(100回{pos[h]['h']}回) / {t}→十(100回{pos[t]['t']}回) / {u}→一(100回{pos[u]['u']}回)"
+        straight_orders.append({"combo": ''.join(map(str, c)), "straight": h+t+u, "reason": reason})
+
     return {
-        "combo_sum":combo_sum_eval,
-        "combo_maxmin":combo_maxmin_eval,
-        "straight_orders":straight_orders,
-        "avg_sum":round(avg_sum,1),
-        "avg_max":round(sum(maxs)/len(maxs),1),
-        "avg_min":round(sum(mins)/len(mins),1),
+        "combo_sum": combo_sum_eval,
+        "combo_maxmin": combo_maxmin_eval,
+        "straight_orders": straight_orders,
+        "avg_sum": round(avg_sum, 1),
+        "avg_max": round(sum(maxs)/len(maxs), 1),
+        "avg_min": round(sum(mins)/len(mins), 1),
     }
 
+
+# ===== 出現間隔アラート =====
 def calc_alert(history):
-    nums=[h['number'] for h in history]
-    alert={}
+    nums = [h['number'] for h in history]
+    alert = {}
     for d in '0123456789':
-        intervals=[]; last=-1
-        for i,n in enumerate(nums):
+        intervals = []
+        last = -1
+        for i, n in enumerate(nums):
             if d in n:
-                if last>=0: intervals.append(i-last)
-                last=i
-        avg=sum(intervals)/len(intervals) if intervals else 0
-        current_rest=0
+                if last >= 0:
+                    intervals.append(i - last)
+                last = i
+        avg = sum(intervals)/len(intervals) if intervals else 0
+        current_rest = 0
         for n in nums:
-            if d in n: break
-            current_rest+=1
-        ratio=current_rest/avg if avg>0 else 0
-        level="🔴" if ratio>=1.5 else "🟡" if ratio>=1.0 else "🟢" if ratio>=0.5 else "⚪"
-        alert[d]={"avg_interval":round(avg,1),"current_rest":current_rest,"ratio":round(ratio,2),"level":level}
+            if d in n:
+                break
+            current_rest += 1
+        ratio = current_rest / avg if avg > 0 else 0
+        level = "🔴" if ratio >= 1.5 else "🟡" if ratio >= 1.0 else "🟢" if ratio >= 0.5 else "⚪"
+        alert[d] = {
+            "avg_interval": round(avg, 1),
+            "current_rest": current_rest,
+            "ratio": round(ratio, 2),
+            "level": level
+        }
     return alert
 
+
+# ===== Claude AIの思考生成 =====
 def generate_ai_thoughts(analysis_a, analysis_b, alert, latest_result, next_round):
-    client=anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-    prompt=f"""
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+
+    pull_streak = analysis_a.get('pull_streak', {})
+    streak_info = f"{pull_streak.get('current', 0)}連続中（継続確率{pull_streak.get('continue_prob', 0)}%）"
+
+    prompt = f"""
 あなたはナンバーズ3の候補数字を分析するAIです。
 以下のデータをもとに、第{next_round}回の予想に向けた分析思考を
 **日本語で・わかりやすく** 説明してください。
 
 【最新当選番号】第{latest_result['round']}回：{latest_result['number']}
-【候補数字調査A】候補数字：{'・'.join(analysis_a['candidates'])}
+【候補数字調査A】
+候補数字：{'・'.join(analysis_a['candidates'])}
 スコア：{analysis_a['scores']}
 勢い：{analysis_a['details']['ikioi']}
 ひっぱり系合計：{analysis_a['details']['pull_total']}
 直近5回ヒット：{analysis_a['last5_hit']}
 最新回に含まれる候補：{analysis_a['in_latest']}
-【候補数字調査B】総和上位：{analysis_b['combo_sum'][:2]}
+ひっぱり連続状況：{streak_info}
+
+【候補数字調査B】
+総和上位：{analysis_b['combo_sum'][:2]}
 推奨ストレート：{analysis_b['straight_orders']}
-【出現間隔アラート】{[f"{d}:{v['level']} 休止{v['current_rest']}回/平均{v['avg_interval']}回" for d,v in alert.items() if v['level'] in ['🔴','🟡']]}
+
+【出現間隔アラート】
+{[f"{d}:{v['level']} 休止{v['current_rest']}回/平均{v['avg_interval']}回" for d,v in alert.items() if v['level'] in ['🔴','🟡']]}
 
 以下の構成で説明してください：
 1. 前回の当選番号の振り返り（ひっぱりの観点）
-2. 今回の候補数字の根拠（調査Aのポイント上位の理由）
-3. 調査Bからの検証（組み合わせの信頼度・推奨ストレート順番の根拠）
-4. アラートで注目すべき数字
-5. 総合的な一言コメント
+2. ひっぱり連続状況と次回への影響
+3. 今回の候補数字の根拠（調査Aのポイント上位の理由）
+4. 調査Bからの検証（組み合わせの信頼度・推奨ストレート順番の根拠）
+5. アラートで注目すべき数字
+6. 総合的な一言コメント
 
 各項目は2〜4文程度で、専門用語は使わずわかりやすく。
 """
-    response=client.messages.create(model="claude-sonnet-4-6",max_tokens=1500,messages=[{"role":"user","content":prompt}])
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1500,
+        messages=[{"role": "user", "content": prompt}]
+    )
     return response.content[0].text
 
+
+# ===== 当たり外れチェック =====
 def check_hit(candidates, result_number):
-    """候補数字が当選番号に含まれているか確認"""
     for d in result_number:
         if d in candidates:
             return True
     return False
 
-def update_archive_index(archive_data):
-    """アーカイブインデックスを更新"""
-    index_path='data/archive/index.json'
-    try:
-        with open(index_path,'r',encoding='utf-8') as f:
-            index=json.load(f)
-    except:
-        index=[]
-    # 既存エントリの更新チェック
-    existing_dates={item['date'] for item in index}
-    if archive_data['date'] not in existing_dates:
-        index.insert(0,{
-            "date":archive_data['date'],
-            "round":archive_data['latest_round'],
-            "candidates":archive_data['analysis_a']['candidates'],
-            "result_number":None,
-            "hit":None
-        })
-    # 前回のエントリに結果を記録
-    latest_nums=[]
-    try:
-        with open('data/history.json','r',encoding='utf-8') as f:
-            history=json.load(f)
-        latest_nums=history[:5]
-    except:
-        pass
-    for item in index:
-        if item['result_number'] is None and item['hit'] is None:
-            # 翌回の当選番号を探す
-            for h in latest_nums:
-                if int(h['round'])==int(item['round'])+1:
-                    item['result_number']=h['number']
-                    item['hit']=check_hit(item['candidates'],h['number'])
-                    break
-    with open(index_path,'w',encoding='utf-8') as f:
-        json.dump(index,f,ensure_ascii=False,indent=2)
 
+# ===== アーカイブインデックス更新 =====
+def update_archive_index(archive_data, history):
+    index_path = 'data/archive/index.json'
+    try:
+        with open(index_path, 'r', encoding='utf-8') as f:
+            index = json.load(f)
+    except:
+        index = []
+
+    existing_dates = {item['date'] for item in index}
+    if archive_data['date'] not in existing_dates:
+        index.insert(0, {
+            "date": archive_data['date'],
+            "round": archive_data['latest_round'],
+            "candidates": archive_data['analysis_a']['candidates'],
+            "result_number": None,
+            "hit": None
+        })
+
+    # 過去のエントリに結果を記録
+    round_map = {h['round']: h['number'] for h in history}
+    for item in index:
+        if item['result_number'] is None:
+            next_round_num = str(int(item['round']) + 1)
+            if next_round_num in round_map:
+                item['result_number'] = round_map[next_round_num]
+                item['hit'] = check_hit(item['candidates'], round_map[next_round_num])
+
+    os.makedirs('data/archive', exist_ok=True)
+    with open(index_path, 'w', encoding='utf-8') as f:
+        json.dump(index, f, ensure_ascii=False, indent=2)
+
+
+# ===== メイン処理 =====
 def main():
     print(f"処理開始: {today}")
-    latest=get_latest_numbers()
+
+    # 当選番号取得
+    latest = get_latest_numbers()
     if not latest:
         print("当選番号の取得に失敗しました")
         return
-    history=load_history()
-    existing_rounds={h['round'] for h in history}
-    new_entries=[e for e in latest if e['round'] not in existing_rounds]
+
+    # 履歴の更新
+    history = load_history()
+    existing_rounds = {h['round'] for h in history}
+    new_entries = [e for e in latest if e['round'] not in existing_rounds]
+
     if new_entries:
-        history=new_entries+history
-        os.makedirs('data',exist_ok=True)
-        with open('data/history.json','w',encoding='utf-8') as f:
-            json.dump(history,f,ensure_ascii=False,indent=2)
+        history = new_entries + history
+        os.makedirs('data', exist_ok=True)
+        with open('data/history.json', 'w', encoding='utf-8') as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
         print(f"新規データ追加: {len(new_entries)}件")
     else:
-        print("新規データなし")
-    if len(history)<20:
+        print("新規データなし（既存データで分析継続）")
+
+    if len(history) < 20:
         print("データ不足（最低20回必要）")
         return
-    result_a=analyze_A(history)
-    chart_data=calc_chart_data(history)
-    result_b=analyze_B(history,result_a['candidates'],chart_data)
-    alert=calc_alert(history)
-    latest_result=history[0]
-    next_round=str(int(latest_result['round'])+1)
-    print("AI思考を生成中...")
-    ai_thoughts=generate_ai_thoughts(result_a,result_b,alert,latest_result,next_round)
-    os.makedirs('data/archive',exist_ok=True)
-    archive_data={
-        "date":today,
-        "latest_round":latest_result['round'],
-        "latest_number":latest_result['number'],
-        "next_round":next_round,
-        "analysis_a":result_a,
-        "analysis_b":result_b,
-        "alert":alert,
-        "ai_thoughts":ai_thoughts,
-        "chart_data":chart_data,
-        "generated_at":datetime.now(JST).isoformat()
-    }
-    with open('data/latest.json','w',encoding='utf-8') as f:
-        json.dump(archive_data,f,ensure_ascii=False,indent=2)
-    with open(f'data/archive/{today}.json','w',encoding='utf-8') as f:
-        json.dump(archive_data,f,ensure_ascii=False,indent=2)
-    update_archive_index(archive_data)
-    print(f"完了！候補数字: {'・'.join(result_a['candidates'])}")
 
-if __name__=="__main__":
+    # 分析実行
+    result_a   = analyze_A(history)
+    chart_data = calc_chart_data(history)
+    result_b   = analyze_B(history, result_a['candidates'], chart_data)
+    alert      = calc_alert(history)
+
+    latest_result = history[0]
+    next_round = str(int(latest_result['round']) + 1)
+
+    # AI思考生成
+    print("AI思考を生成中...")
+    ai_thoughts = generate_ai_thoughts(result_a, result_b, alert, latest_result, next_round)
+
+    # データ保存
+    os.makedirs('data/archive', exist_ok=True)
+    archive_data = {
+        "date": today,
+        "latest_round": latest_result['round'],
+        "latest_number": latest_result['number'],
+        "next_round": next_round,
+        "analysis_a": result_a,
+        "analysis_b": result_b,
+        "alert": alert,
+        "ai_thoughts": ai_thoughts,
+        "chart_data": chart_data,
+        "generated_at": datetime.now(JST).isoformat()
+    }
+
+    with open('data/latest.json', 'w', encoding='utf-8') as f:
+        json.dump(archive_data, f, ensure_ascii=False, indent=2)
+
+    with open(f'data/archive/{today}.json', 'w', encoding='utf-8') as f:
+        json.dump(archive_data, f, ensure_ascii=False, indent=2)
+
+    update_archive_index(archive_data, history)
+
+    print(f"完了！候補数字: {'・'.join(result_a['candidates'])}")
+    pull_streak = result_a.get('pull_streak', {})
+    print(f"ひっぱり連続: {pull_streak.get('current', 0)}連続中（継続確率{pull_streak.get('continue_prob', 0)}%）")
+
+
+if __name__ == "__main__":
     main()
