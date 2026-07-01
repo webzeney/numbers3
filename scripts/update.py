@@ -572,32 +572,47 @@ def main():
     history = load_history()
     existing_rounds = {h['round'] for h in history}
 
-    # 基準回号：既存データの最大回号（なければ7015を初期値とする）
-    if history:
-        base_round = max(int(h['round']) for h in history)
+    # 基準回号：history.jsonの最大回号（4桁・確認済みデータのみ）
+    valid_history = [h for h in history
+                     if h['round'].isdigit() and len(h['round']) == 4
+                     and h['number'].isdigit() and len(h['number']) == 3]
+
+    if valid_history:
+        base_round = max(int(h['round']) for h in valid_history)
     else:
-        base_round = 7015  # 2026年6月時点の既知の最新回号
+        base_round = 7017  # 2026年7月時点の既知の最新回号
+
+    print(f"基準回号: 第{base_round}回")
 
     def is_valid_entry(e):
         r, n = e.get('round', ''), e.get('number', '')
+        # 必須：4桁の回号、3桁の番号
         if not (r.isdigit() and len(r) == 4 and n.isdigit() and len(n) == 3):
             return False
-        # 基準回号から-5〜+10の範囲のみ許可（誤検出を完全排除）
-        return base_round - 5 <= int(r) <= base_round + 10
+        # 必須：基準回号の次の回（+1〜+5）のみ受け付ける
+        # これにより9800・90600などの誤検出を完全排除
+        return base_round + 1 <= int(r) <= base_round + 5
 
     new_entries = [e for e in latest if is_valid_entry(e) and e['round'] not in existing_rounds]
-    print(f"基準回号: 第{base_round}回 / 許可範囲: 第{base_round-20}〜{base_round+50}回")
+    print(f"新着候補: {len(latest)}件 → 有効: {len(new_entries)}件（第{base_round+1}〜{base_round+5}回のみ許可）")
 
     if new_entries:
-        history = new_entries + history
-        # 回号でソート（新しい順）
-        history = sorted(history, key=lambda x: -int(x['round']))
+        # valid_historyのみを使って更新（不正データを排除）
+        updated = new_entries + valid_history
+        updated.sort(key=lambda x: -int(x['round']))
         os.makedirs('data', exist_ok=True)
         with open('data/history.json', 'w', encoding='utf-8') as f:
-            json.dump(history, f, ensure_ascii=False, indent=2)
+            json.dump(updated, f, ensure_ascii=False, indent=2)
+        history = updated
         print(f"新規データ追加: {len(new_entries)}件 / 累計: {len(history)}件")
     else:
-        print(f"新規データなし / 累計: {len(history)}件")
+        # 不正データを排除したvalid_historyで上書き保存（クリーンアップ）
+        valid_history.sort(key=lambda x: -int(x['round']))
+        os.makedirs('data', exist_ok=True)
+        with open('data/history.json', 'w', encoding='utf-8') as f:
+            json.dump(valid_history, f, ensure_ascii=False, indent=2)
+        history = valid_history
+        print(f"新規データなし / 累計: {len(history)}件（不正データ自動除去済み）")
 
     if len(history) < 20:
         print(f"データ不足（{len(history)}件 / 最低20回必要）")
