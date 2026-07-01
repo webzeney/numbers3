@@ -193,13 +193,16 @@ def load_history():
     try:
         with open('data/history.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
-        # 不正なデータ（回号が4桁以外、6000-9999範囲外）を除外
+        # 不正データを除外：回号は4桁・番号は3桁のみ許可
         cleaned = []
         for h in data:
             r = h.get('round', '')
             n = h.get('number', '')
-            if r.isdigit() and len(r) == 4 and 6000 <= int(r) <= 9999 and n.isdigit() and len(n) == 3:
+            if (r.isdigit() and len(r) == 4 and
+                    n.isdigit() and len(n) == 3):
                 cleaned.append(h)
+        # 新しい順にソート
+        cleaned.sort(key=lambda x: -int(x['round']))
         return cleaned
     except:
         return []
@@ -569,11 +572,21 @@ def main():
     history = load_history()
     existing_rounds = {h['round'] for h in history}
 
+    # 基準回号：既存データの最大回号（なければ7015を初期値とする）
+    if history:
+        base_round = max(int(h['round']) for h in history)
+    else:
+        base_round = 7015  # 2026年6月時点の既知の最新回号
+
     def is_valid_entry(e):
         r, n = e.get('round', ''), e.get('number', '')
-        return r.isdigit() and len(r) == 4 and 6000 <= int(r) <= 9999 and n.isdigit() and len(n) == 3
+        if not (r.isdigit() and len(r) == 4 and n.isdigit() and len(n) == 3):
+            return False
+        # 基準回号から-5〜+10の範囲のみ許可（誤検出を完全排除）
+        return base_round - 5 <= int(r) <= base_round + 10
 
     new_entries = [e for e in latest if is_valid_entry(e) and e['round'] not in existing_rounds]
+    print(f"基準回号: 第{base_round}回 / 許可範囲: 第{base_round-20}〜{base_round+50}回")
 
     if new_entries:
         history = new_entries + history
