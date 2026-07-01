@@ -12,179 +12,83 @@ JST = timezone(timedelta(hours=9))
 today = datetime.now(JST).strftime('%Y-%m-%d')
 
 
-# ===== 当選番号の取得 =====
-def get_latest_numbers():
-
+# ===== 当選番号の取得（本日分のみ） =====
+def get_latest_numbers(next_round):
+    """
+    history.jsonの次の回号（next_round）の当選番号のみを取得する。
+    必要なのは毎日1件だけ。
+    """
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
     }
 
-    def parse_rakuten(html):
-        """楽天宝くじ専用パーサー"""
+    next_round_str = str(next_round)
+    print(f"第{next_round_str}回の当選番号を取得します...")
+
+    def search_in_html(html, target_round):
+        """HTMLから特定回号の当選番号を探す"""
         soup = BeautifulSoup(html, 'html.parser')
-        results = []
-        seen_rounds = set()
+        text = soup.get_text()
 
-        # ナンバーズ3の回号は現実的に4桁（6000〜9999）の範囲に限定
-        def is_valid_round(s):
-            return s.isdigit() and len(s) == 4 and 6000 <= int(s) <= 9999
+        # 「第XXXX回」の直後にある3桁数字を探す
+        patterns = [
+            rf'第\s*{target_round}\s*回[^\d]{{0,30}}?(\d{{3}})(?!\d)',
+            rf'{target_round}[^\d]{{0,20}}?(\d{{3}})(?!\d)',
+        ]
+        for pat in patterns:
+            m = re.search(pat, text)
+            if m:
+                number = m.group(1)
+                if len(number) == 3:
+                    return number
 
-        def is_valid_number(s):
-            return s.isdigit() and len(s) == 3
-
-        # テーブルから回号と番号を探す（同じ行内のペアのみ採用）
-        tables = soup.find_all('table')
-        for table in tables:
-            rows = table.find_all('tr')
-            for row in rows:
-                cells = row.find_all(['td', 'th'])
-                texts = [re.sub(r'[^\d]', '', c.get_text(strip=True)) for c in cells]
-                round_num = None
-                number = None
-                for t in texts:
-                    if is_valid_round(t) and round_num is None:
-                        round_num = t
-                    elif is_valid_number(t) and number is None:
-                        number = t
-                if round_num and number and round_num not in seen_rounds:
-                    results.append({"round": round_num, "number": number})
-                    seen_rounds.add(round_num)
-
-        # テーブルで見つからない場合はテキストから「第XXXX回」パターンのみ厳密に抽出
-        if not results:
-            text = soup.get_text()
-            pattern = re.findall(r'第\s*(\d{4})\s*回[^\d]{0,15}?(\d{3})(?!\d)', text)
-            for round_num, number in pattern:
-                if is_valid_round(round_num) and round_num not in seen_rounds:
-                    results.append({"round": round_num, "number": number})
-                    seen_rounds.add(round_num)
-                    if len(results) >= 30:
-                        break
-
-        return results
-
-    def parse_renban(html):
-        """numbers-renban専用パーサー"""
-        soup = BeautifulSoup(html, 'html.parser')
-        results = []
-        seen_rounds = set()
-
-        # すべてのtr要素を確認
+        # テーブルから探す
         for row in soup.find_all('tr'):
-            cells = row.find_all('td')
-            if len(cells) >= 2:
-                for i in range(len(cells)-1):
-                    t1 = cells[i].get_text(strip=True)
-                    t2 = cells[i+1].get_text(strip=True)
-                    if t1.isdigit() and len(t1) >= 4 and t2.isdigit() and len(t2) == 3:
-                        if t1 not in seen_rounds:
-                            results.append({"round": t1, "number": t2})
-                            seen_rounds.add(t1)
+            cells = row.find_all(['td', 'th'])
+            texts = [re.sub(r'[^\d]', '', c.get_text(strip=True)) for c in cells]
+            if target_round in texts:
+                idx = texts.index(target_round)
+                for t in texts[idx+1:idx+4]:
+                    if len(t) == 3:
+                        return t
+        return None
 
-        # aタグからも探す
-        if not results:
-            text = soup.get_text()
-            nums_pattern = re.findall(r'(\d{4,5})[^\d]{1,10}(\d{3})', text)
-            for round_num, number in nums_pattern:
-                if round_num not in seen_rounds and len(number) == 3:
-                    results.append({"round": round_num, "number": number})
-                    seen_rounds.add(round_num)
-                    if len(results) >= 30:
-                        break
-
-        return results
-
-    all_results = {}
-
-    # ===== 楽天宝くじ：月別ページを複数取得 =====
-    print("楽天宝くじ（月別）から取得を試みます...")
+    # 当月・先月のページを試す
     now_jst = datetime.now(JST)
-    for month_offset in range(6):  # 直近6ヶ月分
-        target = now_jst - timedelta(days=30*month_offset)
-        year = target.year
-        month = target.month
+    months_to_try = []
+    for offset in range(2):
+        target = now_jst - timedelta(days=30*offset)
+        months_to_try.append((target.year, target.month))
+
+    for year, month in months_to_try:
         url = f"https://takarakuji.rakuten.co.jp/backnumber/numbers3/{year}{month:02d}/"
         try:
             r = requests.get(url, headers=headers, timeout=15)
             if r.status_code == 200:
-                results = parse_rakuten(r.text)
-                if results:
-                    for item in results:
-                        if item['round'] not in all_results:
-                            all_results[item['round']] = item['number']
-                    print(f"  {year}/{month:02d}: {len(results)}件取得（累計{len(all_results)}件）")
+                number = search_in_html(r.text, next_round_str)
+                if number:
+                    print(f"  ✓ 楽天宝くじ({year}/{month:02d})から取得: 第{next_round_str}回 {number}")
+                    return [{"round": next_round_str, "number": number}]
                 else:
-                    print(f"  {year}/{month:02d}: データなし")
-            else:
-                print(f"  {year}/{month:02d}: {r.status_code}")
+                    print(f"  楽天({year}/{month:02d}): 第{next_round_str}回のデータなし（まだ未掲載の可能性）")
         except Exception as e:
-            print(f"  {year}/{month:02d}: エラー {e}")
+            print(f"  楽天({year}/{month:02d}) エラー: {e}")
 
-    if len(all_results) >= 20:
-        sorted_results = sorted(
-            [{"round": r, "number": n} for r,n in all_results.items()],
-            key=lambda x: -int(x['round'])
-        )
-        print(f"楽天宝くじから合計{len(sorted_results)}件取得成功")
-        print(f"最新: 第{sorted_results[0]['round']}回 {sorted_results[0]['number']}")
-        return sorted_results
-
-    # ===== numbers-renban =====
-    print("numbers-renban から取得を試みます...")
+    # みずほ銀行を試す
     try:
-        r = requests.get(
-            "https://numbers-renban.tokyo/numbers3/result_all",
-            headers=headers, timeout=15
-        )
+        url = "https://www.mizuhobank.co.jp/takarakuji/check/numbers/numbers3/index.html"
+        r = requests.get(url, headers=headers, timeout=15)
         if r.status_code == 200:
-            results = parse_renban(r.text)
-            if results and len(results) >= 10:
-                for item in results:
-                    if item['round'] not in all_results:
-                        all_results[item['round']] = item['number']
-                print(f"  numbers-renban: {len(results)}件取得")
+            number = search_in_html(r.text, next_round_str)
+            if number:
+                print(f"  ✓ みずほ銀行から取得: 第{next_round_str}回 {number}")
+                return [{"round": next_round_str, "number": number}]
     except Exception as e:
-        print(f"  numbers-renban エラー: {e}")
+        print(f"  みずほ銀行 エラー: {e}")
 
-    if len(all_results) >= 20:
-        sorted_results = sorted(
-            [{"round": r, "number": n} for r,n in all_results.items()],
-            key=lambda x: -int(x['round'])
-        )
-        print(f"合計{len(sorted_results)}件取得成功")
-        return sorted_results
-
-    # ===== PayPay銀行 =====
-    print("PayPay銀行から取得を試みます...")
-    try:
-        r = requests.get(
-            "https://www.paypay-bank.co.jp/lottery/numbers/n3recent.html",
-            headers=headers, timeout=15
-        )
-        if r.status_code == 200:
-            soup = BeautifulSoup(r.text, 'html.parser')
-            text = soup.get_text()
-            pattern = re.findall(r'第?\s*(\d{4,5})\s*回[^\d]{0,20}?(\d{3})', text)
-            for round_num, number in pattern:
-                if round_num not in all_results:
-                    all_results[round_num] = number
-            print(f"  PayPay銀行: {len(pattern)}件取得")
-    except Exception as e:
-        print(f"  PayPay銀行 エラー: {e}")
-
-    if all_results:
-        sorted_results = sorted(
-            [{"round": r, "number": n} for r,n in all_results.items()],
-            key=lambda x: -int(x['round'])
-        )
-        print(f"合計{len(sorted_results)}件取得")
-        return sorted_results
-
-    print("全サイトの取得に失敗しました")
+    print(f"  第{next_round_str}回のデータは取得できませんでした（本日未抽選またはページ未掲載）")
     return []
 
 
@@ -562,57 +466,47 @@ def update_archive_index(archive_data, history):
 def main():
     print(f"処理開始: {today}")
 
-    # 当選番号取得
-    latest = get_latest_numbers()
-    if not latest:
-        print("当選番号の取得に失敗しました")
-        return
-
-    # 履歴の更新
+    # まず既存のhistoryを読み込み、次の回号を特定する
     history = load_history()
-    existing_rounds = {h['round'] for h in history}
 
-    # 基準回号：history.jsonの最大回号（4桁・確認済みデータのみ）
+    # 基準回号の特定
     valid_history = [h for h in history
                      if h['round'].isdigit() and len(h['round']) == 4
                      and h['number'].isdigit() and len(h['number']) == 3]
+    valid_history.sort(key=lambda x: -int(x['round']))
 
     if valid_history:
-        base_round = max(int(h['round']) for h in valid_history)
+        base_round = int(valid_history[0]['round'])
     else:
-        base_round = 7017  # 2026年7月時点の既知の最新回号
+        base_round = 7017
 
-    print(f"基準回号: 第{base_round}回")
+    next_round_to_fetch = base_round + 1
+    print(f"既存データ最新: 第{base_round}回 / 取得対象: 第{next_round_to_fetch}回")
 
-    def is_valid_entry(e):
-        r, n = e.get('round', ''), e.get('number', '')
-        # 必須：4桁の回号、3桁の番号
-        if not (r.isdigit() and len(r) == 4 and n.isdigit() and len(n) == 3):
-            return False
-        # 必須：基準回号の次の回（+1〜+5）のみ受け付ける
-        # これにより9800・90600などの誤検出を完全排除
-        return base_round + 1 <= int(r) <= base_round + 5
+    # 本日分（次の1件）のみ取得
+    latest = get_latest_numbers(next_round_to_fetch)
 
-    new_entries = [e for e in latest if is_valid_entry(e) and e['round'] not in existing_rounds]
-    print(f"新着候補: {len(latest)}件 → 有効: {len(new_entries)}件（第{base_round+1}〜{base_round+5}回のみ許可）")
+    # 履歴の更新
+    existing_rounds = {h['round'] for h in valid_history}
+
+    # 取得した本日分データを追加
+    new_entries = [e for e in latest if e['round'] not in existing_rounds]
 
     if new_entries:
-        # valid_historyのみを使って更新（不正データを排除）
         updated = new_entries + valid_history
         updated.sort(key=lambda x: -int(x['round']))
         os.makedirs('data', exist_ok=True)
         with open('data/history.json', 'w', encoding='utf-8') as f:
             json.dump(updated, f, ensure_ascii=False, indent=2)
         history = updated
-        print(f"新規データ追加: {len(new_entries)}件 / 累計: {len(history)}件")
+        print(f"✓ 新規データ追加: 第{new_entries[0]['round']}回 {new_entries[0]['number']} / 累計: {len(history)}件")
     else:
-        # 不正データを排除したvalid_historyで上書き保存（クリーンアップ）
-        valid_history.sort(key=lambda x: -int(x['round']))
+        # valid_historyで上書き（不正データを自動除去）
         os.makedirs('data', exist_ok=True)
         with open('data/history.json', 'w', encoding='utf-8') as f:
             json.dump(valid_history, f, ensure_ascii=False, indent=2)
         history = valid_history
-        print(f"新規データなし / 累計: {len(history)}件（不正データ自動除去済み）")
+        print(f"新規データなし / 累計: {len(history)}件")
 
     if len(history) < 20:
         print(f"データ不足（{len(history)}件 / 最低20回必要）")
