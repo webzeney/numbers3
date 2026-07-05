@@ -764,17 +764,24 @@ async function loadArchive(){
       const judged=judgeResult(item.candidates||[],item.result_number);
       const badge=judged.badge;
       const resultDetail=judged.detail;
-      const resultStr=item.result_number?` → 当選番号：${item.result_number}`:'';
       const nextRound=item.next_round||(parseInt(item.round)+1);
       const candidatesStr=item.candidates?item.candidates.join('・'):'';
+      // 結果テキスト
+      const resultText=item.result_number
+        ?(judged.badge.includes('当選')
+          ?'当選：'+(judged.badge.includes('ストレート')?'ストレート当選':'ボックス当選')
+          :'外れ')
+        :'結果待ち';
       return `<div class="archive-item" onclick="toggleArchive(this,'${item.date}')">
         <div class="archive-header">
-          <div>
-            <div style="font-size:14px;font-weight:bold;">【第${item.round}回】抽選日：${item.date}${resultStr}</div>
-            <div class="archive-meta">第${nextRound}回向け予想数字：${candidatesStr}</div>
-            ${resultDetail?`<div style="font-size:12px;color:var(--accent2);margin-top:2px;">${resultDetail}</div>`:''}
+          <div style="flex:1;">
+            <div style="font-size:15px;font-weight:bold;margin-bottom:6px;">【第${nextRound}回】</div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:3px;">当選数字：<span style="color:var(--text);font-weight:bold;">${item.result_number||'—'}</span></div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:3px;">今回の予想数字：<span style="color:var(--accent);">${candidatesStr}</span></div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:${resultDetail?'3':'0'}px;">結果：<span style="color:${judged.badge.includes('当選')?'var(--accent3)':item.result_number?'var(--danger)':'var(--text2)'};">${resultText}</span></div>
+            ${resultDetail?`<div style="font-size:12px;color:var(--text2);">${resultDetail}</div>`:''}
           </div>
-          <div style="display:flex;align-items:center;gap:12px;">${badge}<div class="archive-candidates">${(item.candidates||[]).map(d=>`<div class="archive-digit">${d}</div>`).join('')}</div></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">${badge}</div>
         </div>
         <div class="archive-detail"><div style="color:var(--text2);font-size:13px;">▼ クリックして詳細を表示</div></div>
       </div>`;
