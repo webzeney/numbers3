@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- updated -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -693,7 +692,7 @@ async function loadArchive(){
       const resultStr=item.result_number?` → 当選番号：${item.result_number}`:'';
       return `<div class="archive-item" onclick="toggleArchive(this,'${item.date}')">
         <div class="archive-header">
-          <div><div style="font-size:14px;font-weight:bold;">${item.date}${resultStr}</div><div class="archive-meta">第${item.round}回の翌回予想</div></div>
+          <div><div style="font-size:14px;font-weight:bold;">【第${parseInt(item.round)+1}回】抽選日：${item.date}${resultStr}</div><div class="archive-meta">第${item.round}回当選結果をもとにした予想</div></div>
           <div style="display:flex;align-items:center;gap:12px;">${badge}<div class="archive-candidates">${item.candidates.map(d=>`<div class="archive-digit">${d}</div>`).join('')}</div></div>
         </div>
         <div class="archive-detail"><div style="color:var(--text2);font-size:13px;">▼ クリックして詳細を表示</div></div>
@@ -711,7 +710,8 @@ async function toggleArchive(el,date){
     try{
       const r=await fetch(`data/archive/${date}.json?t=`+Date.now());
       const j=await r.json();
-      d.innerHTML=`<div class="ai-text" style="font-size:13px;margin-bottom:12px;">${j.ai_thoughts}</div>
+      const cleanThoughts=j.ai_thoughts.replace(/^#+\s*/gm,'').replace(/\*\*/g,'').replace(/---+/g,'').trim();
+      d.innerHTML=`<div class="ai-text" style="font-size:13px;margin-bottom:12px;">${cleanThoughts}</div>
         <div style="color:var(--text2);font-size:12px;">候補数字：${j.analysis_a.candidates.join('・')} ／ 購入：${j.analysis_b.straight_orders.map(s=>s.straight).join('・')}</div>`;
     }catch{d.innerHTML='<div style="color:var(--danger);font-size:13px;">データの読み込みに失敗しました</div>';}
   }
