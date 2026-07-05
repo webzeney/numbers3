@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./
-          server-dir: /home/users/1/oops.jp-testsite/web/numbers/
+          server-dir: /numbers/
           exclude: |
             **/.git*
             **/.git*/**
