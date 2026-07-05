@@ -166,7 +166,9 @@ def calc_chart_data(history):
         sd = sorted(scores.keys(), key=lambda x: -scores[x])
         return {d: pts[i] if i < len(pts) else 0 for i, d in enumerate(sd)}
 
-    freq_all = {d: sum(d in n for n in r100) for d in '0123456789'}
+    # 頻度はanalyze_Aと同じ直近63回で計算（一致させる）
+    r63_cd = nums[:63] if len(nums) >= 63 else nums
+    freq_all = {d: sum(d in n for n in r63_cd) for d in '0123456789'}
     freq_pt_all = rank_pt_all(freq_all, [4,3,2,1,1,0,0,0,0,0])
 
     renban_count_all = {d: 0 for d in '0123456789'}
