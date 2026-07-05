@@ -135,6 +135,8 @@ hr{border:none;border-top:1px solid var(--border);margin:32px 0;}
 .result-badge.hit{background:rgba(79,247,160,0.15);color:var(--accent3);border:1px solid var(--accent3);}
 .result-badge.miss{background:rgba(247,79,79,0.15);color:var(--danger);border:1px solid var(--danger);}
 .result-badge.pending{background:rgba(138,147,168,0.15);color:var(--text2);border:1px solid var(--border);}
+.result-badge.win-straight{background:rgba(255,215,0,0.2);color:#ffd700;border:1px solid #ffd700;}
+.result-badge.win-box{background:rgba(79,247,160,0.15);color:var(--accent3);border:1px solid var(--accent3);}
 .archive-detail{display:none;padding:16px 0 4px;border-top:1px solid var(--border);margin-top:12px;}
 
 .loading{text-align:center;padding:60px;color:var(--text2);}
@@ -688,11 +690,42 @@ async function loadArchive(){
     catch{const r=await fetch('data/latest.json?t='+Date.now());const d=await r.json();list=[{date:d.date,round:d.latest_round,candidates:d.analysis_a.candidates,result_number:null,hit:null}];}
     if(!list.length){el.innerHTML='<div class="loading dim">アーカイブはまだありません</div>';return;}
     el.innerHTML=list.map(item=>{
-      const badge=item.hit===null?'<span class="result-badge pending">結果待ち</span>':item.hit?'<span class="result-badge hit">✓ 当選あり</span>':'<span class="result-badge miss">✗ 外れ</span>';
+      function judgeResult(candidates, resultNumber) {
+        if (!resultNumber) return {badge: '<span class="result-badge pending">結果待ち</span>', detail: ''};
+        const resDigits = resultNumber.split('');
+        const combos = [];
+        for(let i=0;i<candidates.length;i++)
+          for(let j=i+1;j<candidates.length;j++)
+            for(let k=j+1;k<candidates.length;k++)
+              combos.push([candidates[i],candidates[j],candidates[k]]);
+        const resSet = [...new Set(resDigits)].sort();
+        for(const combo of combos) {
+          const comboSorted = [...combo].sort();
+          if(JSON.stringify(comboSorted)===JSON.stringify(resSet)) {
+            const straight = combo.join('')===resultNumber;
+            if(straight) return {badge:'<span class="result-badge win-straight">🎯 当選：ストレート</span>',detail:''};
+            else return {badge:'<span class="result-badge win-box">📦 当選：ボックス</span>',detail:''};
+          }
+        }
+        const hitDigits = candidates.filter(d=>resDigits.includes(d));
+        const doubleHits = candidates.filter(d=>resDigits.filter(r=>r===d).length===2);
+        if(hitDigits.length===0) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:'予想数字は1つも含まれていなかった'};
+        if(doubleHits.length>0&&hitDigits.length===1) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`予想数字「${doubleHits[0]}」がダブルで含まれていた【ダブル発生】`};
+        if(hitDigits.length===1) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`予想数字「${hitDigits[0]}」が含まれていた`};
+        if(hitDigits.length===2) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`予想数字「${hitDigits[0]}」と「${hitDigits[1]}」が含まれていた`};
+        return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:''};
+      }
+      const judged=judgeResult(item.candidates||[],item.result_number);
+      const badge=judged.badge;
+      const resultDetail=judged.detail;
       const resultStr=item.result_number?` → 当選番号：${item.result_number}`:'';
+      const detailStr=resultDetail?`<div style="font-size:11px;color:var(--text2);margin-top:3px;">${resultDetail}</div>`:'';
       return `<div class="archive-item" onclick="toggleArchive(this,'${item.date}')">
         <div class="archive-header">
-          <div><div style="font-size:14px;font-weight:bold;">【第${item.round}回】抽選日：${item.date}${resultStr}</div><div class="archive-meta">第${parseInt(item.round)+1}回向け予想</div></div>
+          <div>
+            <div style="font-size:14px;font-weight:bold;">【第${item.round}回】抽選日：${item.date}${resultStr}</div>
+            <div class="archive-meta">第${parseInt(item.round)+1}回向け予想${resultDetail?' / '+resultDetail:''}</div>
+          </div>
           <div style="display:flex;align-items:center;gap:12px;">${badge}<div class="archive-candidates">${item.candidates.map(d=>`<div class="archive-digit">${d}</div>`).join('')}</div></div>
         </div>
         <div class="archive-detail"><div style="color:var(--text2);font-size:13px;">▼ クリックして詳細を表示</div></div>
