@@ -360,11 +360,10 @@ function renderTop(D){
   <div class="card" style="margin-top:0">
     <div class="card-title">ポイント配分の現在のウェイト</div>
     <div style="margin-top:12px">
-      <div class="pt-bar"><div class="pt-label">① ひっぱり系合計（100回）</div><div class="pt-track"><div class="pt-fill" style="width:100%"></div></div><div class="pt-num">5pt</div></div>
-      <div class="pt-bar"><div class="pt-label">② 出現頻度（63回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
-      <div class="pt-bar"><div class="pt-label">③ 勢い（20回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
-      <div class="pt-bar"><div class="pt-label">④ 直近ひっぱりスコア</div><div class="pt-track"><div class="pt-fill" style="width:60%"></div></div><div class="pt-num">3pt</div></div>
-      <div class="pt-bar"><div class="pt-label">⑤ 連番出現パターン</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+      <div class="pt-bar"><div class="pt-label">① ひっぱりポイント（N連続後の確率）</div><div class="pt-track"><div class="pt-fill" style="width:100%"></div></div><div class="pt-num">5pt</div></div>
+      <div class="pt-bar"><div class="pt-label">② 出現頻度（直近63回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+      <div class="pt-bar"><div class="pt-label">③ 勢い（直近20回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
+      <div class="pt-bar"><div class="pt-label">⑤ 連番出現パターン（直近100回）</div><div class="pt-track"><div class="pt-fill" style="width:80%"></div></div><div class="pt-num">4pt</div></div>
     </div>
   </div>
 </div>
@@ -634,7 +633,7 @@ function renderTop(D){
     const minDist=cd.min_dist||[];
     const pos=cd.pos_data||{};
     const ikAll=cd.ikioi_all||{};
-    const ptAll=cd.pull_total_all||{};
+    const ptAll=cd.pull_pt_all||{};
     const ls=rounds.map((r,i)=>i%10===0?'第'+r+'回':'');
     const periodLbls=['1〜10','11〜20','21〜30','31〜40','41〜50','51〜60','61〜70','71〜80','81〜90','91〜100'].map(s=>s+'回前');
 
@@ -843,25 +842,23 @@ function loadAbout(){
   <table>
     <thead><tr><th>要素</th><th>参照期間</th><th>最大pt</th><th>配点基準</th></tr></thead>
     <tbody>
-      <tr><td class="highlight">① ひっぱり系合計</td><td>直近100回</td><td class="highlight">5pt</td><td style="text-align:left">1位:5pt / 2位:4pt / 3位:3pt / 4位:2pt / 5位:1pt</td></tr>
+      <tr><td class="highlight">① ひっぱりポイント</td><td>全データ</td><td class="highlight">5pt</td><td style="text-align:left">N連続後の次回ひっぱり確率が70%以上→最大5pt / 60〜70%→最大3pt / 60%未満→0pt。最強世代（1・2・3回前）の数字に重点加点</td></tr>
       <tr><td class="highlight">② 出現頻度</td><td>直近63回</td><td class="highlight">4pt</td><td style="text-align:left">1位:4pt / 2位:3pt / 3位:2pt / 4〜5位:1pt</td></tr>
       <tr><td class="highlight">③ 勢い</td><td>直近20回</td><td class="highlight">4pt</td><td style="text-align:left">+3以上:4pt / +2:3pt / +1:2pt / 0:1pt / マイナス:0pt</td></tr>
-      <tr><td class="highlight">④ 直近ひっぱりスコア</td><td>直近3回</td><td class="highlight">3pt</td><td style="text-align:left">1回前:3pt / 2回前:2pt / 3回前:1pt（重複加算）</td></tr>
       <tr><td class="highlight">⑤ 連番出現パターン</td><td>直近100回＋次回候補</td><td class="highlight">4pt</td><td style="text-align:left">連番count上位3位に3・2・1pt ＋ 次回連番候補なら+1pt</td></tr>
-      <tr><td colspan="2" style="text-align:right;color:var(--text2)">合計最大</td><td class="highlight">20pt</td><td></td></tr>
+      <tr><td colspan="2" style="text-align:right;color:var(--text2)">合計最大</td><td class="highlight">17pt</td><td></td></tr>
     </tbody>
   </table>
   <p class="note" style="margin-top:12px">※連続出現補正：3回連続中かつ過去の4回目出現率が50%以上の数字に+2pt（現状は0ptのケースが多い）</p>
 </div>
 <div class="section">
-  <div class="section-title">04 — ひっぱり系分析の詳細（最重要要素）</div>
+  <div class="section-title">04 — ひっぱりポイントの詳細（最重要要素）</div>
   <div class="two-col">
-    <div class="card"><div class="card-title">ひっぱり（1回前）</div><p>前回の当選番号に含まれる数字が、今回の当選番号に再登場する現象。直近100回での発生率：<span style="color:var(--accent3)">73%</span></p></div>
-    <div class="card"><div class="card-title">隔世ひっぱり（2回前）</div><p>2回前の当選番号の数字が、今回の当選番号に登場する現象。直近100回での発生率：<span style="color:var(--accent3)">62%</span></p></div>
-    <div class="card"><div class="card-title">二世代ひっぱり（3回前）</div><p>3回前の当選番号の数字が、今回の当選番号に登場する現象。直近100回での発生率：<span style="color:var(--accent3)">68%</span></p></div>
-    <div class="card"><div class="card-title">合計スコアの意味</div><p>3種類のひっぱりで登場した合計回数。数値が高いほど「どのタイミングでも引っ張られやすい安定した数字」を意味する。</p></div>
+    <div class="card"><div class="card-title">ひっぱりの定義</div><p>前回（1回前）の当選番号が次回の当選番号に含まれている現象。現在何連続でひっぱりが発生しているかを毎回記録する。</p></div>
+    <div class="card"><div class="card-title">N連続後の確率チェック</div><p>過去全データからN連続後に次回もひっぱりが発生した確率を算出。70%以上なら「強い加点」（最大5pt）、60〜70%なら「通常加点」（最大3pt）、60%未満なら加点なし。</p></div>
+    <div class="card"><div class="card-title">最強世代の特定</div><p>ひっぱりが起きると判断した場合、1回前・2回前・3回前のどの世代からひっぱられやすいかを確率で比較。最も確率の高い世代の数字に重点的に加点する。</p></div>
+    <div class="card"><div class="card-title">勢い（③）の定義</div><p>「11〜20回前」と「1〜10回前」の出現回数の差。プラスが大きいほど直近で出現頻度が上昇中＝勢いがある数字。</p><p style="margin-top:6px;font-family:var(--font-mono);font-size:12px;color:var(--accent2)">勢い ＝ 1〜10回前の出現数 − 11〜20回前の出現数</p></div>
   </div>
-  <div class="card" style="margin-top:4px"><div class="card-title">勢い（③）の定義</div><p>「11〜20回前」と「1〜10回前」の出現回数の差。プラスが大きいほど直近で出現頻度が上昇中＝勢いがある数字。</p><p style="margin-top:6px;font-family:var(--font-mono);font-size:12px;color:var(--accent2)">勢い ＝ 1〜10回前の出現数 − 11〜20回前の出現数</p></div>
 </div>
 <div class="section">
   <div class="section-title">05 — サブ分析：出現間隔アラート（D）</div>
