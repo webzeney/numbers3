@@ -181,36 +181,99 @@ def calc_chart_data(history):
     }
 
 
+# ===== ひっぱり連続統計テーブルを構築 =====
+def build_pull_stats(nums):
+    """全データからN連続後の3世代ひっぱり発生確率テーブルを構築する"""
+    N = len(nums)
+    pull1_hist = [bool(set(nums[i-1]) & set(nums[i])) for i in range(1, N)]
+
+    # 各時点での連続数を計算
+    streaks = []
+    current = 0
+    for p in pull1_hist:
+        streaks.append(current)
+        if p: current += 1
+        else: current = 0
+
+    stats = {}
+    for n in range(0, 10):
+        indices = [i for i, s in enumerate(streaks)
+                   if s == n and i >= 3 and i + 1 < N]
+        if len(indices) < 10:
+            continue
+        total = len(indices)
+        next_pull = sum(pull1_hist[i] for i in indices if i < len(pull1_hist))
+        p1 = sum(1 for i in indices if bool(set(nums[i])   & set(nums[i+1])))
+        p2 = sum(1 for i in indices if bool(set(nums[i-1]) & set(nums[i+1])))
+        p3 = sum(1 for i in indices if bool(set(nums[i-2]) & set(nums[i+1])))
+        stats[n] = {
+            'total': total,
+            'pull_prob': round(next_pull / total * 100, 1),
+            'p1': round(p1 / total * 100, 1),
+            'p2': round(p2 / total * 100, 1),
+            'p3': round(p3 / total * 100, 1),
+        }
+    return stats
+
+
 # ===== 候補数字調査A =====
 def analyze_A(history):
     if len(history) < 20:
         return None
     nums = [h['number'] for h in history]
+    N = len(nums)
 
+    # --- 現在の連続数を計算 ---
+    current_streak = 0
+    for i in range(N - 1):
+        if bool(set(nums[i+1]) & set(nums[i])): current_streak += 1
+        else: break
+
+    # --- ひっぱり統計テーブルを構築 ---
+    pull_stats = build_pull_stats(nums)
+    stat = pull_stats.get(current_streak, pull_stats.get(0, {'pull_prob':62.0,'p1':62.0,'p2':58.0,'p3':58.0,'total':0}))
+    pull_prob = stat['pull_prob']
+
+    # --- 加点重みを決定 ---
+    if pull_prob >= 70:
+        pull_weight = 5
+        pull_judge = '強い加点'
+    elif pull_prob >= 60:
+        pull_weight = 3
+        pull_judge = '通常加点'
+    else:
+        pull_weight = 0
+        pull_judge = '加点なし'
+
+    # --- 最強世代を特定して各数字にポイント付与 ---
+    pt_pull = {d: 0 for d in '0123456789'}
+    best_gen_name = '-'
+    best_gen_prob = 0.0
+    if pull_weight > 0 and len(nums) >= 3:
+        gen_map = {
+            'p1': (stat['p1'], set(nums[0])),   # 1回前
+            'p2': (stat['p2'], set(nums[1])),   # 2回前
+            'p3': (stat['p3'], set(nums[2])),   # 3回前
+        }
+        max_prob = max(v[0] for v in gen_map.values())
+        best_gen_name = max(gen_map, key=lambda k: gen_map[k][0])
+        best_gen_prob = gen_map[best_gen_name][0]
+        for gen, (prob, digits) in gen_map.items():
+            for d in digits:
+                pt = round(pull_weight * (prob / max_prob))
+                pt_pull[d] = max(pt_pull[d], pt)
+
+    # --- 頻度（直近63回）---
+    r63 = nums[:63] if len(nums) >= 63 else nums
+    freq = {d: sum(d in n for n in r63) for d in '0123456789'}
+
+    # --- 勢い（直近20回）---
     g1 = nums[:10]
     g2 = nums[10:20]
     ikioi = {d: sum(d in n for n in g1) - sum(d in n for n in g2) for d in '0123456789'}
 
-    r63 = nums[:63] if len(nums) >= 63 else nums
-    freq = {d: sum(d in n for n in r63) for d in '0123456789'}
-
+    # --- 連番パターン（直近100回）---
     r100 = nums[:100] if len(nums) >= 100 else nums
-    pull_total = {d: 0 for d in '0123456789'}
-    for gap in [1, 2, 3]:
-        for i in range(gap, len(r100)):
-            ps = set(r100[i-gap])
-            for d in r100[i]:
-                if d in ps:
-                    pull_total[d] += 1
-
-    pull_score = {}
-    for d in '0123456789':
-        s = 0
-        if len(nums) >= 1 and d in set(nums[0]): s += 3
-        if len(nums) >= 2 and d in set(nums[1]): s += 2
-        if len(nums) >= 3 and d in set(nums[2]): s += 1
-        pull_score[d] = s
-
     renban_count = {d: 0 for d in '0123456789'}
     for i in range(1, len(r100)):
         prev_adj = set()
@@ -230,15 +293,13 @@ def analyze_A(history):
         sd = sorted(scores.keys(), key=lambda x: -scores[x])
         return {d: pts[i] if i < len(pts) else 0 for i, d in enumerate(sd)}
 
-    pt_pull  = rank_pt(pull_total, [5, 4, 3, 2, 1, 0, 0, 0, 0, 0])
-    pt_freq  = rank_pt(freq,       [4, 3, 2, 1, 1, 0, 0, 0, 0, 0])
-    pt_ikioi = {d: (4 if ikioi[d] >= 3 else 3 if ikioi[d] >= 2 else 2 if ikioi[d] >= 1 else 1 if ikioi[d] == 0 else 0) for d in '0123456789'}
-    pt_ps    = {d: (3 if pull_score[d] >= 3 else 2 if pull_score[d] == 2 else 1 if pull_score[d] == 1 else 0) for d in '0123456789'}
+    pt_freq   = rank_pt(freq,  [4, 3, 2, 1, 1, 0, 0, 0, 0, 0])
+    pt_ikioi  = {d: (4 if ikioi[d] >= 3 else 3 if ikioi[d] >= 2 else 2 if ikioi[d] >= 1 else 1 if ikioi[d] == 0 else 0) for d in '0123456789'}
     rn_sorted = sorted(renban_count.keys(), key=lambda x: -renban_count[x])
-    rn_rank = {rn_sorted[i]: [3, 2, 1][i] if i < 3 else 0 for i in range(10)}
+    rn_rank   = {rn_sorted[i]: [3, 2, 1][i] if i < 3 else 0 for i in range(10)}
     pt_renban = {d: rn_rank[d] + (1 if d in renban_next else 0) for d in '0123456789'}
 
-    total = {d: pt_pull[d]+pt_freq[d]+pt_ikioi[d]+pt_ps[d]+pt_renban[d] for d in '0123456789'}
+    total = {d: pt_pull[d] + pt_freq[d] + pt_ikioi[d] + pt_renban[d] for d in '0123456789'}
     ranking = sorted(total.keys(), key=lambda x: -total[x])
     candidates = ranking[:4]
 
@@ -246,48 +307,33 @@ def analyze_A(history):
     hit_check = {d: sum(d in n for n in last5) for d in candidates}
     in_latest = [d for d in candidates if d in set(nums[0])]
 
-    # ひっぱり連続状況
-    all_pull = []
-    for i in range(1, len(nums)):
-        all_pull.append(bool(set(nums[i-1]) & set(nums[i])))
-    all_pull.reverse()
-
-    current_streak = 0
-    for p in reversed(all_pull):
-        if p:
-            current_streak += 1
-        else:
-            break
-
-    continued = 0
-    total_cases = 0
-    if current_streak > 0:
-        for i in range(current_streak, len(all_pull)):
-            if all(all_pull[i-current_streak:i]):
-                total_cases += 1
-                if all_pull[i]:
-                    continued += 1
-
-    pull_continue_prob = round(continued/total_cases*100, 1) if total_cases > 0 else 0
-
     return {
         "candidates": candidates,
         "scores": {d: total[d] for d in candidates},
         "all_scores": total,
         "details": {
-            "ikioi":      {d: ikioi[d]      for d in candidates},
-            "freq":       {d: freq[d]        for d in candidates},
-            "pull_total": {d: pull_total[d]  for d in candidates},
-            "pull_score": {d: pull_score[d]  for d in candidates},
-            "renban":     {d: pt_renban[d]   for d in candidates},
+            "ikioi":   {d: ikioi[d]     for d in candidates},
+            "freq":    {d: freq[d]       for d in candidates},
+            "pull_pt": {d: pt_pull[d]   for d in candidates},
+            "renban":  {d: pt_renban[d] for d in candidates},
         },
         "last5_hit": hit_check,
         "in_latest": in_latest,
         "latest_number": nums[0],
         "pull_streak": {
-            "current": current_streak,
-            "continue_prob": pull_continue_prob,
-            "total_cases": total_cases,
+            "current":      current_streak,
+            "pull_prob":    pull_prob,
+            "pull_judge":   pull_judge,
+            "best_gen":     best_gen_name,
+            "best_gen_prob": best_gen_prob,
+            "p1": stat['p1'],
+            "p2": stat['p2'],
+            "p3": stat['p3'],
+            "gen_digits": {
+                "p1": sorted(set(nums[0])) if len(nums) >= 1 else [],
+                "p2": sorted(set(nums[1])) if len(nums) >= 2 else [],
+                "p3": sorted(set(nums[2])) if len(nums) >= 3 else [],
+            }
         }
     }
 
@@ -379,23 +425,34 @@ def calc_alert(history):
 def generate_ai_thoughts(analysis_a, analysis_b, alert, latest_result, next_round):
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-    pull_streak = analysis_a.get('pull_streak', {})
-    streak_info = f"{pull_streak.get('current', 0)}連続中（継続確率{pull_streak.get('continue_prob', 0)}%）"
+    ps = analysis_a.get('pull_streak', {})
+    streak_info = (
+        f"{ps.get('current',0)}連続中 / "
+        f"次回ひっぱり確率{ps.get('pull_prob',0)}%（{ps.get('pull_judge','-')}）/ "
+        f"最強世代:{ps.get('best_gen','-')}({ps.get('best_gen_prob',0)}%) / "
+        f"1回前:{ps.get('p1',0)}% 2回前:{ps.get('p2',0)}% 3回前:{ps.get('p3',0)}%"
+    )
+    gen_digits = ps.get('gen_digits', {})
 
     prompt = f"""
 あなたはナンバーズ3の候補数字を分析するAIです。
 以下のデータをもとに、第{next_round}回の予想に向けた分析思考を
-**日本語で・わかりやすく** 説明してください。
+日本語でわかりやすく説明してください。
 
 【最新当選番号】第{latest_result['round']}回：{latest_result['number']}
 【候補数字調査A】
 候補数字：{'・'.join(analysis_a['candidates'])}
 スコア：{analysis_a['scores']}
 勢い：{analysis_a['details']['ikioi']}
-ひっぱり系合計：{analysis_a['details']['pull_total']}
+ひっぱりポイント：{analysis_a['details']['pull_pt']}
 直近5回ヒット：{analysis_a['last5_hit']}
 最新回に含まれる候補：{analysis_a['in_latest']}
-ひっぱり連続状況：{streak_info}
+
+【ひっぱり分析】
+{streak_info}
+1回前({latest_result['number']})の数字：{gen_digits.get('p1',[])}
+2回前の数字：{gen_digits.get('p2',[])}
+3回前の数字：{gen_digits.get('p3',[])}
 
 【候補数字調査B】
 総和上位：{analysis_b['combo_sum'][:2]}
@@ -405,14 +462,15 @@ def generate_ai_thoughts(analysis_a, analysis_b, alert, latest_result, next_roun
 {[f"{d}:{v['level']} 休止{v['current_rest']}回/平均{v['avg_interval']}回" for d,v in alert.items() if v['level'] in ['🔴','🟡']]}
 
 以下の構成で説明してください：
-1. 前回の当選番号の振り返り（ひっぱりの観点）
-2. ひっぱり連続状況と次回への影響
-3. 今回の候補数字の根拠（調査Aのポイント上位の理由）
-4. 調査Bからの検証（組み合わせの信頼度・推奨ストレート順番の根拠）
+1. 前回の当選番号の振り返り（ひっぱりが発生したか・どの数字が含まれるか）
+2. ひっぱり分析（現在何連続中か・次回の発生確率・最も引っ張られやすい世代とその数字）
+3. 候補数字の根拠（調査Aのポイント上位の理由）
+4. 調査Bからの検証（信頼度の高い組み合わせ・推奨ストレートの根拠）
 5. アラートで注目すべき数字
 6. 総合的な一言コメント
 
 各項目は2〜4文程度で、専門用語は使わずわかりやすく。
+Markdown記法（#・**・---）は使わないこと。
 """
     response = client.messages.create(
         model="claude-sonnet-4-6",
