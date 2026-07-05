@@ -279,10 +279,9 @@ function renderTop(D){
     <thead>
       <tr>
         <th>順位</th><th>数字</th>
-        <th>①ひっぱり系<br><span style="font-size:10px;">(最大5pt)</span></th>
+        <th>①ひっぱりpt<br><span style="font-size:10px;">(最大5pt)</span></th>
         <th>②頻度<br><span style="font-size:10px;">(最大4pt)</span></th>
         <th>③勢い<br><span style="font-size:10px;">(最大4pt)</span></th>
-        <th>④直近pull<br><span style="font-size:10px;">(最大3pt)</span></th>
         <th>⑤連番<br><span style="font-size:10px;">(最大4pt)</span></th>
         <th>合計</th>
       </tr>
@@ -292,16 +291,20 @@ function renderTop(D){
         const isCandidate=a.candidates.includes(d);
         const isCutLine=i===3;
         const score=allScores[d]||0;
-        const ik=cd.ikioi_all?cd.ikioi_all[d]:'-';
-        const pt=cd.pull_total_all?cd.pull_total_all[d]:'-';
+        const ik=cd.ikioi_all?cd.ikioi_all[d]:0;
+        const pullPt=cd.pull_pt_all?cd.pull_pt_all[d]:'-';
+        const freqPt=cd.freq_pt_all?cd.freq_pt_all[d]:'-';
+        const renbanPt=cd.renban_pt_all?cd.renban_pt_all[d]:'-';
+        const ikiSign=typeof ik==='number'?(ik>=0?'+':'')+ik:'-';
+        const ikiClass=typeof ik==='number'&&ik>0?'up':typeof ik==='number'&&ik<0?'down':'';
+        const ikiPt=typeof ik==='number'?(ik>=3?4:ik>=2?3:ik>=1?2:ik===0?1:0):'-';
         return `<tr class="${!isCandidate?'row-out':''}${isCutLine?' style="border-bottom:2px dashed var(--accent2);"':''}">
           <td class="${isCandidate?'highlight':'dim'}">${i+1}位</td>
-          <td class="${isCandidate?'highlight':'dim'}" style="font-size:${isCandidate?'18':'14'}px;">${d}${isCandidate?'':'　'}</td>
-          <td>${pt}</td>
-          <td>-</td>
-          <td class="${typeof ik==='number'&&ik>0?'up':typeof ik==='number'&&ik<0?'down':''}">${typeof ik==='number'?(ik>=0?'+':'')+ik:'-'}</td>
-          <td>-</td>
-          <td>-</td>
+          <td class="${isCandidate?'highlight':'dim'}" style="font-size:${isCandidate?'18':'14'}px;">${d}</td>
+          <td>${pullPt}</td>
+          <td>${freqPt}</td>
+          <td class="${ikiClass}">${ikiSign}(${ikiPt}pt)</td>
+          <td>${renbanPt}</td>
           <td class="${isCandidate?'highlight':'dim'}">${score}pt</td>
         </tr>`;
       }).join('')}
