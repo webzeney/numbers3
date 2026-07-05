@@ -692,7 +692,7 @@ async function loadArchive(){
       const resultStr=item.result_number?` → 当選番号：${item.result_number}`:'';
       return `<div class="archive-item" onclick="toggleArchive(this,'${item.date}')">
         <div class="archive-header">
-          <div><div style="font-size:14px;font-weight:bold;">【第${parseInt(item.round)+1}回】抽選日：${item.date}${resultStr}</div><div class="archive-meta">第${item.round}回当選結果をもとにした予想</div></div>
+          <div><div style="font-size:14px;font-weight:bold;">【第${item.round}回】抽選日：${item.date}${resultStr}</div><div class="archive-meta">第${parseInt(item.round)+1}回向け予想</div></div>
           <div style="display:flex;align-items:center;gap:12px;">${badge}<div class="archive-candidates">${item.candidates.map(d=>`<div class="archive-digit">${d}</div>`).join('')}</div></div>
         </div>
         <div class="archive-detail"><div style="color:var(--text2);font-size:13px;">▼ クリックして詳細を表示</div></div>
