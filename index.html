@@ -558,13 +558,58 @@ function renderTop(D){
 
 <div class="section">
   <div class="section-title">05 — 調査B 総合順位（3項目の統合評価）</div>
-  <table>
-    <tr><th>順位</th><th>組み合わせ</th><th>総和①</th><th>最大・最小②</th><th>桁別③</th><th>総合評価</th></tr>
-    <tr><td class="highlight">1位</td><td class="highlight" style="font-size:18px;">179</td><td class="up">1位</td><td class="up">1位</td><td class="up">適合</td><td class="up">3項目すべてで上位・最有力</td></tr>
-    <tr><td>2位</td><td class="highlight" style="font-size:18px;">167</td><td class="up">2位</td><td class="warn">3位</td><td class="up">適合</td><td>総和・桁別は強い。最大値がやや低め</td></tr>
-    <tr><td>3位</td><td class="highlight" style="font-size:18px;">169</td><td class="warn">3位</td><td class="up">1位</td><td class="up">適合</td><td>最大・最小は最適。総和出現回数はやや少なめ</td></tr>
-    <tr><td class="down">4位</td><td class="down" style="font-size:18px;">679</td><td class="down">4位</td><td class="down">4位</td><td class="warn">最大のみ適合</td><td class="down">総和0回・最小値6は傾向に反する</td></tr>
-  </table>
+  ${(()=>{
+    // combo_sum・combo_maxmin・straight_ordersから総合順位を動的に生成
+    const RC=['#f7c04f','#a0aab8','#c87941','#f74f4f'];
+    const RL=['1位','2位','3位','4位'];
+    // 総和ランク（出現回数の多い順）
+    const sumRanked=b.combo_sum.map(c=>c.combo);
+    // 最大最小ランク（max_rank+min_rankの小さい順）
+    const mmRanked=[...b.combo_maxmin].sort((x,y)=>(x.max_rank+x.min_rank)-(y.max_rank+y.min_rank)).map(c=>c.combo);
+    // 桁別ランク（straight_ordersの順番）
+    const posRanked=b.straight_orders.map(c=>c.combo);
+    // 総合スコア（各ランクの合計・小さいほど良い）
+    const allCombos=[...new Set([...sumRanked,...mmRanked,...posRanked])];
+    const scored=allCombos.map(combo=>{
+      const si=sumRanked.indexOf(combo);
+      const mi=mmRanked.indexOf(combo);
+      const pi=posRanked.indexOf(combo);
+      const score=(si>=0?si:3)+(mi>=0?mi:3)+(pi>=0?pi:3);
+      // 各項目の詳細
+      const sumD=b.combo_sum.find(c=>c.combo===combo)||{};
+      const mmD=b.combo_maxmin.find(c=>c.combo===combo)||{};
+      return {combo,score,si,mi,pi,sumD,mmD};
+    }).sort((x,y)=>x.score-y.score);
+    // 総合評価コメント生成
+    function evalComment(s){
+      const best=s.si<=0&&s.mi<=0?'3項目すべてで上位・最有力':
+                 s.si<=0&&s.mi<=1?'総和・最大最小ともに上位':
+                 s.si<=1&&s.mi<=0?'最大最小が最適・総和も安定':
+                 s.si<=1?'総和が安定。最大最小はやや劣る':
+                 s.mi<=1?'最大最小が最適。総和はやや少ない':
+                 '全項目で下位・信頼度最低';
+      return best;
+    }
+    function rankClass(i){return i===0?'up':i===1?'warn':i>=2?'down':'dim';}
+    return '<table><tr><th>順位</th><th>組み合わせ</th><th>総和①出現</th><th>最大・最小②</th><th>桁別③</th><th>総合評価</th></tr>'+
+      scored.map((s,idx)=>{
+        const color=RC[idx]||'#888';
+        const sumLabel=s.sumD.count!==undefined?s.sumD.count+'回':'—';
+        const mmLabel=s.mmD.max_rank!==undefined?`最大${s.mmD.max_rank}位/最小${s.mmD.min_rank}位`:'—';
+        const posLabel=s.pi<=0?'最有力':s.pi<=1?'適合':'参考';
+        const evalC=evalComment(s);
+        const trClass=idx===0?'class="highlight"':idx===3?'class="down"':'';
+        const tdClass=idx===0?'class="up"':idx===1?'class="warn"':idx>=2?'class="down"':'';
+        return \`<tr>
+          <td style="color:\${color};font-weight:bold;">\${RL[idx]||idx+1+'位'}</td>
+          <td style="font-size:18px;color:\${color};font-weight:bold;">\${s.combo}</td>
+          <td class="\${rankClass(s.si)}">\${sumLabel}(\${s.si+1}位)</td>
+          <td class="\${rankClass(s.mi)}">\${mmLabel}</td>
+          <td class="\${rankClass(s.pi)}">\${posLabel}</td>
+          <td class="\${idx===0?'up':idx===3?'down':''}">\${evalC}</td>
+        </tr>\`;
+      }).join('')+'</table>';
+  })()}
   <p class="note">※調査Bはあくまで傾向の適合度評価。4通りすべてを購入（800円）する方針は変わらない。</p>
 </div>
 
@@ -689,6 +734,8 @@ async function loadArchive(){
     try{const r=await fetch('data/archive/index.json?t='+Date.now());list=await r.json();}
     catch{const r=await fetch('data/latest.json?t='+Date.now());const d=await r.json();list=[{date:d.date,round:d.latest_round,candidates:d.analysis_a.candidates,result_number:null,hit:null}];}
     if(!list.length){el.innerHTML='<div class="loading dim">アーカイブはまだありません</div>';return;}
+    // 最新エントリ（トップページと同じ）は除外
+    if(list.length>1) list=list.slice(1);
     el.innerHTML=list.map(item=>{
       function judgeResult(candidates, resultNumber) {
         if (!resultNumber) return {badge: '<span class="result-badge pending">結果待ち</span>', detail: ''};
@@ -707,26 +754,29 @@ async function loadArchive(){
             else return {badge:'<span class="result-badge win-box">📦 当選：ボックス</span>',detail:''};
           }
         }
-        const hitDigits = candidates.filter(d=>resDigits.includes(d));
-        const doubleHits = candidates.filter(d=>resDigits.filter(r=>r===d).length===2);
+        // 予想数字（candidates）の中で当選番号に含まれるものだけを抽出
+        const hitDigits=[...new Set(resDigits.filter(d=>candidates.includes(d)))];
+        const doubleHits=candidates.filter(d=>resDigits.filter(r=>r===d).length===2);
         if(hitDigits.length===0) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:'予想数字は1つも含まれていなかった'};
-        if(doubleHits.length>0&&hitDigits.length===1) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`予想数字「${doubleHits[0]}」がダブルで含まれていた【ダブル発生】`};
-        if(hitDigits.length===1) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`予想数字「${hitDigits[0]}」が含まれていた`};
-        if(hitDigits.length===2) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`予想数字「${hitDigits[0]}」と「${hitDigits[1]}」が含まれていた`};
+        if(doubleHits.length>0&&hitDigits.length===1&&hitDigits[0]===doubleHits[0]) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`当選番号に予想数字「${doubleHits[0]}」がダブルで含まれていた【ダブル発生】`};
+        if(hitDigits.length===1) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`当選番号に予想数字「${hitDigits[0]}」が含まれていた`};
+        if(hitDigits.length===2) return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:`当選番号に予想数字「${hitDigits[0]}」と「${hitDigits[1]}」が含まれていた`};
         return {badge:'<span class="result-badge miss">✗ 外れ</span>',detail:''};
       }
       const judged=judgeResult(item.candidates||[],item.result_number);
       const badge=judged.badge;
       const resultDetail=judged.detail;
       const resultStr=item.result_number?` → 当選番号：${item.result_number}`:'';
-      const detailStr=resultDetail?`<div style="font-size:11px;color:var(--text2);margin-top:3px;">${resultDetail}</div>`:'';
+      const nextRound=item.next_round||(parseInt(item.round)+1);
+      const candidatesStr=item.candidates?item.candidates.join('・'):'';
       return `<div class="archive-item" onclick="toggleArchive(this,'${item.date}')">
         <div class="archive-header">
           <div>
             <div style="font-size:14px;font-weight:bold;">【第${item.round}回】抽選日：${item.date}${resultStr}</div>
-            <div class="archive-meta">第${parseInt(item.round)+1}回向け予想${resultDetail?' / '+resultDetail:''}</div>
+            <div class="archive-meta">第${nextRound}回向け予想数字：${candidatesStr}</div>
+            ${resultDetail?`<div style="font-size:12px;color:var(--accent2);margin-top:2px;">${resultDetail}</div>`:''}
           </div>
-          <div style="display:flex;align-items:center;gap:12px;">${badge}<div class="archive-candidates">${item.candidates.map(d=>`<div class="archive-digit">${d}</div>`).join('')}</div></div>
+          <div style="display:flex;align-items:center;gap:12px;">${badge}<div class="archive-candidates">${(item.candidates||[]).map(d=>`<div class="archive-digit">${d}</div>`).join('')}</div></div>
         </div>
         <div class="archive-detail"><div style="color:var(--text2);font-size:13px;">▼ クリックして詳細を表示</div></div>
       </div>`;
