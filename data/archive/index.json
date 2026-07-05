@@ -1,17 +1,5 @@
 [
   {
-    "date": "2026-07-05",
-    "round": "7019",
-    "candidates": [
-      "6",
-      "7",
-      "4",
-      "1"
-    ],
-    "result_number": null,
-    "hit": null
-  },
-  {
     "date": "2026-07-03",
     "round": "7019",
     "candidates": [
@@ -21,7 +9,8 @@
       "7"
     ],
     "result_number": "304",
-    "hit": false
+    "hit": false,
+    "result_detail": "予想数字は1つも含まれていなかった"
   },
   {
     "date": "2026-07-02",
@@ -33,7 +22,8 @@
       "7"
     ],
     "result_number": "768",
-    "hit": true
+    "hit": false,
+    "result_detail": "予想数字「6」と「7」が含まれていた"
   },
   {
     "date": "2026-07-01",
@@ -45,7 +35,8 @@
       "7"
     ],
     "result_number": "026",
-    "hit": true
+    "hit": false,
+    "result_detail": "予想数字「6」と「2」が含まれていた"
   },
   {
     "date": "2026-06-30",
@@ -57,7 +48,8 @@
       "9"
     ],
     "result_number": "629",
-    "hit": true
+    "hit": false,
+    "result_detail": "予想数字「6」と「9」が含まれていた"
   },
   {
     "date": "2026-06-29",
@@ -69,6 +61,7 @@
       "9"
     ],
     "result_number": "554",
-    "hit": false
+    "hit": false,
+    "result_detail": "予想数字は1つも含まれていなかった"
   }
 ]
