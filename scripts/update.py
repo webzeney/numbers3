@@ -161,6 +161,31 @@ def calc_chart_data(history):
                     pull_total[d] += 1
     pull_total_all = dict(pull_total)
 
+    # 全数字のポイント計算（index.htmlのテーブル表示用）
+    def rank_pt_all(scores, pts):
+        sd = sorted(scores.keys(), key=lambda x: -scores[x])
+        return {d: pts[i] if i < len(pts) else 0 for i, d in enumerate(sd)}
+
+    freq_all = {d: sum(d in n for n in r100) for d in '0123456789'}
+    freq_pt_all = rank_pt_all(freq_all, [4,3,2,1,1,0,0,0,0,0])
+
+    renban_count_all = {d: 0 for d in '0123456789'}
+    for i in range(1, len(r100)):
+        prev_adj = set()
+        for pd in r100[i-1]:
+            prev_adj.add(str((int(pd)+1) % 10))
+            prev_adj.add(str((int(pd)-1) % 10))
+        for d in r100[i]:
+            if d in prev_adj:
+                renban_count_all[d] += 1
+    renban_next_all = set()
+    for pd in nums[0]:
+        renban_next_all.add(str((int(pd)+1) % 10))
+        renban_next_all.add(str((int(pd)-1) % 10))
+    rn_sorted = sorted(renban_count_all.keys(), key=lambda x: -renban_count_all[x])
+    rn_rank = {rn_sorted[i]: [3,2,1][i] if i < 3 else 0 for i in range(10)}
+    renban_pt_all = {d: rn_rank[d] + (1 if d in renban_next_all else 0) for d in '0123456789'}
+
     return {
         "rounds":   list(reversed(rounds)),
         "sums":     list(reversed(sums)),
@@ -178,6 +203,8 @@ def calc_chart_data(history):
         "pos_data": pos_data,
         "ikioi_all": ikioi_all,
         "pull_total_all": pull_total_all,
+        "freq_pt_all": freq_pt_all,
+        "renban_pt_all": renban_pt_all,
     }
 
 
@@ -334,7 +361,8 @@ def analyze_A(history):
                 "p2": sorted(set(nums[1])) if len(nums) >= 2 else [],
                 "p3": sorted(set(nums[2])) if len(nums) >= 3 else [],
             }
-        }
+        },
+        "pull_pt_all": pt_pull,  # 全数字のひっぱりポイント（chart_data経由でindex.htmlに渡す）
     }
 
 
@@ -480,12 +508,45 @@ Markdown記法（#・**・---）は使わないこと。
     return response.content[0].text
 
 
-# ===== 当たり外れチェック =====
+# ===== 当たり外れチェック・詳細判定 =====
+def judge_result(candidates, result_number):
+    """
+    当選・外れの詳細判定
+    - 当選：候補4つから3つの組み合わせが当選番号の3桁と一致
+    - 外れ：それ以外（含まれる数字数と詳細を返す）
+    """
+    if not result_number:
+        return None, ""
+
+    from itertools import combinations as _combs
+    res_digits = list(result_number)
+    res_set = sorted(set(res_digits))
+
+    # セット当選チェック（4候補から3つの組み合わせ）
+    for combo in _combs(candidates, 3):
+        if sorted(combo) == res_set:
+            straight = ''.join(combo) == result_number
+            return True, "ストレート当選" if straight else "ボックス当選"
+
+    # 外れの場合：当選番号の中で候補数字に含まれるものだけを抽出
+    hit_digits = list(dict.fromkeys([d for d in res_digits if d in candidates]))
+    double_hits = [d for d in candidates if res_digits.count(d) == 2]
+
+    if len(hit_digits) == 0:
+        return False, "予想数字は1つも含まれていなかった"
+    elif double_hits and len(hit_digits) == 1 and hit_digits[0] in double_hits:
+        return False, f"当選番号に予想数字「{double_hits[0]}」がダブルで含まれていた【ダブル発生】"
+    elif len(hit_digits) == 1:
+        return False, f"当選番号に予想数字「{hit_digits[0]}」が含まれていた"
+    elif len(hit_digits) == 2:
+        return False, f"当選番号に予想数字「{hit_digits[0]}」と「{hit_digits[1]}」が含まれていた"
+    else:
+        return False, ""
+
+
 def check_hit(candidates, result_number):
-    for d in result_number:
-        if d in candidates:
-            return True
-    return False
+    hit, _ = judge_result(candidates, result_number)
+    return hit
 
 
 # ===== アーカイブインデックス更新 =====
@@ -497,23 +558,38 @@ def update_archive_index(archive_data, history):
     except:
         index = []
 
+    # 今日のエントリを追加（重複チェック）
     existing_dates = {item['date'] for item in index}
     if archive_data['date'] not in existing_dates:
         index.insert(0, {
-            "date": archive_data['date'],
-            "round": archive_data['latest_round'],
-            "candidates": archive_data['analysis_a']['candidates'],
+            "date":        archive_data['date'],
+            "round":       archive_data['latest_round'],   # 当選回号
+            "next_round":  archive_data['next_round'],     # 予想した回号
+            "candidates":  archive_data['analysis_a']['candidates'],  # 予想数字
             "result_number": None,
-            "hit": None
+            "hit":         None,
+            "result_detail": ""
         })
 
+    # 過去エントリの当選番号・判定を更新
+    # 判定ロジック：
+    # エントリの「next_round」の当選番号が出たら
+    # candidates（next_round向けの予想数字）と照合する
     round_map = {h['round']: h['number'] for h in history}
     for item in index:
-        if item['result_number'] is None:
-            next_round_num = str(int(item['round']) + 1)
-            if next_round_num in round_map:
-                item['result_number'] = round_map[next_round_num]
-                item['hit'] = check_hit(item['candidates'], round_map[next_round_num])
+        # next_roundが未設定の場合は補完
+        if 'next_round' not in item:
+            item['next_round'] = str(int(item.get('round', '0')) + 1)
+
+        if item.get('result_number') is None:
+            # next_round（予想した回）の当選番号が出ているか確認
+            next_r = item.get('next_round', '')
+            if next_r in round_map:
+                result_num = round_map[next_r]
+                hit, detail = judge_result(item.get('candidates', []), result_num)
+                item['result_number'] = result_num
+                item['hit'] = hit
+                item['result_detail'] = detail
 
     os.makedirs('data/archive', exist_ok=True)
     with open(index_path, 'w', encoding='utf-8') as f:
@@ -573,6 +649,8 @@ def main():
     # 分析実行
     result_a   = analyze_A(history)
     chart_data = calc_chart_data(history)
+    # ひっぱりポイント（全数字）をchart_dataにマージしてindex.htmlで参照できるようにする
+    chart_data['pull_pt_all'] = result_a.get('pull_pt_all', {})
     result_b   = analyze_B(history, result_a['candidates'], chart_data)
     alert      = calc_alert(history)
 
@@ -606,9 +684,9 @@ def main():
 
     update_archive_index(archive_data, history)
 
+    ps = result_a.get('pull_streak', {})
     print(f"完了！候補数字: {'・'.join(result_a['candidates'])}")
-    pull_streak = result_a.get('pull_streak', {})
-    print(f"ひっぱり連続: {pull_streak.get('current', 0)}連続中（継続確率{pull_streak.get('continue_prob', 0)}%）")
+    print(f"ひっぱり連続: {ps.get('current', 0)}連続中 / 次回ひっぱり確率: {ps.get('pull_prob', 0)}%（{ps.get('pull_judge', '-')}）")
 
 
 if __name__ == "__main__":
