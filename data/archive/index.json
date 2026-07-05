@@ -1,18 +1,6 @@
 [
   {
-    "date": "2026-07-05",
-    "round": "7019",
-    "candidates": [
-      "6",
-      "7",
-      "4",
-      "1"
-    ],
-    "result_number": null,
-    "hit": null
-  },
-  {
-    "date": "2026-07-02",
+    "date": "2026-07-03",
     "round": "7019",
     "candidates": [
       "6",
@@ -24,7 +12,7 @@
     "hit": false
   },
   {
-    "date": "2026-07-01",
+    "date": "2026-07-02",
     "round": "7018",
     "candidates": [
       "6",
@@ -36,7 +24,7 @@
     "hit": true
   },
   {
-    "date": "2026-06-30",
+    "date": "2026-07-01",
     "round": "7017",
     "candidates": [
       "6",
@@ -48,7 +36,7 @@
     "hit": true
   },
   {
-    "date": "2026-06-27",
+    "date": "2026-06-30",
     "round": "7016",
     "candidates": [
       "1",
@@ -60,20 +48,8 @@
     "hit": true
   },
   {
-    "date": "2026-06-26",
+    "date": "2026-06-29",
     "round": "7015",
-    "candidates": [
-      "1",
-      "6",
-      "7",
-      "9"
-    ],
-    "result_number": "554",
-    "hit": false
-  },
-  {
-    "date": "2026-06-25",
-    "round": "7014",
     "candidates": [
       "1",
       "6",
