@@ -55,40 +55,71 @@ def get_latest_numbers(next_round):
                         return t
         return None
 
-    # 当月・先月のページを試す
-    now_jst = datetime.now(JST)
-    months_to_try = []
-    for offset in range(2):
-        target = now_jst - timedelta(days=30*offset)
-        months_to_try.append((target.year, target.month))
+    # 試すサイトリスト（上から順に試す）
+    scrapers = [
+        {
+            "name": "numbers-renban",
+            "url": "https://numbers-renban.tokyo/numbers3/result_all",
+            "method": "renban",
+        },
+        {
+            "name": "ts4-net",
+            "url": "https://ts4-net.com/suuji3-hyo.html",
+            "method": "generic",
+        },
+        {
+            "name": "money-plan",
+            "url": "https://numbers3.money-plan.net/",
+            "method": "generic",
+        },
+        {
+            "name": "mk-mode",
+            "url": "https://www.mk-mode.com/rails/loto/numbers3",
+            "method": "generic",
+        },
+        {
+            "name": "楽天宝くじ(当月)",
+            "url": f"https://takarakuji.rakuten.co.jp/backnumber/numbers3/{datetime.now(JST).strftime('%Y%m')}/",
+            "method": "generic",
+        },
+    ]
 
-    for year, month in months_to_try:
-        url = f"https://takarakuji.rakuten.co.jp/backnumber/numbers3/{year}{month:02d}/"
+    def parse_renban(html, target_round):
+        """numbers-renban専用パーサー（テーブルから回号と番号のペアを探す）"""
+        soup = BeautifulSoup(html, 'html.parser')
+        for row in soup.find_all('tr'):
+            cells = row.find_all('td')
+            texts = [re.sub(r'[^\d]', '', c.get_text(strip=True)) for c in cells]
+            if target_round in texts:
+                idx = texts.index(target_round)
+                for t in texts[idx+1:idx+4]:
+                    if len(t) == 3:
+                        return t
+        return None
+
+    for scraper in scrapers:
         try:
-            r = requests.get(url, headers=headers, timeout=15)
-            if r.status_code == 200:
+            print(f"  {scraper['name']} を試みます...")
+            r = requests.get(scraper['url'], headers=headers, timeout=15)
+            print(f"  ステータス: {r.status_code}")
+            if r.status_code != 200:
+                continue
+
+            if scraper['method'] == 'renban':
+                number = parse_renban(r.text, next_round_str)
+            else:
                 number = search_in_html(r.text, next_round_str)
-                if number:
-                    print(f"  ✓ 楽天宝くじ({year}/{month:02d})から取得: 第{next_round_str}回 {number}")
-                    return [{"round": next_round_str, "number": number}]
-                else:
-                    print(f"  楽天({year}/{month:02d}): 第{next_round_str}回のデータなし（まだ未掲載の可能性）")
-        except Exception as e:
-            print(f"  楽天({year}/{month:02d}) エラー: {e}")
 
-    # みずほ銀行を試す
-    try:
-        url = "https://www.mizuhobank.co.jp/takarakuji/check/numbers/numbers3/index.html"
-        r = requests.get(url, headers=headers, timeout=15)
-        if r.status_code == 200:
-            number = search_in_html(r.text, next_round_str)
             if number:
-                print(f"  ✓ みずほ銀行から取得: 第{next_round_str}回 {number}")
+                print(f"  ✓ {scraper['name']}から取得: 第{next_round_str}回 {number}")
                 return [{"round": next_round_str, "number": number}]
-    except Exception as e:
-        print(f"  みずほ銀行 エラー: {e}")
+            else:
+                print(f"  {scraper['name']}: 第{next_round_str}回のデータなし")
 
-    print(f"  第{next_round_str}回のデータは取得できませんでした（本日未抽選またはページ未掲載）")
+        except Exception as e:
+            print(f"  {scraper['name']} エラー: {e}")
+
+    print(f"  第{next_round_str}回のデータは取得できませんでした")
     return []
 
 
