@@ -1,5 +1,19 @@
 [
   {
+    "date": "2026-07-07",
+    "round": "7020",
+    "next_round": "7021",
+    "candidates": [
+      "6",
+      "0",
+      "7",
+      "4"
+    ],
+    "result_number": null,
+    "hit": null,
+    "result_detail": ""
+  },
+  {
     "date": "2026-07-06",
     "round": "7019",
     "candidates": [
@@ -8,9 +22,10 @@
       "7",
       "4"
     ],
-    "result_number": null,
-    "hit": null,
-    "next_round": "7020"
+    "result_number": "069",
+    "hit": false,
+    "next_round": "7020",
+    "result_detail": "当選番号に予想数字「6」が含まれていた"
   },
   {
     "date": "2026-07-05",
@@ -22,8 +37,8 @@
       "7",
       "4"
     ],
-    "result_number": null,
-    "hit": null,
-    "result_detail": ""
+    "result_number": "069",
+    "hit": false,
+    "result_detail": "当選番号に予想数字「6」が含まれていた"
   }
 ]
