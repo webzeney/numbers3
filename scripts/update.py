@@ -81,36 +81,41 @@ def get_latest_numbers(next_round):
     ]
 
     def parse_renban(html, target_round):
-        """numbers-renban専用パーサー"""
+        """numbers-renban専用パーサー
+        構造：テーブルに「ナンバーズ3」と当選番号のペアが入っている
+        回号は別途テキストから探す
+        """
         soup = BeautifulSoup(html, 'html.parser')
         text = soup.get_text()
-        # デバッグ：回号が含まれるか確認
-        print(f"    [{target_round}含む: {target_round in text}] [069含む: {'069' in text}]")
-        # デバッグ：069の前後50文字を表示
-        idx = text.find('069')
-        if idx >= 0:
-            print(f"    069前後: {repr(text[max(0,idx-50):idx+50])}")
-        # デバッグ：最初のテーブルの最初の3行を表示
-        tables = soup.find_all('table')
-        print(f"    テーブル数: {len(tables)}")
-        if tables:
-            rows = tables[0].find_all('tr')[:3]
-            for row in rows:
-                cells = row.find_all(['td','th'])
-                print(f"    行: {[c.get_text(strip=True)[:15] for c in cells[:6]]}")
-        # テーブルから探す
+
+        # テーブルから「ナンバーズ3」行の当選番号を取得
+        number = None
         for row in soup.find_all('tr'):
-            cells = row.find_all('td')
-            texts = [re.sub(r'[^\d]', '', c.get_text(strip=True)) for c in cells]
-            if target_round in texts:
-                idx = texts.index(target_round)
-                for t in texts[idx+1:idx+4]:
-                    if len(t) == 3:
-                        return t
-        # テキストから「第XXXX回」パターン
-        m = re.search(rf'第\s*{target_round}\s*回[^\d]{{0,30}}?(\d{{3}})(?!\d)', text)
-        if m:
-            return m.group(1)
+            cells = row.find_all(['td', 'th'])
+            texts = [c.get_text(strip=True) for c in cells]
+            # 「ナンバーズ3」と3桁数字のペアを探す
+            if len(texts) >= 2 and 'ナンバーズ3' in texts[0]:
+                candidate = re.sub(r'[^\d]', '', texts[1])
+                if len(candidate) == 3:
+                    number = candidate
+                    break
+
+        if not number:
+            return None
+
+        # 回号を確認：テキストから最新の回号を探す
+        round_matches = re.findall(r'第\s*(\d{4,5})\s*回', text)
+        if round_matches:
+            latest_round = round_matches[0]
+            print(f"    取得した回号: 第{latest_round}回 / 番号: {number}")
+            if latest_round == target_round:
+                return number
+            else:
+                print(f"    ※回号不一致（取得:{latest_round} / 期待:{target_round}）- 本日未掲載の可能性")
+                return None
+
+        # 回号が見つからない場合はhistry.jsonの最新回号と照合
+        print(f"    回号不明・番号のみ取得: {number}")
         return None
 
     def parse_ts4(html, target_round):
