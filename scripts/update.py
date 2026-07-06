@@ -56,6 +56,7 @@ def get_latest_numbers(next_round):
         return None
 
     # 試すサイトリスト（上から順に試す）
+    # money-planは予想サイトのため除外
     scrapers = [
         {
             "name": "numbers-renban",
@@ -65,12 +66,7 @@ def get_latest_numbers(next_round):
         {
             "name": "ts4-net",
             "url": "https://ts4-net.com/suuji3-hyo.html",
-            "method": "generic",
-        },
-        {
-            "name": "money-plan",
-            "url": "https://numbers3.money-plan.net/",
-            "method": "generic",
+            "method": "ts4",
         },
         {
             "name": "mk-mode",
@@ -85,8 +81,12 @@ def get_latest_numbers(next_round):
     ]
 
     def parse_renban(html, target_round):
-        """numbers-renban専用パーサー（テーブルから回号と番号のペアを探す）"""
+        """numbers-renban専用パーサー"""
         soup = BeautifulSoup(html, 'html.parser')
+        text = soup.get_text()
+        # デバッグ：回号が含まれるか確認
+        print(f"    [{target_round}含む: {target_round in text}] [069含む: {'069' in text}]")
+        # テーブルから探す
         for row in soup.find_all('tr'):
             cells = row.find_all('td')
             texts = [re.sub(r'[^\d]', '', c.get_text(strip=True)) for c in cells]
@@ -95,6 +95,35 @@ def get_latest_numbers(next_round):
                 for t in texts[idx+1:idx+4]:
                     if len(t) == 3:
                         return t
+        # テキストから「第XXXX回」パターン
+        m = re.search(rf'第\s*{target_round}\s*回[^\d]{{0,30}}?(\d{{3}})(?!\d)', text)
+        if m:
+            return m.group(1)
+        return None
+
+    def parse_ts4(html, target_round):
+        """ts4-net専用パーサー"""
+        soup = BeautifulSoup(html, 'html.parser')
+        text = soup.get_text()
+        print(f"    [{target_round}含む: {target_round in text}] [069含む: {'069' in text}]")
+        # テーブルの全行を確認
+        for row in soup.find_all('tr'):
+            cells = row.find_all(['td','th'])
+            texts = [re.sub(r'[^\d]', '', c.get_text(strip=True)) for c in cells]
+            if target_round in texts:
+                idx = texts.index(target_round)
+                for t in texts[idx+1:idx+4]:
+                    if len(t) == 3:
+                        return t
+        # テキストパターン
+        patterns = [
+            rf'第\s*{target_round}\s*回[^\d]{{0,30}}?(\d{{3}})(?!\d)',
+            rf'{target_round}[^\d]{{0,20}}?(\d{{3}})(?!\d)',
+        ]
+        for pat in patterns:
+            m = re.search(pat, text)
+            if m:
+                return m.group(1)
         return None
 
     for scraper in scrapers:
@@ -107,6 +136,8 @@ def get_latest_numbers(next_round):
 
             if scraper['method'] == 'renban':
                 number = parse_renban(r.text, next_round_str)
+            elif scraper['method'] == 'ts4':
+                number = parse_ts4(r.text, next_round_str)
             else:
                 number = search_in_html(r.text, next_round_str)
 
