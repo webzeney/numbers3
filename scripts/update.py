@@ -86,6 +86,18 @@ def get_latest_numbers(next_round):
         text = soup.get_text()
         # デバッグ：回号が含まれるか確認
         print(f"    [{target_round}含む: {target_round in text}] [069含む: {'069' in text}]")
+        # デバッグ：069の前後50文字を表示
+        idx = text.find('069')
+        if idx >= 0:
+            print(f"    069前後: {repr(text[max(0,idx-50):idx+50])}")
+        # デバッグ：最初のテーブルの最初の3行を表示
+        tables = soup.find_all('table')
+        print(f"    テーブル数: {len(tables)}")
+        if tables:
+            rows = tables[0].find_all('tr')[:3]
+            for row in rows:
+                cells = row.find_all(['td','th'])
+                print(f"    行: {[c.get_text(strip=True)[:15] for c in cells[:6]]}")
         # テーブルから探す
         for row in soup.find_all('tr'):
             cells = row.find_all('td')
