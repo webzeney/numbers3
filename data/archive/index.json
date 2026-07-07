@@ -1,5 +1,19 @@
 [
   {
+    "date": "2026-07-08",
+    "round": "7021",
+    "next_round": "7022",
+    "candidates": [
+      "0",
+      "6",
+      "4",
+      "3"
+    ],
+    "result_number": null,
+    "hit": null,
+    "result_detail": ""
+  },
+  {
     "date": "2026-07-07",
     "round": "7020",
     "next_round": "7021",
