@@ -674,23 +674,24 @@ def update_archive_index(archive_data, history):
             "result_detail": ""
         })
 
-    # 過去エントリの当選番号・判定を更新
-    # 判定ロジック：
-    # エントリの「next_round」の当選番号が出たら
-    # candidates（next_round向けの予想数字）と照合する
+    # 過去エントリの当選番号・判定を更新（自己修復機能付き）
+    # 毎回全エントリをhistory.jsonと照合し、
+    # 結果が未記入または食い違っている場合は正しい値で上書きする
+    # （過去に誤データが混入してもhistory.jsonが正しければ自動的に修復される）
     round_map = {h['round']: h['number'] for h in history}
     for item in index:
         # next_roundが未設定の場合は補完
         if 'next_round' not in item:
             item['next_round'] = str(int(item.get('round', '0')) + 1)
 
-        if item.get('result_number') is None:
-            # next_round（予想した回）の当選番号が出ているか確認
-            next_r = item.get('next_round', '')
-            if next_r in round_map:
-                result_num = round_map[next_r]
-                hit, detail = judge_result(item.get('candidates', []), result_num)
-                item['result_number'] = result_num
+        next_r = item.get('next_round', '')
+        if next_r in round_map:
+            correct_num = round_map[next_r]
+            if item.get('result_number') != correct_num:
+                if item.get('result_number') is not None:
+                    print(f"  ⚠ アーカイブ修復: 第{next_r}回 {item.get('result_number')} → {correct_num}")
+                hit, detail = judge_result(item.get('candidates', []), correct_num)
+                item['result_number'] = correct_num
                 item['hit'] = hit
                 item['result_detail'] = detail
 
