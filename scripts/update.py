@@ -57,7 +57,8 @@ def get_latest_numbers(next_round, base_number='000'):
 
     # 試すサイトリスト（上から順に試す）
     # メイン: numbers-renban（動作確認済み）
-    # バックアップ候補: ts4-net / umiduki / tokaikensyo（構造調査中）
+    # バックアップ: ts4-net（回号+番号ペア確認済み）→ umiduki（同型テーブル）
+    # 構造調査続行: tokaikensyo（結果掲載後の構造を確認）
     scrapers = [
         {
             "name": "numbers-renban",
@@ -65,18 +66,18 @@ def get_latest_numbers(next_round, base_number='000'):
             "method": "renban",
         },
         {
+            "name": "ts4-net",
+            "url": "https://ts4-net.com/suuji3-hyo.html",
+            "method": "pair",
+        },
+        {
             "name": "umiduki",
             "url": "https://umiduki.net/numbers3/bangou/",
-            "method": "debug",
+            "method": "pair",
         },
         {
             "name": "tokaikensyo",
             "url": "https://tokaikensyo.com/campaignwinning/numbers3/",
-            "method": "debug",
-        },
-        {
-            "name": "ts4-net",
-            "url": "https://ts4-net.com/suuji3-hyo.html",
             "method": "debug",
         },
     ]
@@ -119,29 +120,28 @@ def get_latest_numbers(next_round, base_number='000'):
         print(f"    回号不明・番号のみ取得: {number}")
         return None
 
-    def parse_ts4(html, target_round):
-        """ts4-net専用パーサー"""
+    def parse_pair_table(html, target_round):
+        """回号+番号ペアテーブル用パーサー（ts4-net・umiduki共通）
+        テーブル行の先頭セルに「7022回」または「7022」、
+        隣接セルに3桁の当選番号がある構造を想定
+        """
         soup = BeautifulSoup(html, 'html.parser')
-        text = soup.get_text()
-        print(f"    [{target_round}含む: {target_round in text}] [069含む: {'069' in text}]")
-        # テーブルの全行を確認
         for row in soup.find_all('tr'):
-            cells = row.find_all(['td','th'])
-            texts = [re.sub(r'[^\d]', '', c.get_text(strip=True)) for c in cells]
-            if target_round in texts:
-                idx = texts.index(target_round)
-                for t in texts[idx+1:idx+4]:
-                    if len(t) == 3:
-                        return t
-        # テキストパターン
-        patterns = [
-            rf'第\s*{target_round}\s*回[^\d]{{0,30}}?(\d{{3}})(?!\d)',
-            rf'{target_round}[^\d]{{0,20}}?(\d{{3}})(?!\d)',
-        ]
-        for pat in patterns:
-            m = re.search(pat, text)
-            if m:
-                return m.group(1)
+            cells = row.find_all(['td', 'th'])
+            if len(cells) < 2:
+                continue
+            c0 = re.sub(r'[^\d]', '', cells[0].get_text(strip=True))
+            if c0 == target_round:
+                # 隣接セルから3桁数字を探す
+                for c in cells[1:4]:
+                    num = re.sub(r'[^\d]', '', c.get_text(strip=True))
+                    if len(num) == 3:
+                        return num
+        # テーブルで見つからない場合はテキストパターン
+        text = soup.get_text()
+        m = re.search(rf'{target_round}\s*回?[^\d]{{0,10}}?(\d{{3}})(?!\d)', text)
+        if m:
+            return m.group(1)
         return None
 
     for scraper in scrapers:
@@ -152,10 +152,14 @@ def get_latest_numbers(next_round, base_number='000'):
             if r.status_code != 200:
                 continue
 
+            # 文字化け対策：エンコーディングを内容から自動判定
+            if r.encoding is None or r.encoding.lower() in ('iso-8859-1', 'ascii'):
+                r.encoding = r.apparent_encoding
+
             if scraper['method'] == 'renban':
                 number = parse_renban(r.text, next_round_str)
-            elif scraper['method'] == 'ts4':
-                number = parse_ts4(r.text, next_round_str)
+            elif scraper['method'] == 'pair':
+                number = parse_pair_table(r.text, next_round_str)
             elif scraper['method'] == 'debug':
                 # 構造調査モード：HTMLの構造をログ出力するだけ（取得はしない）
                 soup_d = BeautifulSoup(r.text, 'html.parser')
@@ -657,9 +661,9 @@ def update_archive_index(archive_data, history):
     except:
         index = []
 
-    # 今日のエントリを追加（重複チェック）
-    existing_dates = {item['date'] for item in index}
-    if archive_data['date'] not in existing_dates:
+    # 今日のエントリを追加（重複チェックはnext_round基準：日をまたぐリトライ実行に対応）
+    existing_next_rounds = {item.get('next_round') for item in index}
+    if archive_data['next_round'] not in existing_next_rounds:
         index.insert(0, {
             "date":        archive_data['date'],
             "round":       archive_data['latest_round'],   # 当選回号
@@ -740,6 +744,20 @@ def main():
             json.dump(valid_history, f, ensure_ascii=False, indent=2)
         history = valid_history
         print(f"新規データなし / 累計: {len(history)}件")
+
+        # 同じ回向けの予想が既にアーカイブに存在する場合はここで終了
+        # （0時・1時のリトライ実行で無駄なAI生成・上書きを防ぐ）
+        try:
+            with open('data/archive/index.json', 'r', encoding='utf-8') as f:
+                _idx = json.load(f)
+            _next_r = str(int(history[0]['round']) + 1)
+            if any(item.get('next_round') == _next_r for item in _idx):
+                print(f"第{_next_r}回向けの予想は生成済みのためスキップします")
+                return
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            print(f"アーカイブ確認エラー（処理は続行）: {e}")
 
     if len(history) < 20:
         print(f"データ不足（{len(history)}件 / 最低20回必要）")
