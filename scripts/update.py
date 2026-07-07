@@ -13,7 +13,7 @@ today = datetime.now(JST).strftime('%Y-%m-%d')
 
 
 # ===== 当選番号の取得（本日分のみ） =====
-def get_latest_numbers(next_round):
+def get_latest_numbers(next_round, base_number='000'):
     """
     history.jsonの次の回号（next_round）の当選番号のみを取得する。
     必要なのは毎日1件だけ。
@@ -56,7 +56,8 @@ def get_latest_numbers(next_round):
         return None
 
     # 試すサイトリスト（上から順に試す）
-    # money-planは予想サイトのため除外
+    # メイン: numbers-renban（動作確認済み）
+    # バックアップ候補: ts4-net / umiduki / tokaikensyo（構造調査中）
     scrapers = [
         {
             "name": "numbers-renban",
@@ -64,19 +65,19 @@ def get_latest_numbers(next_round):
             "method": "renban",
         },
         {
+            "name": "umiduki",
+            "url": "https://umiduki.net/numbers3/bangou/",
+            "method": "debug",
+        },
+        {
+            "name": "tokaikensyo",
+            "url": "https://tokaikensyo.com/campaignwinning/numbers3/",
+            "method": "debug",
+        },
+        {
             "name": "ts4-net",
             "url": "https://ts4-net.com/suuji3-hyo.html",
-            "method": "ts4",
-        },
-        {
-            "name": "mk-mode",
-            "url": "https://www.mk-mode.com/rails/loto/numbers3",
-            "method": "generic",
-        },
-        {
-            "name": "楽天宝くじ(当月)",
-            "url": f"https://takarakuji.rakuten.co.jp/backnumber/numbers3/{datetime.now(JST).strftime('%Y%m')}/",
-            "method": "generic",
+            "method": "debug",
         },
     ]
 
@@ -155,6 +156,23 @@ def get_latest_numbers(next_round):
                 number = parse_renban(r.text, next_round_str)
             elif scraper['method'] == 'ts4':
                 number = parse_ts4(r.text, next_round_str)
+            elif scraper['method'] == 'debug':
+                # 構造調査モード：HTMLの構造をログ出力するだけ（取得はしない）
+                soup_d = BeautifulSoup(r.text, 'html.parser')
+                text_d = soup_d.get_text()
+                print(f"    [構造調査] {next_round_str}含む: {next_round_str in text_d} / 前回番号含む: {base_number in text_d}")
+                idx_d = text_d.find(next_round_str)
+                if idx_d < 0:
+                    idx_d = text_d.find(base_number)
+                if idx_d >= 0:
+                    print(f"    前後80文字: {repr(text_d[max(0,idx_d-40):idx_d+40])}")
+                tables_d = soup_d.find_all('table')
+                print(f"    テーブル数: {len(tables_d)}")
+                if tables_d:
+                    for row_d in tables_d[0].find_all('tr')[:3]:
+                        cells_d = row_d.find_all(['td','th'])
+                        print(f"    行: {[c.get_text(strip=True)[:12] for c in cells_d[:6]]}")
+                number = None
             else:
                 number = search_in_html(r.text, next_round_str)
 
@@ -699,7 +717,7 @@ def main():
     print(f"既存データ最新: 第{base_round}回 / 取得対象: 第{next_round_to_fetch}回")
 
     # 本日分（次の1件）のみ取得
-    latest = get_latest_numbers(next_round_to_fetch)
+    latest = get_latest_numbers(next_round_to_fetch, valid_history[0]['number'] if valid_history else '000')
 
     # 履歴の更新
     existing_rounds = {h['round'] for h in valid_history}
