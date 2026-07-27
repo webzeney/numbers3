@@ -1,5 +1,19 @@
 [
   {
+    "date": "2026-07-28",
+    "round": "7035",
+    "next_round": "7036",
+    "candidates": [
+      "4",
+      "3",
+      "1",
+      "6"
+    ],
+    "result_number": null,
+    "hit": null,
+    "result_detail": ""
+  },
+  {
     "date": "2026-07-25",
     "round": "7034",
     "next_round": "7035",
@@ -9,9 +23,9 @@
       "7",
       "1"
     ],
-    "result_number": null,
-    "hit": null,
-    "result_detail": ""
+    "result_number": "432",
+    "hit": false,
+    "result_detail": "当選番号に予想数字「4」が含まれていた"
   },
   {
     "date": "2026-07-24",
