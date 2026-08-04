@@ -1,5 +1,19 @@
 [
   {
+    "date": "2026-08-05",
+    "round": "7041",
+    "next_round": "7042",
+    "candidates": [
+      "2",
+      "6",
+      "3",
+      "7"
+    ],
+    "result_number": null,
+    "hit": null,
+    "result_detail": ""
+  },
+  {
     "date": "2026-08-04",
     "round": "7040",
     "next_round": "7041",
@@ -9,9 +23,9 @@
       "6",
       "1"
     ],
-    "result_number": null,
-    "hit": null,
-    "result_detail": ""
+    "result_number": "722",
+    "hit": false,
+    "result_detail": "当選番号に予想数字「2」がダブルで含まれていた【ダブル発生】"
   },
   {
     "date": "2026-08-01",
