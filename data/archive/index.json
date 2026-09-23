@@ -1,5 +1,19 @@
 [
   {
+    "date": "2026-09-24",
+    "round": "7073",
+    "next_round": "7074",
+    "candidates": [
+      "9",
+      "2",
+      "5",
+      "8"
+    ],
+    "result_number": null,
+    "hit": null,
+    "result_detail": ""
+  },
+  {
     "date": "2026-09-23",
     "round": "7072",
     "next_round": "7073",
@@ -9,9 +23,9 @@
       "5",
       "0"
     ],
-    "result_number": null,
-    "hit": null,
-    "result_detail": ""
+    "result_number": "188",
+    "hit": false,
+    "result_detail": "当選番号に予想数字「8」がダブルで含まれていた【ダブル発生】"
   },
   {
     "date": "2026-09-22",
