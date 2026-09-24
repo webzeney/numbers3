@@ -1,5 +1,19 @@
 [
   {
+    "date": "2026-09-25",
+    "round": "7074",
+    "next_round": "7075",
+    "candidates": [
+      "8",
+      "6",
+      "7",
+      "9"
+    ],
+    "result_number": null,
+    "hit": null,
+    "result_detail": ""
+  },
+  {
     "date": "2026-09-24",
     "round": "7073",
     "next_round": "7074",
@@ -9,9 +23,9 @@
       "5",
       "8"
     ],
-    "result_number": null,
-    "hit": null,
-    "result_detail": ""
+    "result_number": "766",
+    "hit": false,
+    "result_detail": "予想数字は1つも含まれていなかった"
   },
   {
     "date": "2026-09-23",
