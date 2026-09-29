@@ -48,17 +48,16 @@ jobs:
           esac
 
       - name: 結果をGitHubに保存
-        if: steps.gen.outputs.code == '0'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
-          git diff --quiet && git diff --staged --quiet || \
-            git commit -m "自動更新: 第$(python3 -c "import json;print(json.load(open('data/latest.json'))['target_round'])")回向け"
+          git diff --quiet && git diff --staged --quiet && { echo "変更なし"; exit 0; }
+          git commit -m "自動更新: 第$(python3 -c "import json;print(json.load(open('data/latest.json'))['target_round'])")回向け"
           git push
 
+      # 生成が走らない日(結果待ち・生成済み)もサーバーとリポジトリを一致させる
       - name: ロリポップにFTPアップロード
-        if: steps.gen.outputs.code == '0'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_HOST }}
