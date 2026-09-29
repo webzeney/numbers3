@@ -1,5 +1,5 @@
 # 設定ファイルとスクリプトを外部から見えないようにする
-<FilesMatch "^\.env|\.py$|^base\.csv$">
+<FilesMatch "^\.env|\.py$|^base\.csv$|^NUMBERS3_ALL\.csv$">
   Require all denied
 </FilesMatch>
 <IfModule mod_headers.c>

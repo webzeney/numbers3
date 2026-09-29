@@ -417,7 +417,9 @@ function render(D){
 `;
 
   $('#foot').innerHTML = `ロジック版 ${esc(D.logic_version)} ／ 生成 ${esc(D.generated_at)}<br>
-    ナンバーズ3の当選番号は予測できません。このサイトは候補の提示と統計の可視化のみを行い、当選を保証しません。`;
+    ナンバーズ3の当選番号は予測できません。このサイトは候補の提示と統計の可視化のみを行い、当選を保証しません。<br>
+    当選番号データの取得元: <a class="rlink" href="https://loto-life.net/" rel="noopener">loto-life.net</a> ／
+    <a class="rlink" href="https://www.mk-mode.com/" rel="noopener">mk-mode.com</a>`;
 }
 
 (async () => {

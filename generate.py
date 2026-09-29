@@ -35,13 +35,14 @@ SOURCES_DIR = DATA / "sources"    # 取得元ごとの生データ
 # 取得元。いずれか新しいものを採用し、重なる範囲の当選番号が一致するか照合する。
 # みずほ銀行(公式)は機械的なアクセスを403で拒否するため、中継サイトを使う。
 SOURCES = [
-    {"name": "mk-mode", "format": "mk",
-     "url": "https://www.mk-mode.com/rails/loto/NUMBERS3_ALL.csv"},
+    # 抽選当日19:50頃に公開される(実測)。こちらを主に使う
     {"name": "loto-life", "format": "lotolife",
      "url": "https://loto-life.net/csv/numbers3"},
+    # 翌朝10:15頃の更新。照合用かつloto-lifeが落ちたときの予備
+    {"name": "mk-mode", "format": "mk",
+     "url": "https://www.mk-mode.com/rails/loto/NUMBERS3_ALL.csv"},
 ]
-UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-      "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
 LOGIC_VERSION = "2.1.0-tilted"
 TILT_WEIGHT = 0.2         # 宝島本の手法に該当する数字への傾き。0なら完全な一様ランダム
@@ -118,13 +119,46 @@ def _parse(text: str, fmt: str) -> list[dict]:
 
 
 def _download(src: dict) -> list[dict] | None:
-    req = urllib.request.Request(src["url"], headers={"User-Agent": UA})
+    """取得元からCSVを取る。前回から変わっていなければ再取得しない(304)"""
+    cache = SOURCES_DIR / f"{src['name']}.csv"
+    meta_path = SOURCES_DIR / f"{src['name']}.meta.json"
+    meta = {}
+    if meta_path.exists() and cache.exists():
+        try:
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            meta = {}
+
+    headers = {"User-Agent": UA}
+    if meta.get("last_modified"):
+        headers["If-Modified-Since"] = meta["last_modified"]
+    if meta.get("etag"):
+        headers["If-None-Match"] = meta["etag"]
+
+    req = urllib.request.Request(src["url"], headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=60, context=ssl_ctx()) as r:
             body = r.read()
-    except (urllib.error.URLError, urllib.error.HTTPError) as e:
+            new_meta = {"last_modified": r.headers.get("Last-Modified"),
+                        "etag": r.headers.get("ETag")}
+    except urllib.error.HTTPError as e:
+        if e.code == 304 and cache.exists():       # 変わっていないので手元のものを使う
+            print(f"  {src['name']}: 更新なし(304) → キャッシュを使用")
+            return _parse_bytes(cache.read_bytes(), src)
         print(f"  {src['name']}: 取得失敗 ({e})", file=sys.stderr)
         return None
+    except urllib.error.URLError as e:
+        print(f"  {src['name']}: 取得失敗 ({e})", file=sys.stderr)
+        return None
+    draws = _parse_bytes(body, src)
+    if draws:
+        SOURCES_DIR.mkdir(parents=True, exist_ok=True)
+        cache.write_bytes(body)
+        meta_path.write_text(json.dumps(new_meta, ensure_ascii=False), encoding="utf-8")
+    return draws
+
+
+def _parse_bytes(body: bytes, src: dict) -> list[dict] | None:
     for enc in ("utf-8", "cp932"):
         try:
             text = body.decode(enc)
@@ -138,8 +172,6 @@ def _download(src: dict) -> list[dict] | None:
     if len(draws) < 1000:
         print(f"  {src['name']}: 件数が少なすぎる({len(draws)}件)", file=sys.stderr)
         return None
-    SOURCES_DIR.mkdir(parents=True, exist_ok=True)
-    (SOURCES_DIR / f"{src['name']}.csv").write_bytes(body)
     return draws
 
 
@@ -171,6 +203,8 @@ def fetch_csv() -> list[dict] | None:
     name, best = max(got, key=lambda g: g[1][-1]["round"])
     print(f"  採用: {name}")
     # 共通の形式で保存し直す (以降の処理はこのファイルだけを見る)
+    # このファイルは取得元のデータそのものなので、公開も再配布もしない
+    # (.gitignore と FTPの除外設定で外している)
     DATA.mkdir(parents=True, exist_ok=True)
     with CSV_PATH.open("w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
