@@ -1,0 +1,7 @@
+# 設定ファイルとスクリプトを外部から見えないようにする
+<FilesMatch "^\.env|\.py$|^base\.csv$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>

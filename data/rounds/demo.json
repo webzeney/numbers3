@@ -1,0 +1,147 @@
+{
+ "logic_version": "2.0.0-uniform",
+ "selection": {
+  "method": "210通り(10C4)から一様ランダム",
+  "seed_material": "7081:702:2.0.0-uniform",
+  "hash": "1e389c5a131b63e6c9768f9361dcd42a8efbbd1d1a9787b19bab22a41a05a9e0",
+  "rejections": 0,
+  "combos": 210,
+  "probability_each": 0.004762
+ },
+ "odds": {
+  "miss_all": 21.6,
+  "atleast1": 78.4,
+  "box": 6.4,
+  "expected_covered": 1.2
+ },
+ "tags": {
+  "4": [
+   {
+    "name": "1回ご無沙汰",
+    "desc": "直近1回このデジットは出ていない",
+    "hit_rate": null
+   }
+  ],
+  "5": [
+   {
+    "name": "裏数字",
+    "desc": "前回の当選番号に5を足した数字",
+    "hit_rate": 27.36
+   },
+   {
+    "name": "2回ご無沙汰",
+    "desc": "直近2回このデジットは出ていない",
+    "hit_rate": null
+   }
+  ],
+  "8": [
+   {
+    "name": "スライド",
+    "desc": "前回の当選番号の±1の数字",
+    "hit_rate": 27.12
+   },
+   {
+    "name": "3回ご無沙汰",
+    "desc": "直近3回このデジットは出ていない",
+    "hit_rate": null
+   }
+  ],
+  "9": [
+   {
+    "name": "スライド",
+    "desc": "前回の当選番号の±1の数字",
+    "hit_rate": 27.12
+   },
+   {
+    "name": "合わせ数字",
+    "desc": "前回の桁同士を足した下1桁",
+    "hit_rate": 26.94
+   },
+   {
+    "name": "2回ご無沙汰",
+    "desc": "直近2回このデジットは出ていない",
+    "hit_rate": null
+   }
+  ]
+ },
+ "ai": {
+  "round": 7081,
+  "asked_at": "2026-09-29T19:06:28+09:00",
+  "picks": {
+   "gpt": {
+    "label": "ChatGPT",
+    "status": "ok",
+    "model": "gpt-5.5",
+    "straight": "258",
+    "candidates": [
+     "2",
+     "5",
+     "8",
+     "0"
+    ],
+    "reason": "直近の出現バランスと未出寄りを重視",
+    "raw": "本命3桁: 258\n候補4数字: 2,5,8,0\n理由: 直近の出現バランスと未出寄りを重視",
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
+    }
+   },
+   "claude": {
+    "label": "Claude",
+    "status": "未設定",
+    "detail": "ANTHROPIC_API_KEY が設定されていません"
+   },
+   "gemini": {
+    "label": "Gemini",
+    "status": "ok",
+    "model": "gemini-3.1-flash-lite",
+    "straight": "419",
+    "candidates": [
+     "1",
+     "4",
+     "7",
+     "9"
+    ],
+    "reason": "過去の出現傾向と直近の数字の並びから、低・中・高のバランスを考慮して予測しました。",
+    "raw": "本命3桁: 419\n候補4数字: 1,4,7,9\n理由: 過去の出現傾向と直近の数字の並びから、低・中・高のバランスを考慮して予測しました。",
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
+    }
+   }
+  }
+ },
+ "demo": true,
+ "target_round": 0,
+ "generated_at": "（見本）",
+ "basis": {
+  "round": 0,
+  "date": "（見本）",
+  "number": "000"
+ },
+ "candidates": [
+  "4",
+  "5",
+  "8",
+  "9"
+ ],
+ "result": {
+  "number": "166",
+  "date": "（見本）",
+  "SIMULATED": true
+ },
+ "outcome": {
+  "covered": 0,
+  "digits": [],
+  "all3": false,
+  "label": "候補は1つも含まれなかった（当選の 1・6 はすべて候補外）【ダブル発生】",
+  "detail": {
+   "sum": 13,
+   "pattern": "ダブル",
+   "missed": [
+    "1",
+    "6"
+   ]
+  }
+ }
+}
