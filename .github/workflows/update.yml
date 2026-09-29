@@ -2,41 +2,63 @@ name: ナンバーズ3 自動更新
 
 on:
   schedule:
-    - cron: '0 14 * * 1-5'
+    - cron: '0 15 * * *'      # UTC 15:00 = JST 0:00（本命）
+    - cron: '0 1-3 * * *'     # UTC 01-03 = JST 10:00-12:00（保険）
   workflow_dispatch:
+
+concurrency:
+  group: numbers3-update
+  cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: リポジトリを取得
         uses: actions/checkout@v4
 
       - name: Pythonをセットアップ
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
-      - name: 必要なライブラリをインストール
-        run: |
-          pip install requests beautifulsoup4 anthropic
+      # 追加ライブラリは不要（標準ライブラリのみで動く）
 
-      - name: 更新スクリプトを実行
+      - name: 候補を生成
+        id: gen
         env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TZ: Asia/Tokyo
         run: |
-          python scripts/update.py
+          set +e
+          python3 generate.py --if-new
+          CODE=$?
+          set -e
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"
+          case $CODE in
+            0) echo "::notice::候補を生成した" ;;
+            2) echo "::warning::データ未更新または異常のため生成を見送った" ;;
+            3) echo "::notice::すでに生成済み" ;;
+            *) echo "::error::想定外の終了コード $CODE"; exit $CODE ;;
+          esac
 
       - name: 結果をGitHubに保存
+        if: steps.gen.outputs.code == '0'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
-          git diff --quiet && git diff --staged --quiet || git commit -m "自動更新: $(date '+%Y-%m-%d %H:%M')"
+          git diff --quiet && git diff --staged --quiet || \
+            git commit -m "自動更新: 第$(python3 -c "import json;print(json.load(open('data/latest.json'))['target_round'])")回向け"
           git push
 
       - name: ロリポップにFTPアップロード
+        if: steps.gen.outputs.code == '0'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -47,6 +69,7 @@ jobs:
           exclude: |
             **/.git*
             **/.git*/**
-            **/scripts/**
-            **/.github/**
-            **/node_modules/**
+            **/tools/**
+            **/__pycache__/**
+            **/data/sources/**
+            **/.env
