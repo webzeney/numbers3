@@ -74,17 +74,80 @@ p{margin:0 0 12px; font-size:13px; color:var(--text2)}
 .scroll::-webkit-scrollbar{height:6px}
 .scroll::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px}
 .hint{display:none}
+@media (max-width:560px){ .hint{display:block; font-size:10px; color:var(--text3); margin:0 0 6px} }
+table{border-collapse:collapse; width:100%; font-size:12px; min-width:460px}
+th,td{padding:8px 10px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap}
+th{font-weight:600; color:var(--text3); font-size:11px; text-align:right}
+th:first-child,td:first-child{text-align:left}
+tbody tr:last-child td{border-bottom:none}
+td.mono,th.mono{font-family:var(--mono)}
+.ok{color:var(--ok)} .ng{color:var(--ng)} .dim{color:var(--text3)}
+
+/* 分布バー */
+.bars{display:flex; flex-direction:column; gap:5px}
+.bar{display:grid; grid-template-columns:18px 1fr 72px; gap:8px; align-items:center; font-size:11px}
+.bar .t{height:16px; background:var(--surface2); border-radius:4px; overflow:hidden; position:relative}
+.bar .f{height:100%; background:var(--accent); opacity:.75}
+.bar .e{position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--text3)}
+.bars.dev .t{position:relative}
+.bars.dev .f{position:absolute; top:0; bottom:0; border-radius:3px; opacity:.9}
+.bars.dev .zero{position:absolute; left:50%; top:-3px; bottom:-3px; width:2px;
+  background:var(--text3); opacity:.75; transform:translateX(-1px)}
+.bar .n .up{color:var(--accent)} .bar .n .down{color:var(--warn)}
+.bar .n{font-family:var(--mono); color:var(--text2); text-align:right}
+.bar .l{font-family:var(--mono); color:var(--text2)}
+
+/* 透明性 */
+dl.kv{margin:0; display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 14px; font-size:12px}
+dl.kv dt{color:var(--text3); white-space:nowrap}
+dl.kv dd{margin:0; font-family:var(--mono); color:var(--text);
+  word-break:break-all; overflow-wrap:anywhere; min-width:0}
+
+.stale.awaiting{border-color:var(--accent)}
+.stale.awaiting strong{color:var(--accent)}
+.stale{background:var(--surface); border:1px solid var(--ng); border-left-width:3px;
+  border-radius:0 10px 10px 0; padding:14px 16px; margin-bottom:16px; font-size:13px}
+.stale strong{color:var(--ng)}
+.stale .when{font:11px/1.6 var(--mono); color:var(--text3); display:block; margin-top:6px}
+.back{display:inline-block; font-size:12px; color:var(--accent); text-decoration:none; margin-bottom:14px}
+.back:hover{text-decoration:underline}
+.result{display:flex; align-items:center; gap:14px; flex-wrap:wrap; background:var(--surface2);
+  border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:4px 0 14px}
+.result .big{font:700 34px/1 var(--mono); letter-spacing:.06em}
+.result .txt{font-size:13px; color:var(--text2)}
+.result.hit{border-color:var(--ok)} .result.miss{border-color:var(--ng)}
+.result.hit .big{color:var(--ok)} .result.miss .big{color:var(--ng)}
+.pending{font-size:13px; color:var(--text3)}
+a.rlink{color:var(--accent); text-decoration:none; font-family:var(--mono)}
+a.rlink:hover{text-decoration:underline}
+.ai{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px}
+.ai-card{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px}
+.ai-card .who{font-size:12px; font-weight:600; display:flex; justify-content:space-between; align-items:baseline; gap:6px}
+.ai-card .who em{font:400 10px/1 var(--mono); color:var(--text3); font-style:normal}
+.ai-card .st{font:700 30px/1.2 var(--mono); letter-spacing:.04em; margin:8px 0 2px}
+.ai-card .cd{font:12px/1.5 var(--mono); color:var(--text2)}
+.ai-card .rs{font-size:11px; color:var(--text3); margin-top:8px; line-height:1.6}
+.ai-card .rec{font-size:11px; color:var(--text2); margin-top:10px; padding-top:8px; border-top:1px solid var(--line)}
+.ai-card.off .st{font-size:15px; color:var(--text3); font-weight:400}
+.callout{
+  border-left:3px solid var(--accent); background:var(--surface2);
+  padding:12px 14px; border-radius:0 8px 8px 0; font-size:12px; color:var(--text2);
+}
+.callout strong{color:var(--text)}
+footer{margin-top:28px; font-size:11px; color:var(--text3); text-align:center}
+.err{color:var(--ng); font-size:13px}
+.load{color:var(--text3); font-size:13px}
 @media (max-width:560px){
   .wrap{padding:18px 13px 48px}
   section{padding:16px 13px; border-radius:10px}
-  h1{font-size:21px}
-  .lede{font-size:13.5px}
-  p{font-size:14px; line-height:1.8}
-  .note{font-size:12.5px}
-  h2{font-size:15px}
-  h3{font-size:14px}
+  h1{font-size:22px}
+  .lede{font-size:14.5px}
+  p{font-size:15px; line-height:1.85}
+  .note{font-size:13.5px; line-height:1.75}
+  h2{font-size:16px}
+  h3{font-size:15px}
 
-  /* 候補4数字: 4列を維持したまま、数字とタグを大きく */
+  /* 候補4数字: 4列を維持したまま数字とタグを大きく */
   .picks{gap:6px}
   .pick{padding:12px 4px; border-radius:8px}
   .pick .d{font-size:32px}
@@ -97,45 +160,44 @@ p{margin:0 0 12px; font-size:13px; color:var(--text2)}
   /* 確率カード */
   .odds{grid-template-columns:repeat(2,1fr); gap:9px}
   .odd{padding:12px 11px}
-  .odd .v{font-size:21px}
-  .odd .k{font-size:12px; line-height:1.55; margin-top:5px}
+  .odd .v{font-size:23px}
+  .odd .k{font-size:13px; line-height:1.6; margin-top:6px}
 
   /* 選出記録: 項目名が上、値が下 */
   dl.kv{grid-template-columns:1fr; gap:0}
-  dl.kv dt{margin-top:10px; font-size:12.5px}
-  dl.kv dd{font-size:12.5px; line-height:1.6}
+  dl.kv dt{margin-top:12px; font-size:13.5px}
+  dl.kv dd{font-size:13.5px; line-height:1.65}
 
   /* 分布バー */
-  .bar{grid-template-columns:16px 1fr 78px; gap:7px; font-size:12px}
-  .bar .t{height:16px}
+  .bar{grid-template-columns:18px 1fr 92px; gap:8px; font-size:13px}
+  .bar .t{height:18px}
 
   /* 表 */
-  table{min-width:440px; font-size:13px}
-  th,td{padding:9px 9px}
-  th{font-size:12px}
-  .hint{font-size:11.5px}
+  table{min-width:460px; font-size:14px}
+  th,td{padding:10px}
+  th{font-size:13px}
+  .hint{font-size:12.5px}
 
   /* AI・結果表示 */
   .ai{gap:9px}
   .ai-card{padding:14px}
-  .ai-card .who{font-size:13.5px}
+  .ai-card .who{font-size:14.5px}
   .ai-card .st{font-size:31px}
-  .ai-card .cd{font-size:13px}
-  .ai-card .rs{font-size:12.5px}
-  .ai-card .rec{font-size:12.5px}
+  .ai-card .cd{font-size:14px}
+  .ai-card .rs{font-size:13.5px}
+  .ai-card .rec{font-size:13.5px}
   .result{gap:12px; padding:14px}
   .result .big{font-size:32px}
-  .result .txt{font-size:13.5px}
-  .callout{font-size:13px; padding:13px 14px; line-height:1.8}
-  .stamp{font-size:11.5px; gap:3px 12px}
-  footer{font-size:12px; line-height:1.7}
+  .result .txt{font-size:14.5px}
+  .callout{font-size:14px; padding:14px; line-height:1.85}
+  .stamp{font-size:12.5px; gap:4px 12px}
+  footer{font-size:13px; line-height:1.75}
 }
 
-/* 特に狭い端末ではタグだけ少し詰める */
+/* 特に狭い端末ではタグだけ詰める */
 @media (max-width:360px){
   .pick .d{font-size:29px}
-  .pick .tg span{font-size:9.5px; padding:2px 3px}
-}
+  .pick .tg span{font-size:9.5px; padding:2px 1px}
 }
 </style>
 </head>
@@ -299,17 +361,22 @@ function renderTagPoints(pts, chosen){
   }).join('') + '</div>';
 }
 
-function renderDist(counts, expected, total){
-  const max = Math.max(...Object.values(counts));
-  return Object.keys(counts).map(d => {
-    const c = counts[d], w = (c / max * 100).toFixed(1), e = (expected / max * 100).toFixed(1);
-    const diff = c - expected;
+function renderDist(counts, expected){
+  const keys = Object.keys(counts);
+  const maxAbs = Math.max(...keys.map(d => Math.abs(counts[d] - expected)), 1);
+  return `<div class="bars dev">` + keys.map(d => {
+    const c = counts[d], diff = c - expected;
+    const pct = Math.abs(diff) / maxAbs * 50;
+    const style = diff >= 0
+      ? `left:50%; width:${pct}%; background:var(--accent)`
+      : `left:${50 - pct}%; width:${pct}%; background:var(--warn)`;
     return `<div class="bar">
       <div class="l">${d}</div>
-      <div class="t"><div class="f" style="width:${w}%"></div><div class="e" style="left:${e}%"></div></div>
-      <div class="n">${c.toLocaleString()} <span class="dim">${diff >= 0 ? '+' : ''}${Math.round(diff)}</span></div>
+      <div class="t"><div class="zero"></div><div class="f" style="${style}"></div></div>
+      <div class="n">${c.toLocaleString()} <span class="${diff >= 0 ? 'up' : 'down'}">${diff >= 0 ? '+' : ''}${Math.round(diff)}</span></div>
     </div>`;
-  }).join('');
+  }).join('') + `</div>
+  <p class="note">中央の線が期待値 ${Math.round(expected).toLocaleString()}回。右に伸びるほど多く出ていて、左に伸びるほど出ていない数字です。最大でも${Math.round(maxAbs)}回の差しかなく、統計的には誤差の範囲です。</p>`;
 }
 
 function renderRules(rules){
@@ -405,8 +472,8 @@ function render(D){
     <div class="odd"><div class="v ${s.chi2_all < s.chi2_limit_5 ? 'ok' : 'ng'}">${s.chi2_all}</div><div class="k">全体のχ²（限界${s.chi2_limit_5}）</div></div>
     ${s.chi2_pos.map((c, i) => `<div class="odd"><div class="v ${c < s.chi2_limit_5 ? 'ok' : 'ng'}">${c}</div><div class="k">${['百','十','一'][i]}の位のχ²</div></div>`).join('')}
   </div>
-  <h3>数字の出現回数（縦線が期待値 ${s.digit_expected.toLocaleString()}回）</h3>
-  <div class="bars">${renderDist(s.digit_counts, s.digit_expected, s.draws * 3)}</div>
+  <h3>数字の出現回数（期待値からのズレ）</h3>
+  <div class="bars">${renderDist(s.digit_counts, s.digit_expected)}</div>
   <h3>湿度の影響</h3>
   <p>高湿度期（6〜9月・${s.season.humid_draws.toLocaleString()}回）と低湿度期（12〜3月・${s.season.dry_draws.toLocaleString()}回）で出現分布を比較しました。同質性のχ²は <strong>${s.season.homogeneity_chi2}</strong> で、5%限界${s.chi2_limit_5}を下回ります。<strong>季節による差は検出されません</strong>。</p>
   <p class="note">ダブル出現率 ${s.double_rate}%（理論27%） / トリプル ${s.triple_rate}%（理論1%） / 3桁の和の平均 ${s.sum_mean}（理論13.5）</p>
