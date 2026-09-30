@@ -1,5 +1,18 @@
 [
  {
+  "round": 7083,
+  "generated_at": "2026-10-01",
+  "candidates": [
+   "0",
+   "2",
+   "5",
+   "8"
+  ],
+  "result": null,
+  "covered": null,
+  "label": "抽選前"
+ },
+ {
   "round": 7082,
   "generated_at": "2026-09-29",
   "candidates": [
@@ -8,8 +21,8 @@
    "3",
    "5"
   ],
-  "result": null,
-  "covered": null,
-  "label": "抽選前"
+  "result": "518",
+  "covered": 2,
+  "label": "当選番号に候補の「1」と「5」が含まれていた"
  }
 ]
