@@ -30,43 +30,43 @@ body{
   font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
   line-height:1.75; -webkit-text-size-adjust:100%;
 }
-.wrap{max-width:860px; margin:0 auto; padding:28px 20px 72px}
+.wrap{max-width:1180px; margin:0 auto; padding:34px 28px 80px}
 header{margin-bottom:28px}
-.eyebrow{font-size:11px; letter-spacing:.14em; color:var(--text3); text-transform:uppercase}
-h1{font-size:22px; margin:6px 0 4px; letter-spacing:.02em}
-.lede{font-size:13px; color:var(--text2); margin:0}
-.stamp{margin-top:10px; font:11px/1.7 var(--mono); color:var(--text3);
+.eyebrow{font-size:12px; letter-spacing:.16em; color:var(--text3); text-transform:uppercase}
+h1{font-size:27px; margin:8px 0 6px; letter-spacing:.02em}
+.lede{font-size:15px; color:var(--text2); margin:0}
+.stamp{margin-top:12px; font:13px/1.8 var(--mono); color:var(--text3);
   display:flex; flex-wrap:wrap; gap:4px 14px}
 .stamp b{font-weight:600; color:var(--text2)}
 section{
-  background:var(--surface); border:1px solid var(--line); border-radius:12px;
-  padding:20px; margin-bottom:16px;
+  background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:26px 28px; margin-bottom:18px;
 }
-h2{font-size:14px; margin:0 0 14px; display:flex; align-items:baseline; gap:8px}
-h2 .num{font:600 11px/1 var(--mono); color:var(--text3); letter-spacing:.1em}
-h3{font-size:13px; margin:22px 0 10px; color:var(--text2)}
-p{margin:0 0 12px; font-size:13px; color:var(--text2)}
-.note{font-size:12px; color:var(--text3)}
+h2{font-size:18px; margin:0 0 16px; display:flex; align-items:baseline; gap:10px}
+h2 .num{font:600 13px/1 var(--mono); color:var(--text3); letter-spacing:.1em}
+h3{font-size:16px; margin:26px 0 12px; color:var(--text2)}
+p{margin:0 0 14px; font-size:15px; color:var(--text2); max-width:80ch}
+.note{font-size:13.5px; color:var(--text3); line-height:1.8}
 
 /* 候補数字 */
 .picks{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:4px 0 18px}
 .pick{
   background:var(--surface2); border:1px solid var(--line);
-  border-radius:10px; padding:14px 8px; text-align:center;
+  border-radius:12px; padding:22px 12px; text-align:center;
 }
-.pick .d{font:700 40px/1 var(--mono); letter-spacing:-.02em}
+.pick .d{font:700 54px/1 var(--mono); letter-spacing:-.02em}
 .pick .tg{margin-top:10px; display:flex; flex-direction:column; gap:4px}
 .pick .tg span{
-  font-size:10px; color:var(--text2); background:var(--bg);
+  font-size:12.5px; color:var(--text2); background:var(--bg);
   border:1px solid var(--line); border-radius:99px; padding:2px 6px; white-space:nowrap;
 }
 .round{font:600 12px/1 var(--mono); color:var(--accent)}
 
 /* 確率 */
-.odds{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px}
-.odd{background:var(--surface2); border:1px solid var(--line); border-radius:9px; padding:12px}
-.odd .v{font:700 20px/1.2 var(--mono)}
-.odd .k{font-size:11px; color:var(--text3); margin-top:4px}
+.odds{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px}
+.odd{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:16px 18px}
+.odd .v{font:700 27px/1.2 var(--mono)}
+.odd .k{font-size:13px; color:var(--text3); margin-top:6px; line-height:1.6}
 .odd.miss .v{color:var(--ng)}
 
 /* テーブル */
@@ -75,18 +75,18 @@ p{margin:0 0 12px; font-size:13px; color:var(--text2)}
 .scroll::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px}
 .hint{display:none}
 @media (max-width:560px){ .hint{display:block; font-size:10px; color:var(--text3); margin:0 0 6px} }
-table{border-collapse:collapse; width:100%; font-size:12px; min-width:460px}
-th,td{padding:8px 10px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap}
-th{font-weight:600; color:var(--text3); font-size:11px; text-align:right}
+table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:460px}
+th,td{padding:11px 14px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap}
+th{font-weight:600; color:var(--text3); font-size:13px; text-align:right}
 th:first-child,td:first-child{text-align:left}
 tbody tr:last-child td{border-bottom:none}
 td.mono,th.mono{font-family:var(--mono)}
 .ok{color:var(--ok)} .ng{color:var(--ng)} .dim{color:var(--text3)}
 
 /* 分布バー */
-.bars{display:flex; flex-direction:column; gap:5px}
-.bar{display:grid; grid-template-columns:18px 1fr 72px; gap:8px; align-items:center; font-size:11px}
-.bar .t{height:16px; background:var(--surface2); border-radius:4px; overflow:hidden; position:relative}
+.bars{display:flex; flex-direction:column; gap:7px}
+.bar{display:grid; grid-template-columns:24px 1fr 130px; gap:12px; align-items:center; font-size:14px}
+.bar .t{height:22px; background:var(--surface2); border-radius:5px; overflow:hidden; position:relative}
 .bar .f{height:100%; background:var(--accent); opacity:.75}
 .bar .e{position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--text3)}
 .bars.dev .t{position:relative}
@@ -98,7 +98,7 @@ td.mono,th.mono{font-family:var(--mono)}
 .bar .l{font-family:var(--mono); color:var(--text2)}
 
 /* 透明性 */
-dl.kv{margin:0; display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 14px; font-size:12px}
+dl.kv{margin:0; display:grid; grid-template-columns:auto minmax(0,1fr); gap:9px 20px; font-size:14px}
 dl.kv dt{color:var(--text3); white-space:nowrap}
 dl.kv dd{margin:0; font-family:var(--mono); color:var(--text);
   word-break:break-all; overflow-wrap:anywhere; min-width:0}
@@ -113,31 +113,33 @@ dl.kv dd{margin:0; font-family:var(--mono); color:var(--text);
 .back:hover{text-decoration:underline}
 .result{display:flex; align-items:center; gap:14px; flex-wrap:wrap; background:var(--surface2);
   border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:4px 0 14px}
-.result .big{font:700 34px/1 var(--mono); letter-spacing:.06em}
-.result .txt{font-size:13px; color:var(--text2)}
+.result .big{font:700 44px/1 var(--mono); letter-spacing:.06em}
+.result .txt{font-size:15px; color:var(--text2); line-height:1.75}
 .result.hit{border-color:var(--ok)} .result.miss{border-color:var(--ng)}
 .result.hit .big{color:var(--ok)} .result.miss .big{color:var(--ng)}
 .pending{font-size:13px; color:var(--text3)}
 a.rlink{color:var(--accent); text-decoration:none; font-family:var(--mono)}
 a.rlink:hover{text-decoration:underline}
-.ai{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px}
-.ai-card{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px}
-.ai-card .who{font-size:12px; font-weight:600; display:flex; justify-content:space-between; align-items:baseline; gap:6px}
+.ai{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px}
+.ai-card{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:20px}
+.ai-card .who{font-size:15px; font-weight:600; display:flex; justify-content:space-between; align-items:baseline; gap:6px}
 .ai-card .who em{font:400 10px/1 var(--mono); color:var(--text3); font-style:normal}
-.ai-card .st{font:700 30px/1.2 var(--mono); letter-spacing:.04em; margin:8px 0 2px}
-.ai-card .cd{font:12px/1.5 var(--mono); color:var(--text2)}
-.ai-card .rs{font-size:11px; color:var(--text3); margin-top:8px; line-height:1.6}
-.ai-card .rec{font-size:11px; color:var(--text2); margin-top:10px; padding-top:8px; border-top:1px solid var(--line)}
+.ai-card .st{font:700 40px/1.2 var(--mono); letter-spacing:.04em; margin:12px 0 4px}
+.ai-card .cd{font:14.5px/1.6 var(--mono); color:var(--text2)}
+.ai-card .rs{font-size:13.5px; color:var(--text3); margin-top:10px; line-height:1.7}
+.ai-card .rec{font-size:13.5px; color:var(--text2); margin-top:12px; padding-top:10px; border-top:1px solid var(--line)}
 .ai-card.off .st{font-size:15px; color:var(--text3); font-weight:400}
 .callout{
-  border-left:3px solid var(--accent); background:var(--surface2);
-  padding:12px 14px; border-radius:0 8px 8px 0; font-size:12px; color:var(--text2);
+  border-left:4px solid var(--accent); background:var(--surface2);
+  padding:16px 20px; border-radius:0 10px 10px 0; font-size:14.5px; color:var(--text2);
+  line-height:1.85; max-width:92ch;
 }
 .callout strong{color:var(--text)}
-footer{margin-top:28px; font-size:11px; color:var(--text3); text-align:center}
+footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; line-height:1.8}
 .err{color:var(--ng); font-size:13px}
 .load{color:var(--text3); font-size:13px}
 @media (max-width:560px){
+  p, .callout{max-width:none}
   .wrap{padding:18px 13px 48px}
   section{padding:16px 13px; border-radius:10px}
   h1{font-size:22px}
