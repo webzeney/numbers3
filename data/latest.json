@@ -1,42 +1,42 @@
 {
  "logic_version": "2.1.0-tilted",
- "generated_at": "2026-10-01T04:46:11+09:00",
- "target_round": 7083,
+ "generated_at": "2026-10-02T05:03:32+09:00",
+ "target_round": 7084,
  "candidates": [
-  "0",
-  "2",
+  "1",
+  "3",
   "5",
-  "8"
+  "9"
  ],
  "basis": {
-  "round": 7082,
-  "date": "2026-09-30",
-  "number": "518"
+  "round": 7083,
+  "date": "2026-10-01",
+  "number": "606"
  },
  "selection": {
   "method": "210通り(10C4)から抽選。宝島本の手法に該当する数字を多く含む組をexp(0.2×該当点)の比率でやや選ばれやすくしている",
-  "seed_material": "7083:518:2.1.0-tilted",
-  "hash": "32aa9e1ead37b00752eca098c9faf0bfc569f111f6fc99e808d85bdd03e05273",
+  "seed_material": "7084:606:2.1.0-tilted",
+  "hash": "8de8d1ef57833027ee4abdc8aa0d23af79d9738b5e64a9674f5521b35633bfb6",
   "combos": 210,
   "tilt_weight": 0.2,
-  "probability": 0.003805,
+  "probability": 0.005633,
   "probability_uniform": 0.004762,
-  "ratio_to_uniform": 0.8,
+  "ratio_to_uniform": 1.18,
   "spread": {
-   "max": 1.78,
-   "min": 0.65
+   "max": 1.76,
+   "min": 0.53
   },
   "tag_points": {
-   "0": 2,
-   "1": 1,
+   "0": 1,
+   "1": 2,
    "2": 1,
-   "3": 2,
-   "4": 1,
-   "5": 1,
-   "6": 3,
+   "3": 0,
+   "4": 0,
+   "5": 2,
+   "6": 2,
    "7": 1,
-   "8": 1,
-   "9": 2
+   "8": 0,
+   "9": 1
   }
  },
  "odds": {
@@ -46,7 +46,7 @@
   "expected_covered": 1.2
  },
  "tags": {
-  "0": [
+  "1": [
    {
     "name": "スライド",
     "desc": "前回の当選番号の±1の数字",
@@ -63,11 +63,23 @@
     "hit_rate": null
    }
   ],
-  "2": [
+  "3": [
+   {
+    "name": "2回ご無沙汰",
+    "desc": "直近2回このデジットは出ていない",
+    "hit_rate": null
+   }
+  ],
+  "5": [
    {
     "name": "スライド",
     "desc": "前回の当選番号の±1の数字",
     "hit_rate": 27.12
+   },
+   {
+    "name": "裏数字",
+    "desc": "前回の当選番号に5を足した数字",
+    "hit_rate": 27.36
    },
    {
     "name": "1回ご無沙汰",
@@ -75,55 +87,43 @@
     "hit_rate": null
    }
   ],
-  "5": [
+  "9": [
    {
-    "name": "ひっぱり",
-    "desc": "前回の当選番号に含まれていた数字",
-    "hit_rate": 27.26
+    "name": "スライド",
+    "desc": "前回の当選番号の±1の数字",
+    "hit_rate": 27.12
    },
    {
-    "name": "前回登場",
-    "desc": "前回の当選番号に含まれていた",
-    "hit_rate": null
-   }
-  ],
-  "8": [
-   {
-    "name": "ひっぱり",
-    "desc": "前回の当選番号に含まれていた数字",
-    "hit_rate": 27.26
-   },
-   {
-    "name": "前回登場",
-    "desc": "前回の当選番号に含まれていた",
+    "name": "5回ご無沙汰",
+    "desc": "直近5回このデジットは出ていない",
     "hit_rate": null
    }
   ]
  },
  "stats": {
-  "draws": 7082,
+  "draws": 7083,
   "span": [
    "1994-10-07",
-   "2026-09-30"
+   "2026-10-01"
   ],
   "digit_counts": {
-   "0": 2135,
+   "0": 2136,
    "1": 2112,
    "2": 2134,
    "3": 2146,
    "4": 2120,
    "5": 2013,
-   "6": 2100,
+   "6": 2102,
    "7": 2099,
    "8": 2162,
    "9": 2225
   },
-  "digit_expected": 2124.6,
-  "chi2_all": 12.25,
+  "digit_expected": 2124.9,
+  "chi2_all": 12.21,
   "chi2_pos": [
-   13.73,
-   6.31,
-   7.65
+   13.83,
+   6.37,
+   7.57
   ],
   "chi2_limit_5": 16.92,
   "chi2_limit_1": 21.67,
@@ -135,13 +135,13 @@
     "3": 711,
     "4": 713,
     "5": 637,
-    "6": 742,
+    "6": 743,
     "7": 682,
     "8": 724,
     "9": 755
    },
    {
-    "0": 731,
+    "0": 732,
     "1": 696,
     "2": 698,
     "3": 745,
@@ -159,7 +159,7 @@
     "3": 690,
     "4": 690,
     "5": 684,
-    "6": 678,
+    "6": 679,
     "7": 711,
     "8": 754,
     "9": 737
@@ -168,26 +168,26 @@
   "rules": [
    {
     "name": "ひっぱり",
-    "rate": 27.26,
+    "rate": 27.25,
     "base": 27.1,
-    "z": 0.49,
-    "n": 19187,
+    "z": 0.48,
+    "n": 19190,
     "verdict": "有意差なし"
    },
    {
     "name": "スライド",
-    "rate": 27.11,
+    "rate": 27.12,
     "base": 27.1,
-    "z": 0.06,
-    "n": 38374,
+    "z": 0.07,
+    "n": 38380,
     "verdict": "有意差なし"
    },
    {
     "name": "裏数字",
     "rate": 27.37,
     "base": 27.1,
-    "z": 0.83,
-    "n": 19187,
+    "z": 0.85,
+    "n": 19190,
     "verdict": "有意差なし"
    },
    {
@@ -195,7 +195,7 @@
     "rate": 26.95,
     "base": 27.1,
     "z": -0.48,
-    "n": 19187,
+    "n": 19190,
     "verdict": "有意差なし"
    }
   ],
@@ -204,63 +204,63 @@
    "dry_draws": 2291,
    "homogeneity_chi2": 8.22
   },
-  "double_rate": 27.45,
+  "double_rate": 27.46,
   "triple_rate": 0.79,
   "sum_mean": 13.552
  },
  "stale": null,
  "ai": {
-  "round": 7083,
-  "asked_at": "2026-10-01T04:46:25+09:00",
+  "round": 7084,
+  "asked_at": "2026-10-02T05:03:43+09:00",
   "picks": {
    "gpt": {
     "label": "ChatGPT",
     "status": "ok",
     "model": "gpt-5.5",
-    "straight": "493",
+    "straight": "629",
     "candidates": [
+     "6",
      "2",
-     "3",
-     "4",
-     "9"
+     "9",
+     "0"
     ],
-    "reason": "低出現の4・9に3・2を絡める",
-    "raw": "本命3桁: 493\n候補4数字: 2,3,4,9\n理由: 低出現の4・9に3・2を絡める"
+    "reason": "出現多い6と2に反動狙いの9を加味",
+    "raw": "本命3桁: 629\n候補4数字: 6,2,9,0\n理由: 出現多い6と2に反動狙いの9を加味"
    },
    "claude": {
     "label": "Claude",
     "status": "ok",
     "model": "claude-sonnet-5",
-    "straight": "493",
+    "straight": "439",
     "candidates": [
      "4",
-     "9",
      "3",
-     "7"
+     "9",
+     "1"
     ],
-    "reason": "直近の桁分布から偏りを避け中間帯を選出",
-    "raw": "本命3桁: 493\n候補4数字: 4,9,3,7\n理由: 直近の桁分布から偏りを避け中間帯を選出"
+    "reason": "直近の数字偏りを避け、未出傾向の組み合わせを選択",
+    "raw": "本命3桁: 439\n候補4数字: 4,3,9,1\n理由: 直近の数字偏りを避け、未出傾向の組み合わせを選択"
    },
    "gemini": {
     "label": "Gemini",
     "status": "ok",
     "model": "gemini-3.1-flash-lite",
-    "straight": "472",
+    "straight": "471",
     "candidates": [
      "4",
      "7",
-     "2",
+     "1",
      "9"
     ],
-    "reason": "過去の出現傾向と直近の数字の並びから、出現頻度の低い数字を組み合わせたバランス重視の予想です。",
-    "raw": "本命3桁: 472\n候補4数字: 4,7,2,9\n理由: 過去の出現傾向と直近の数字の並びから、出現頻度の低い数字を組み合わせたバランス重視の予想です。"
+    "reason": "過去の出目から偶数と奇数のバランスを調整し、出現傾向が強い数字を組み合わせました。",
+    "raw": "本命3桁: 471\n候補4数字: 4,7,1,9\n理由: 過去の出目から偶数と奇数のバランスを調整し、出現傾向が強い数字を組み合わせました。"
    }
   }
  },
  "ai_records": {
   "gpt": {
    "label": "ChatGPT",
-   "n": 1,
+   "n": 2,
    "straight": 0,
    "covered": 1,
    "atleast1": 1,
@@ -278,15 +278,28 @@
      ],
      "covered": 1,
      "straight_hit": false
+    },
+    {
+     "round": 7083,
+     "result": "606",
+     "straight": "493",
+     "candidates": [
+      "2",
+      "3",
+      "4",
+      "9"
+     ],
+     "covered": 0,
+     "straight_hit": false
     }
    ],
-   "mean_covered": 1.0,
-   "atleast1_rate": 100.0,
+   "mean_covered": 0.5,
+   "atleast1_rate": 50.0,
    "all3_rate": 0.0
   },
   "claude": {
    "label": "Claude",
-   "n": 1,
+   "n": 2,
    "straight": 0,
    "covered": 1,
    "atleast1": 1,
@@ -304,15 +317,28 @@
      ],
      "covered": 1,
      "straight_hit": false
+    },
+    {
+     "round": 7083,
+     "result": "606",
+     "straight": "493",
+     "candidates": [
+      "4",
+      "9",
+      "3",
+      "7"
+     ],
+     "covered": 0,
+     "straight_hit": false
     }
    ],
-   "mean_covered": 1.0,
-   "atleast1_rate": 100.0,
+   "mean_covered": 0.5,
+   "atleast1_rate": 50.0,
    "all3_rate": 0.0
   },
   "gemini": {
    "label": "Gemini",
-   "n": 1,
+   "n": 2,
    "straight": 0,
    "covered": 2,
    "atleast1": 1,
@@ -330,16 +356,29 @@
      ],
      "covered": 2,
      "straight_hit": false
+    },
+    {
+     "round": 7083,
+     "result": "606",
+     "straight": "472",
+     "candidates": [
+      "4",
+      "7",
+      "2",
+      "9"
+     ],
+     "covered": 0,
+     "straight_hit": false
     }
    ],
-   "mean_covered": 2.0,
-   "atleast1_rate": 100.0,
+   "mean_covered": 1.0,
+   "atleast1_rate": 50.0,
    "all3_rate": 0.0
   }
  },
  "record": {
-  "count": 2,
+  "count": 3,
   "start_round": 7082,
-  "judged": 1
+  "judged": 2
  }
 }
