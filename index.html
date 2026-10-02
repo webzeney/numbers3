@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ナンバーズ3 候補数字</title>
-<meta name="description" content="ナンバーズ3の候補数字を、検証可能な抽選で選出します。全履歴7080回の検定結果も公開しています。">
+<title>ナンバーズ3 ミニ 候補数字</title>
+<meta name="description" content="ナンバーズ3ミニ（下2桁）の候補数字を、検証可能な抽選で選出します。全履歴7000回超の検定結果も公開しています。">
 <style>
 :root{
   --bg:#f6f7f9; --surface:#ffffff; --surface2:#f0f2f5; --line:#e2e5ea;
@@ -127,6 +127,11 @@ a.rlink:hover{text-decoration:underline}
 .ai-card .st{font:700 40px/1.2 var(--mono); letter-spacing:.04em; margin:12px 0 4px}
 .ai-card .cd{font:14.5px/1.6 var(--mono); color:var(--text2)}
 .ai-card .rs{font-size:13.5px; color:var(--text3); margin-top:10px; line-height:1.7}
+.tickets{display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:6px; margin:10px 0 14px}
+.tickets span{font:600 15px/1 var(--mono); text-align:center; padding:9px 0;
+  background:var(--surface2); border:1px solid var(--line); border-radius:7px; letter-spacing:.04em}
+@media (max-width:560px){ .tickets{grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px}
+  .tickets span{font-size:14px; padding:8px 0} }
 .hyp{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px}
 .hyp h4{margin:0 0 6px; font-size:16px}
 .hyp .claim{font-size:14px; color:var(--text2); margin:0 0 12px}
@@ -203,7 +208,12 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   .ai-card .st{font-size:31px}
   .ai-card .cd{font-size:14px}
   .ai-card .rs{font-size:13.5px}
-  .hyp{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px}
+  .tickets{display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:6px; margin:10px 0 14px}
+.tickets span{font:600 15px/1 var(--mono); text-align:center; padding:9px 0;
+  background:var(--surface2); border:1px solid var(--line); border-radius:7px; letter-spacing:.04em}
+@media (max-width:560px){ .tickets{grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px}
+  .tickets span{font-size:14px; padding:8px 0} }
+.hyp{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px}
 .hyp h4{margin:0 0 6px; font-size:16px}
 .hyp .claim{font-size:14px; color:var(--text2); margin:0 0 12px}
 .hyp .prog{height:8px; background:var(--bg); border-radius:4px; overflow:hidden; margin:10px 0 6px}
@@ -239,8 +249,8 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
 <div class="wrap">
 <header>
   <div class="eyebrow">Numbers3 Selection System</div>
-  <h1>ナンバーズ3 候補数字</h1>
-  <p class="lede">候補は検証可能な抽選で選びます。当たりやすさは主張しません。</p>
+  <h1>ナンバーズ3 ミニ 候補数字</h1>
+  <p class="lede">下2桁（ミニ）を狙う候補です。検証可能な抽選で選びます。当たりやすさは主張しません。</p>
   <div class="stamp" id="stamp"></div>
 </header>
 <main id="app"><p class="load">読み込み中…</p></main>
@@ -270,19 +280,19 @@ function renderPicks(D){
 
 function outcomeBox(outcome, result, demo){
   if(!result) return '<p class="pending">この回はまだ抽選前です。</p>';
-  const cls = outcome && outcome.covered ? 'hit' : 'miss';
+  const cls = outcome && (outcome.mini_hit || outcome.covered) ? 'hit' : 'miss';
   const sim = result.SIMULATED
     ? `<div class="callout" style="margin-bottom:10px;border-left-color:var(--warn)"><strong>これは表示例です。</strong>実際の抽選結果ではありません。${demo ? 'ハズレたときの見え方を確認するための架空のデータです。' : '本物の結果が確定すると自動的に置き換わります。'}</div>`
     : '';
   return sim + `<div class="result ${cls}">
     <div class="big">${esc(result.number)}</div>
-    <div class="txt"><strong>${outcome && outcome.covered ? `${outcome.covered}桁が一致` : 'ハズレ'}</strong><br>
+    <div class="txt"><strong>${outcome && outcome.mini_hit ? 'ミニ的中' : (outcome && outcome.covered ? `${outcome.covered}桁が一致（ミニは外れ）` : 'ハズレ')}</strong><br>
       ${esc((outcome && outcome.label) || '')}
       ${outcome && outcome.detail ? `<br><span class="note">当選番号の形: ${esc(outcome.detail.pattern)} ／ 3桁の和: ${outcome.detail.sum}</span>` : ''}
     </div></div>`;
 }
 
-function renderHypotheses(list){
+function renderHypotheses(list, targetRound){
   if(!list.length) return '<p class="note">登録されている仮説はありません。</p>';
   return `<p>バックテストで「当たっているように見える現象」が見つかったとき、<strong>後から都合よく解釈できない形で検証する</strong>ための欄です。条件を先に固定し、登録した回以降の実データだけで判定します。</p>` +
   list.map(h => {
@@ -292,7 +302,7 @@ function renderHypotheses(list){
       <p class="claim">${esc(h.claim)}</p>
       <div class="formula">${esc(h.formula)}</div>
       <div class="odds">
-        <div class="odd"><div class="v">${esc(h.prediction)}</div><div class="k">今回の予測（第${D.target_round}回）</div></div>
+        <div class="odd"><div class="v">${esc(h.prediction)}</div><div class="k">今回の予測（第${targetRound}回）</div></div>
         <div class="odd"><div class="v">${r.hits} / ${r.n}</div><div class="k">的中 / 検証回数（期待 ${r.expected}回）</div></div>
         <div class="odd"><div class="v">${r.p_value === null ? '—' : r.p_value}</div><div class="k">p値（閾値 ${h.threshold_p}）</div></div>
         <div class="odd"><div class="v">${r.progress}%</div><div class="k">${h.min_rounds}回までの進捗</div></div>
@@ -385,8 +395,8 @@ function renderAI(D){
     return `<div class="ai-card">
       <div class="who">${esc(p.label)}<em>${esc(p.version || p.model || '')}</em></div>
       ${p.title ? `<div class="rule-title">${esc(p.title)}</div>` : ''}
-      <div class="st">${esc(p.straight || '—')}</div>
-      <div class="cd">候補 ${(p.candidates || []).join(',') || '—'}</div>
+      <div class="st">${esc(p.mini || (p.straight || '').slice(1) || '—')}</div>
+      <div class="cd">3桁なら ${esc(p.straight || '—')} ／ 候補 ${(p.candidates || []).join(',') || '—'}</div>
       <div class="rs">${esc(p.reason || '')}</div>
       ${p.self_assessment ? `<div class="rs self">自己評価: ${esc(p.self_assessment)}</div>` : ''}
       ${p.rule_text ? `<details class="ruledet"><summary>宣言したルールを見る</summary><pre>${esc(p.rule_text)}</pre>
@@ -410,6 +420,12 @@ function renderAIRecords(D){
       <td class="mono">${r.atleast1_rate}%<span class="dim"> / 78.4%</span></td>
       <td class="mono">${r.all3_rate}%<span class="dim"> / 6.4%</span></td>
     </tr>`).join('')}</tbody></table></div>`;
+}
+
+function renderTickets(cands){
+  const sorted = [...cands].sort();
+  return '<div class="tickets">' + sorted.map(a => sorted.map(b =>
+    `<span>${esc(a)}${esc(b)}</span>`).join('')).join('') + '</div>';
 }
 
 function renderTagPoints(pts, chosen){
@@ -482,20 +498,23 @@ function render(D){
   <p>第${D.basis.round}回（${esc(D.basis.date)}・当選番号 ${esc(D.basis.number)}）の確定を受けて選出しました。</p>
   <div class="picks">${renderPicks(D)}</div>
   <div class="odds">
-    <div class="odd"><div class="v">${pct(o.atleast1)}</div><div class="k">1桁以上が当選番号に含まれる確率</div></div>
-    <div class="odd miss"><div class="v">${pct(o.miss_all)}</div><div class="k">1つも含まれない確率</div></div>
-    <div class="odd"><div class="v">${pct(o.box)}</div><div class="k">3桁すべてが候補に含まれる確率</div></div>
-    <div class="odd"><div class="v">${o.expected_covered.toFixed(1)}桁</div><div class="k">含まれる桁数の期待値</div></div>
+    <div class="odd"><div class="v">${pct(o.mini_both)}</div><div class="k">下2桁の<strong>両方</strong>が候補に入る確率（＝ミニ的中）</div></div>
+    <div class="odd"><div class="v">${pct(o.mini_either)}</div><div class="k">どちらか片方が入る確率</div></div>
+    <div class="odd miss"><div class="v">${pct(o.mini_none)}</div><div class="k">どちらも入らない確率</div></div>
+    <div class="odd"><div class="v">${o.tickets}口</div><div class="k">全部買うと ${o.cost.toLocaleString()}円</div></div>
   </div>
-  <p class="note" style="margin-top:12px">これらは4数字を選んだ時点で決まる数学的な確率で、候補の選び方によって変わりません。どんな選出方法でも同じ値になります。</p>
+  <h3>この4数字で作る買い目（${o.tickets}通り）</h3>
+  ${renderTickets(D.candidates)}
+  ${o.mini_prize && o.mini_prize.mean ? `<p class="note">ミニ1口（200円）の的中確率は1.0%、当選金額の平均は ${o.mini_prize.mean.toLocaleString()}円（直近${o.mini_prize.n}回の実測／中央値 ${o.mini_prize.median.toLocaleString()}円）。<strong>1口あたりの期待値は約${o.mini_prize.expected_value}円</strong>で、200円を払って平均86円が戻る計算です。</p>` : ''}
+  <p class="note">これらは4数字を選んだ時点で決まる数学的な確率で、候補の選び方によって変わりません。どんな選出方法でも同じ値になります。</p>
 </section>
 
 <section>
   <h2><span class="num">02</span>3つのAIの予想</h2>
-  <p>3つのAIは、その場で数字を考えていません。<strong>抽選前にそれぞれが「選定ルール」を宣言し、そのルールが機械的に数字を決めています</strong>。同じ過去データから誰が計算しても同じ数字になり、後から理由を付け替えることはできません。</p>
+  <p>3つのAIは、その場で数字を考えていません。<strong>抽選前にそれぞれが「選定ルール」を宣言し、そのルールが機械的に数字を決めています</strong>。大きく出ているのが<strong>ミニの本命（下2桁）</strong>です。同じ過去データから誰が計算しても同じ数字になり、後から理由を付け替えることはできません。</p>
   ${renderAI(D)}
   <div class="callout" style="margin-top:14px">
-    <strong>この3つも当たりません。</strong>本命3桁が当たる確率はどの予想でも1/1000＝0.1%、候補4数字に当選の1桁以上が含まれる確率は78.4%です。ルールを宣言しても的中率は変わりません。変わるのは<strong>「理由が後付けか、先にあったか」</strong>です。以前は数字を出してから理由を書いていましたが、今は宣言したルールが数字を決めています。ルール文を書き換えた場合は変更履歴に残ります。
+    <strong>この3つも当たりません。</strong>ミニの本命2桁が当たる確率はどの予想でも1/100＝1.0%、候補4数字で作る16通りが当たる確率は16.0%です。ルールを宣言しても的中率は変わりません。変わるのは<strong>「理由が後付けか、先にあったか」</strong>です。以前は数字を出してから理由を書いていましたが、今は宣言したルールが数字を決めています。ルール文を書き換えた場合は変更履歴に残ります。
   </div>
   ${renderAIRecords(D)}
 </section>
@@ -536,7 +555,17 @@ function render(D){
     <div class="odd"><div class="v ${s.chi2_all < s.chi2_limit_5 ? 'ok' : 'ng'}">${s.chi2_all}</div><div class="k">全体のχ²（限界${s.chi2_limit_5}）</div></div>
     ${s.chi2_pos.map((c, i) => `<div class="odd"><div class="v ${c < s.chi2_limit_5 ? 'ok' : 'ng'}">${c}</div><div class="k">${['百','十','一'][i]}の位のχ²</div></div>`).join('')}
   </div>
-  <h3>数字の出現回数（期待値からのズレ）</h3>
+  <h3>下2桁（ミニの対象）の分布</h3>
+  <p>00〜99の100通りについて、出現回数が均等かを検定しています。</p>
+  <div class="odds">
+    <div class="odd"><div class="v ${s.mini.chi2_last2 < s.mini.chi2_last2_limit ? 'ok' : 'ng'}">${s.mini.chi2_last2}</div><div class="k">下2桁100通りのχ²（5%限界 ${s.mini.chi2_last2_limit}）</div></div>
+    <div class="odd"><div class="v">${s.mini.expected}回</div><div class="k">1通りあたりの期待出現回数</div></div>
+    <div class="odd"><div class="v">${s.mini.top.map(x => x.n).join(' ')}</div><div class="k">最も多い下2桁（${s.mini.top.map(x => x.c).join('/')}回）</div></div>
+    <div class="odd"><div class="v">${s.mini.bottom.map(x => x.n).join(' ')}</div><div class="k">最も少ない下2桁（${s.mini.bottom.map(x => x.c).join('/')}回）</div></div>
+  </div>
+  <p class="note">χ²が5%限界を下回っているので、<strong>特定の下2桁が出やすいという事実はありません</strong>。最多と最少の差も、100通りに分けたときの自然なばらつきの範囲です。</p>
+
+  <h3>数字ごとの出現回数（期待値からのズレ）</h3>
   <div class="bars">${renderDist(s.digit_counts, s.digit_expected)}</div>
   <h3>湿度の影響</h3>
   <p>高湿度期（6〜9月・${s.season.humid_draws.toLocaleString()}回）と低湿度期（12〜3月・${s.season.dry_draws.toLocaleString()}回）で出現分布を比較しました。同質性のχ²は <strong>${s.season.homogeneity_chi2}</strong> で、5%限界${s.chi2_limit_5}を下回ります。<strong>季節による差は検出されません</strong>。</p>
@@ -545,7 +574,7 @@ function render(D){
 
 <section>
   <h2><span class="num">06</span>登録した仮説</h2>
-  ${renderHypotheses(D.hypotheses || [])}
+  ${renderHypotheses(D.hypotheses || [], D.target_round)}
 </section>
 
 <section>

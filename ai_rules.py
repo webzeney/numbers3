@@ -189,7 +189,7 @@ CHANGELOG = [
 ]
 
 
-def run_all(draws: list[dict]) -> dict:
+def run_all(draws: list[dict], mini: bool = False) -> dict:
     """全ルールを実行する。ルール文のハッシュも添えて改変できないようにする"""
     out = {}
     for key, r in RULES.items():
@@ -197,7 +197,10 @@ def run_all(draws: list[dict]) -> dict:
         out[key] = {
             "label": r["label"], "status": "ok",
             "version": r["version"], "title": r["title"],
-            "straight": res["straight"], "candidates": res["candidates"],
+            "straight": res["straight"],
+            # ミニは下2桁だけが対象。宣言ルールが出した十の位・一の位をそのまま使う
+            "mini": res["straight"][1:],
+            "candidates": res["candidates"],
             "reason": r["reason"], "self_assessment": r["self"],
             "rule_text": r["rule"],
             "rule_hash": hashlib.sha256(r["rule"].encode("utf-8")).hexdigest(),

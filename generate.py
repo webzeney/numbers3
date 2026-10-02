@@ -44,7 +44,7 @@ SOURCES = [
 ]
 UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
-LOGIC_VERSION = "2.3.0-tilted"      # サイト全体のバージョン（表示・記録用）
+LOGIC_VERSION = "3.0.0-mini"      # サイト全体のバージョン（表示・記録用）
 
 # 選出方式そのもののバージョン。乱数の種に使うため、方式を変えない限り凍結する。
 # ここを変えると同じ回でも候補が変わってしまう（2026-10-02に実際に起きた事故）。
@@ -298,6 +298,29 @@ def check_target_not_drawn(draws: list[dict], now: datetime | None = None) -> No
             kind=kind)
 
 
+def mini_prize_stats() -> dict:
+    """取得元の生データからミニの当選金額を集計する(無ければNone)"""
+    f = SOURCES_DIR / "loto-life.csv"
+    if not f.exists():
+        return {}
+    vals = []
+    try:
+        for row in list(csv.reader(f.read_text(encoding="cp932").splitlines()))[1:]:
+            if row and row[0].strip().isdigit() and int(row[0]) >= 6000 and len(row) > 12:
+                v = row[12].strip()
+                if v.isdigit() and int(v) > 0:
+                    vals.append(int(v))
+    except (UnicodeDecodeError, ValueError):
+        return {}
+    if not vals:
+        return {}
+    vals.sort()
+    mean = sum(vals) / len(vals)
+    return {"n": len(vals), "mean": round(mean), "median": vals[len(vals) // 2],
+            "min": vals[0], "max": vals[-1],
+            "expected_value": round(mean * 0.01)}      # 1口200円あたりの期待値
+
+
 # ---------------------------------------------------------------- 候補の選出
 
 def tag_points(prev_number: str) -> dict:
@@ -444,8 +467,18 @@ def build_stats(draws: list[dict]) -> dict:
     tot = sum(hi.values()) + sum(lo.values())
     homo = sum((grp[d] - (hi[d] + lo[d]) * gn / tot) ** 2 / ((hi[d] + lo[d]) * gn / tot)
                for d in DIGITS for grp, gn in ((hi, sum(hi.values())), (lo, sum(lo.values()))))
+    last2 = [n[1:] for n in numbers]
+    c2 = Counter(last2)
+    exp2 = N / 100
+    chi2_last2 = sum((c2[f"{i:02d}"] - exp2) ** 2 / exp2 for i in range(100))
     return {
         "draws": N,
+        "mini": {
+            "chi2_last2": round(chi2_last2, 1), "chi2_last2_limit": 123.2,
+            "top": [{"n": k, "c": v} for k, v in c2.most_common(3)],
+            "bottom": [{"n": k, "c": v} for k, v in c2.most_common()[-3:]],
+            "expected": round(exp2, 1),
+        },
         "span": [str(draws[0]["date"]), str(draws[-1]["date"])],
         "digit_counts": {d: allc[d] for d in DIGITS},
         "digit_expected": round(N * 3 / 10, 1),
@@ -466,29 +499,34 @@ def build_stats(draws: list[dict]) -> dict:
 # ---------------------------------------------------------------- 結果の判定
 
 def judge(combo: list[str], number: str) -> dict:
-    """候補と当選番号を突き合わせ、旧サイト相当の検証コメントを作る"""
+    """候補と当選番号を突き合わせる(ミニ=下2桁が判定の主役)"""
     counts = Counter(number)
+    last2 = number[1:]                       # 十の位・一の位
+    in_set = [ch in combo for ch in last2]
+    mini_hit = all(in_set)                   # 16通りの買い目に入っていたか
     covered = [ch for ch in number if ch in combo]
     uniq = sorted(set(covered))
     triple = [d for d, c in counts.items() if c == 3]
     double = [d for d, c in counts.items() if c == 2]
 
-    if uniq:
-        names = "と".join(f"「{d}」" for d in uniq)
-        label = f"当選番号に候補の{names}が含まれていた"
-        hit_multi = [d for d in uniq if counts[d] >= 2]
-        if hit_multi and triple:
-            label += "【トリプル発生】"
-        elif hit_multi:
-            label += "【ダブル発生】"
+    if mini_hit:
+        label = f"下2桁「{last2}」は候補16通りの中にあった（ミニ的中）"
+    elif any(in_set):
+        got = last2[0] if in_set[0] else last2[1]
+        miss = last2[1] if in_set[0] else last2[0]
+        pos = "十の位" if in_set[0] else "一の位"
+        label = (f"下2桁のうち{pos}の「{got}」は候補にあったが、"
+                 f"もう一方の「{miss}」が候補外だった")
     else:
-        label = f"候補は1つも含まれなかった（当選の {'・'.join(sorted(set(number)))} はすべて候補外）"
-        if triple:
-            label += "【トリプル発生】"
-        elif double:
-            label += "【ダブル発生】"
+        label = f"下2桁「{last2}」はどちらも候補外だった"
+    if triple:
+        label += "【トリプル発生】"
+    elif double:
+        label += "【ダブル発生】"
 
     return {
+        "mini_hit": mini_hit,
+        "last2": last2,
         "covered": len(covered), "digits": uniq,
         "all3": set(number) <= set(combo),
         "label": label,
@@ -496,6 +534,7 @@ def judge(combo: list[str], number: str) -> dict:
             "sum": sum(int(c) for c in number),
             "pattern": "トリプル" if triple else "ダブル" if double else "3桁すべて異なる",
             "missed": sorted(set(number) - set(combo)),
+            "mini_tickets": [a + b for a in sorted(combo) for b in sorted(combo)],
         },
     }
 
@@ -563,6 +602,7 @@ def build_rounds_index() -> list[dict]:
             "result": (snap.get("result") or {}).get("number"),
             "covered": (snap.get("outcome") or {}).get("covered"),
             "label": (snap.get("outcome") or {}).get("label", "抽選前"),
+            "mini_hit": (snap.get("outcome") or {}).get("mini_hit"),
         })
     (ROUNDS / "index.json").write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -724,8 +764,18 @@ def main() -> None:
             "spread": picked["spread"],
             "tag_points": picked["tag_points"],
         },
-        "odds": {"miss_all": 21.6, "atleast1": 78.4, "box": 6.4,
-                 "expected_covered": 1.2},
+        "odds": {
+            # ミニ（下2桁一致）を基準にした確率。候補4数字で下2桁を組むと 4×4=16通り
+            "mini_both": 16.0,        # 下2桁の両方が候補に含まれる
+            "mini_either": 64.0,      # 下2桁のどちらかが候補に含まれる
+            "mini_none": 36.0,        # どちらも含まれない
+            "tickets": 16,            # 16通りを全部買う場合の口数
+            "cost": 16 * 200,
+            "mini_odds": 1.0,         # ミニ1口の的中確率(%)
+            "mini_prize": mini_prize_stats(),
+            # 参考: 3桁(ストレート/ボックス)の確率
+            "ref_atleast1": 78.4, "ref_all3": 6.4, "ref_expected_covered": 1.2,
+        },
         "tags": {d: tags_for(d, hist, picked["combo"]) for d in picked["combo"]},
         "stats": build_stats(draws),
     }
@@ -738,7 +788,7 @@ def main() -> None:
         latest["ai"] = {
             "mode": "pre-committed-rules",
             "decided_at": now_jst().isoformat(timespec="seconds"),
-            "picks": ai_rules.run_all(hist),
+            "picks": ai_rules.run_all(hist, mini=True),
             "changelog": ai_rules.CHANGELOG,
         }
         latest["ai_records"] = tally_ai(draws)

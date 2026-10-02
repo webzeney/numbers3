@@ -1,6 +1,6 @@
 {
- "logic_version": "2.3.0-tilted",
- "generated_at": "2026-10-02T14:37:02+09:00",
+ "logic_version": "3.0.0-mini",
+ "generated_at": "2026-10-02T14:51:41+09:00",
  "target_round": 7084,
  "candidates": [
   "1",
@@ -40,10 +40,23 @@
   }
  },
  "odds": {
-  "miss_all": 21.6,
-  "atleast1": 78.4,
-  "box": 6.4,
-  "expected_covered": 1.2
+  "mini_both": 16.0,
+  "mini_either": 64.0,
+  "mini_none": 36.0,
+  "tickets": 16,
+  "cost": 3200,
+  "mini_odds": 1.0,
+  "mini_prize": {
+   "n": 1084,
+   "mean": 8636,
+   "median": 8600,
+   "min": 2900,
+   "max": 15700,
+   "expected_value": 86
+  },
+  "ref_atleast1": 78.4,
+  "ref_all3": 6.4,
+  "ref_expected_covered": 1.2
  },
  "tags": {
   "1": [
@@ -102,6 +115,39 @@
  },
  "stats": {
   "draws": 7083,
+  "mini": {
+   "chi2_last2": 72.7,
+   "chi2_last2_limit": 123.2,
+   "top": [
+    {
+     "n": "33",
+     "c": 87
+    },
+    {
+     "n": "09",
+     "c": 84
+    },
+    {
+     "n": "32",
+     "c": 84
+    }
+   ],
+   "bottom": [
+    {
+     "n": "64",
+     "c": 57
+    },
+    {
+     "n": "65",
+     "c": 57
+    },
+    {
+     "n": "73",
+     "c": 54
+    }
+   ],
+   "expected": 70.8
+  },
   "span": [
    "1994-10-07",
    "2026-10-01"
@@ -244,7 +290,7 @@
  ],
  "ai": {
   "mode": "pre-committed-rules",
-  "decided_at": "2026-10-02T14:37:02+09:00",
+  "decided_at": "2026-10-02T14:51:41+09:00",
   "picks": {
    "gpt": {
     "label": "ChatGPT",
@@ -252,6 +298,7 @@
     "version": "GPT-v1",
     "title": "検証可能な擬似ランダム基準",
     "straight": "418",
+    "mini": "18",
     "candidates": [
      "6",
      "2",
@@ -274,6 +321,7 @@
     "version": "Claude-v1",
     "title": "最長未出現基準（ギャンブラーの誤謬の意図的実装）",
     "straight": "845",
+    "mini": "45",
     "candidates": [
      "5",
      "7",
@@ -347,6 +395,7 @@
     "version": "Gemini-v1",
     "title": "重み付け周期相関フィルタ",
     "straight": "444",
+    "mini": "44",
     "candidates": [
      "4",
      "3",
