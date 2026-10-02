@@ -127,6 +127,15 @@ a.rlink:hover{text-decoration:underline}
 .ai-card .st{font:700 40px/1.2 var(--mono); letter-spacing:.04em; margin:12px 0 4px}
 .ai-card .cd{font:14.5px/1.6 var(--mono); color:var(--text2)}
 .ai-card .rs{font-size:13.5px; color:var(--text3); margin-top:10px; line-height:1.7}
+.hyp{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px}
+.hyp h4{margin:0 0 6px; font-size:16px}
+.hyp .claim{font-size:14px; color:var(--text2); margin:0 0 12px}
+.hyp .prog{height:8px; background:var(--bg); border-radius:4px; overflow:hidden; margin:10px 0 6px}
+.hyp .prog i{display:block; height:100%; background:var(--accent)}
+.hyp ul{margin:8px 0 0; padding-left:1.2em; font-size:13px; color:var(--text2); line-height:1.9}
+.hyp .formula{font:13px/1.7 var(--mono); background:var(--bg); border:1px solid var(--line);
+  border-radius:8px; padding:10px 12px; margin:10px 0; word-break:break-all}
+.hyp .verdict{font-weight:600}
 .ai-card .rule-title{font-size:12px; color:var(--text3); margin-top:2px}
 .ai-card .rs.self{color:var(--text3); font-style:normal; border-left:2px solid var(--line); padding-left:8px}
 .ai-card .ruledet{margin-top:10px; font-size:12px; color:var(--text2)}
@@ -194,7 +203,16 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   .ai-card .st{font-size:31px}
   .ai-card .cd{font-size:14px}
   .ai-card .rs{font-size:13.5px}
-  .ai-card .rule-title{font-size:12px; color:var(--text3); margin-top:2px}
+  .hyp{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px}
+.hyp h4{margin:0 0 6px; font-size:16px}
+.hyp .claim{font-size:14px; color:var(--text2); margin:0 0 12px}
+.hyp .prog{height:8px; background:var(--bg); border-radius:4px; overflow:hidden; margin:10px 0 6px}
+.hyp .prog i{display:block; height:100%; background:var(--accent)}
+.hyp ul{margin:8px 0 0; padding-left:1.2em; font-size:13px; color:var(--text2); line-height:1.9}
+.hyp .formula{font:13px/1.7 var(--mono); background:var(--bg); border:1px solid var(--line);
+  border-radius:8px; padding:10px 12px; margin:10px 0; word-break:break-all}
+.hyp .verdict{font-weight:600}
+.ai-card .rule-title{font-size:12px; color:var(--text3); margin-top:2px}
 .ai-card .rs.self{color:var(--text3); font-style:normal; border-left:2px solid var(--line); padding-left:8px}
 .ai-card .ruledet{margin-top:10px; font-size:12px; color:var(--text2)}
 .ai-card .ruledet summary{cursor:pointer; color:var(--accent)}
@@ -262,6 +280,32 @@ function outcomeBox(outcome, result, demo){
       ${esc((outcome && outcome.label) || '')}
       ${outcome && outcome.detail ? `<br><span class="note">当選番号の形: ${esc(outcome.detail.pattern)} ／ 3桁の和: ${outcome.detail.sum}</span>` : ''}
     </div></div>`;
+}
+
+function renderHypotheses(list){
+  if(!list.length) return '<p class="note">登録されている仮説はありません。</p>';
+  return `<p>バックテストで「当たっているように見える現象」が見つかったとき、<strong>後から都合よく解釈できない形で検証する</strong>ための欄です。条件を先に固定し、登録した回以降の実データだけで判定します。</p>` +
+  list.map(h => {
+    const r = h.record;
+    return `<div class="hyp">
+      <h4>${esc(h.title)}</h4>
+      <p class="claim">${esc(h.claim)}</p>
+      <div class="formula">${esc(h.formula)}</div>
+      <div class="odds">
+        <div class="odd"><div class="v">${esc(h.prediction)}</div><div class="k">今回の予測（第${D.target_round}回）</div></div>
+        <div class="odd"><div class="v">${r.hits} / ${r.n}</div><div class="k">的中 / 検証回数（期待 ${r.expected}回）</div></div>
+        <div class="odd"><div class="v">${r.p_value === null ? '—' : r.p_value}</div><div class="k">p値（閾値 ${h.threshold_p}）</div></div>
+        <div class="odd"><div class="v">${r.progress}%</div><div class="k">${h.min_rounds}回までの進捗</div></div>
+      </div>
+      <div class="prog"><i style="width:${Math.min(100, r.progress)}%"></i></div>
+      <p class="note verdict">現在の判定: ${esc(r.verdict)}</p>
+      <h3>なぜ登録したか</h3>
+      <p class="note">${esc(h.origin)}</p>
+      <h3>事前に固定した条件</h3>
+      <ul>${h.conditions.map(c => `<li>${esc(c)}</li>`).join('')}</ul>
+      <p class="note">第${h.registered_round}回から登録（${esc(h.registered_at)}）。登録前の的中は数えません。</p>
+    </div>`;
+  }).join('');
 }
 
 function renderRounds(list){
@@ -500,7 +544,12 @@ function render(D){
 </section>
 
 <section>
-  <h2><span class="num">06</span>保存版ページ</h2>
+  <h2><span class="num">06</span>登録した仮説</h2>
+  ${renderHypotheses(D.hypotheses || [])}
+</section>
+
+<section>
+  <h2><span class="num">07</span>保存版ページ</h2>
   <p>各回の予想ページをそのまま保存しています。候補・乱数の種・AIの予想・結果の検証が、当時の形で残ります。</p>
   ${D.record && D.record.start_round ? `<p class="note">記録は<strong>第${D.record.start_round}回から</strong>。現在 ${D.record.count}回分を保存し、うち${D.record.judged}回が結果確定済みです。</p>` : ''}
   ${renderRounds(D.__rounds || [])}

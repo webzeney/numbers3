@@ -24,6 +24,7 @@ from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 
 import ai_rules
+import hypotheses
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
@@ -43,7 +44,11 @@ SOURCES = [
 ]
 UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
-LOGIC_VERSION = "2.2.0-tilted"
+LOGIC_VERSION = "2.3.0-tilted"      # サイト全体のバージョン（表示・記録用）
+
+# 選出方式そのもののバージョン。乱数の種に使うため、方式を変えない限り凍結する。
+# ここを変えると同じ回でも候補が変わってしまう（2026-10-02に実際に起きた事故）。
+SELECTION_VERSION = "2.1.0-tilted"
 TILT_WEIGHT = 0.2         # 宝島本の手法に該当する数字への傾き。0なら完全な一様ランダム
 DIGITS = "0123456789"
 COMBOS = [tuple(c) for c in itertools.combinations(DIGITS, 4)]   # 210通り
@@ -323,7 +328,7 @@ def pick(target_round: int, prev_number: str) -> dict:
     pts = tag_points(prev_number)
     weights = [math.exp(TILT_WEIGHT * sum(pts[d] for d in c)) for c in COMBOS]
     total = sum(weights)
-    material = f"{target_round}:{prev_number}:{LOGIC_VERSION}"
+    material = f"{target_round}:{prev_number}:{SELECTION_VERSION}"
     h = hashlib.sha256(material.encode()).hexdigest()
     u = int(h[:16], 16) / 2 ** 64            # [0,1)の一様乱数
     acc = 0.0
@@ -498,7 +503,7 @@ def judge(combo: list[str], number: str) -> dict:
 # ---------------------------------------------------------------- 保存版ページ
 
 SNAPSHOT_KEYS = ("logic_version", "generated_at", "target_round", "candidates",
-                 "basis", "selection", "odds", "tags", "ai")
+                 "basis", "selection", "odds", "tags", "ai", "hypotheses")
 
 
 def save_snapshot(latest: dict) -> None:
@@ -506,6 +511,10 @@ def save_snapshot(latest: dict) -> None:
     ROUNDS.mkdir(parents=True, exist_ok=True)
     f = ROUNDS / f"{latest['target_round']}.json"
     snap = {k: latest[k] for k in SNAPSHOT_KEYS if k in latest}
+    # 仮説は「予測だけ」を焼き込む(集計はその時点のものなので保存しない)
+    if "hypotheses" in snap:
+        snap["hypotheses"] = [{"id": h["id"], "prediction": h["prediction"],
+                               "formula": h["formula"]} for h in snap["hypotheses"]]
     if f.exists():                      # 既存の結果欄は保持する
         old = json.loads(f.read_text(encoding="utf-8"))
         for k in ("result", "outcome"):
@@ -600,6 +609,37 @@ def tally_ai(draws: list[dict]) -> dict:
     return tally
 
 
+def build_hypotheses(draws: list[dict], target_round: int) -> list[dict]:
+    """登録済み仮説について、今回の予測と、登録後の実績を集計する"""
+    results = {d["round"]: d["number"] for d in draws}
+    out = []
+    for h in hypotheses.REGISTRY:
+        records = []
+        if ROUNDS.exists():
+            for f in sorted(ROUNDS.glob("*.json"), key=lambda x: int(x.stem) if x.stem.isdigit() else 0):
+                if not f.stem.isdigit():
+                    continue
+                snap = json.loads(f.read_text(encoding="utf-8"))
+                rnd = snap["target_round"]
+                if rnd < h["registered_round"] or rnd not in results:
+                    continue
+                for rec in snap.get("hypotheses", []):
+                    if rec.get("id") == h["id"]:
+                        records.append({"round": rnd, "prediction": rec["prediction"],
+                                        "result": results[rnd]})
+        out.append({
+            "id": h["id"], "title": h["title"],
+            "registered_round": h["registered_round"], "registered_at": h["registered_at"],
+            "claim": h["claim"], "origin": h["origin"], "formula": h["formula"],
+            "conditions": h["conditions"], "min_rounds": h["min_rounds"],
+            "threshold_p": h["threshold_p"],
+            "prediction": hypotheses.predict(h, draws[-1]["number"], target_round),
+            "record": hypotheses.evaluate(h, records),
+            "history": records[-30:],
+        })
+    return out
+
+
 # ---------------------------------------------------------------- 生成
 
 def main() -> None:
@@ -644,6 +684,24 @@ def main() -> None:
                 print(f"  第{target_round}回向けは生成済み。何もしない")
                 sys.exit(3)
     picked = pick(target_round, last["number"])
+
+    # 公開済みの回は候補を作り直さない。最初に出した値を必ず維持する
+    existing = ROUNDS / f"{target_round}.json"
+    if existing.exists():
+        try:
+            prev_snap = json.loads(existing.read_text(encoding="utf-8"))
+            if prev_snap.get("candidates"):
+                if prev_snap["candidates"] != picked["combo"]:
+                    print(f"  公開済みの候補を維持: {','.join(prev_snap['candidates'])}"
+                          f" (再計算値 {','.join(picked['combo'])} は破棄)", file=sys.stderr)
+                picked["combo"] = prev_snap["candidates"]
+                if prev_snap.get("selection"):
+                    picked["seed_material"] = prev_snap["selection"].get(
+                        "seed_material", picked["seed_material"])
+                    picked["hash"] = prev_snap["selection"].get("hash", picked["hash"])
+        except json.JSONDecodeError:
+            pass
+
     hist = [d["number"] for d in draws]
 
     latest = {
@@ -672,6 +730,7 @@ def main() -> None:
         "stats": build_stats(draws),
     }
     latest["stale"] = None
+    latest["hypotheses"] = build_hypotheses(draws, target_round)
 
     # 3つのAIの予想: 各AIが事前に宣言したルールを実行する(その場で考えない)
     if "--no-ai" not in args:
@@ -705,6 +764,10 @@ def main() -> None:
     print(f"  hash: {picked['hash'][:32]}…")
     print(f"  選ばれやすさ: 一様の{picked['ratio_to_uniform']}倍 "
           f"(この回の範囲 {picked['spread']['min']}〜{picked['spread']['max']}倍)")
+    for h in latest.get("hypotheses", []):
+        r = h["record"]
+        print(f"  仮説[{h['id']}] 今回の予測 {h['prediction']} / "
+              f"{r['verdict']} 的中{r['hits']}回(期待{r['expected']})")
     print(f"  保存版ページ {len(rounds_index)}件 (data/rounds/)")
     print("  data/latest.json を書き出した")
 
