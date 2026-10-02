@@ -11,7 +11,6 @@
   python3 generate.py --if-new   # 新しい回が出ていなければ何もしない(cron用)
   python3 generate.py --no-fetch # ダウンロードせずローカルCSVで生成
   python3 generate.py --no-ai    # AIへの問い合わせを省く
-  python3 generate.py --refresh-ai  # AIの予想を取り直す(キーを後から足したとき)
   python3 generate.py --verify   # 生成物の整合性を検証するだけ
   python3 generate.py --now 2026-09-30T20:00  # 現在時刻を差し替える(テスト用)
 
@@ -24,7 +23,7 @@ from collections import Counter
 from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 
-import ai_picks
+import ai_rules
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
@@ -44,7 +43,7 @@ SOURCES = [
 ]
 UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
-LOGIC_VERSION = "2.1.0-tilted"
+LOGIC_VERSION = "2.2.0-tilted"
 TILT_WEIGHT = 0.2         # 宝島本の手法に該当する数字への傾き。0なら完全な一様ランダム
 DIGITS = "0123456789"
 COMBOS = [tuple(c) for c in itertools.combinations(DIGITS, 4)]   # 210通り
@@ -561,6 +560,46 @@ def build_rounds_index() -> list[dict]:
     return out
 
 
+def tally_ai(draws: list[dict]) -> dict:
+    """保存版ページを集計して、AIごとの通算成績を出す"""
+    results = {d["round"]: d["number"] for d in draws}
+    tally = {k: {"label": v["label"], "n": 0, "straight": 0, "covered": 0,
+                 "atleast1": 0, "all3": 0, "history": []}
+             for k, v in ai_rules.RULES.items()}
+    if not ROUNDS.exists():
+        return tally
+    for f in sorted(ROUNDS.glob("*.json"), key=lambda x: int(x.stem) if x.stem.isdigit() else 0):
+        if not f.stem.isdigit():
+            continue
+        snap = json.loads(f.read_text(encoding="utf-8"))
+        actual = results.get(snap["target_round"])
+        if not actual:
+            continue
+        for name, p in (snap.get("ai", {}).get("picks", {}) or {}).items():
+            if name not in tally or p.get("status") != "ok":
+                continue
+            t = tally[name]
+            cov = sum(1 for ch in actual if ch in p.get("candidates", []))
+            t["n"] += 1
+            t["covered"] += cov
+            t["atleast1"] += cov >= 1
+            t["all3"] += set(actual) <= set(p.get("candidates", []))
+            t["straight"] += p.get("straight") == actual
+            t["history"].append({"round": snap["target_round"], "result": actual,
+                                 "straight": p.get("straight"),
+                                 "candidates": p.get("candidates", []),
+                                 "covered": cov,
+                                 "straight_hit": p.get("straight") == actual,
+                                 "version": p.get("version", "API期")})
+    for t in tally.values():
+        n = t["n"]
+        t["mean_covered"] = round(t["covered"] / n, 3) if n else None
+        t["atleast1_rate"] = round(t["atleast1"] / n * 100, 1) if n else None
+        t["all3_rate"] = round(t["all3"] / n * 100, 1) if n else None
+        t["history"] = t["history"][-30:]
+    return tally
+
+
 # ---------------------------------------------------------------- 生成
 
 def main() -> None:
@@ -634,19 +673,18 @@ def main() -> None:
     }
     latest["stale"] = None
 
-    # 3つのAIの予想 (1回号につき1回だけ問い合わせ、失敗しても生成は止めない)
+    # 3つのAIの予想: 各AIが事前に宣言したルールを実行する(その場で考えない)
     if "--no-ai" not in args:
-        try:
-            ai = ai_picks.ask_all(target_round, hist,
-                                  force="--refresh-ai" in args)
-            latest["ai"] = ai
-            latest["ai_records"] = ai_picks.load_records(
-                {d["round"]: d["number"] for d in draws})
-            ok = [p["label"] for p in ai["picks"].values() if p.get("status") == "ok"]
-            print(f"  AI予想: {', '.join(ok) if ok else 'なし'}"
-                  f" (未取得 {3 - len(ok)}件)")
-        except Exception as e:
-            print(f"  AI予想の取得に失敗: {e}", file=sys.stderr)
+        hist = [{**d, "date": str(d["date"])} for d in draws]
+        latest["ai"] = {
+            "mode": "pre-committed-rules",
+            "decided_at": now_jst().isoformat(timespec="seconds"),
+            "picks": ai_rules.run_all(hist),
+            "changelog": ai_rules.CHANGELOG,
+        }
+        latest["ai_records"] = tally_ai(draws)
+        print("  AI予想(宣言ルールの実行): " + " / ".join(
+            f"{v['label']} {v['straight']}" for v in latest["ai"]["picks"].values()))
 
     (DATA / "latest.json").write_text(
         json.dumps(latest, ensure_ascii=False, indent=1), encoding="utf-8")

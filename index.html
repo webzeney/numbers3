@@ -127,6 +127,13 @@ a.rlink:hover{text-decoration:underline}
 .ai-card .st{font:700 40px/1.2 var(--mono); letter-spacing:.04em; margin:12px 0 4px}
 .ai-card .cd{font:14.5px/1.6 var(--mono); color:var(--text2)}
 .ai-card .rs{font-size:13.5px; color:var(--text3); margin-top:10px; line-height:1.7}
+.ai-card .rule-title{font-size:12px; color:var(--text3); margin-top:2px}
+.ai-card .rs.self{color:var(--text3); font-style:normal; border-left:2px solid var(--line); padding-left:8px}
+.ai-card .ruledet{margin-top:10px; font-size:12px; color:var(--text2)}
+.ai-card .ruledet summary{cursor:pointer; color:var(--accent)}
+.ai-card .ruledet pre{white-space:pre-wrap; word-break:break-word; font-size:11.5px;
+  background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px; margin:8px 0 6px}
+.ai-card .ruledet .hash{font:10.5px/1.5 var(--mono); color:var(--text3); word-break:break-all}
 .ai-card .rec{font-size:13.5px; color:var(--text2); margin-top:12px; padding-top:10px; border-top:1px solid var(--line)}
 .ai-card.off .st{font-size:15px; color:var(--text3); font-weight:400}
 .callout{
@@ -187,7 +194,14 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   .ai-card .st{font-size:31px}
   .ai-card .cd{font-size:14px}
   .ai-card .rs{font-size:13.5px}
-  .ai-card .rec{font-size:13.5px}
+  .ai-card .rule-title{font-size:12px; color:var(--text3); margin-top:2px}
+.ai-card .rs.self{color:var(--text3); font-style:normal; border-left:2px solid var(--line); padding-left:8px}
+.ai-card .ruledet{margin-top:10px; font-size:12px; color:var(--text2)}
+.ai-card .ruledet summary{cursor:pointer; color:var(--accent)}
+.ai-card .ruledet pre{white-space:pre-wrap; word-break:break-word; font-size:11.5px;
+  background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px; margin:8px 0 6px}
+.ai-card .ruledet .hash{font:10.5px/1.5 var(--mono); color:var(--text3); word-break:break-all}
+.ai-card .rec{font-size:13.5px}
   .result{gap:12px; padding:14px}
   .result .big{font-size:32px}
   .result .txt{font-size:14.5px}
@@ -325,10 +339,14 @@ function renderAI(D){
       ? `この回: ${oc.straight_hit ? '本命的中' : `候補${oc.covered}桁が一致`}`
       : (r.n ? `通算 ${r.n}回: 本命的中 ${r.straight}回 ／ 平均カバー ${r.mean_covered}桁（基準1.2）` : '記録はこれから');
     return `<div class="ai-card">
-      <div class="who">${esc(p.label)}<em>${esc(p.model || '')}</em></div>
+      <div class="who">${esc(p.label)}<em>${esc(p.version || p.model || '')}</em></div>
+      ${p.title ? `<div class="rule-title">${esc(p.title)}</div>` : ''}
       <div class="st">${esc(p.straight || '—')}</div>
       <div class="cd">候補 ${(p.candidates || []).join(',') || '—'}</div>
       <div class="rs">${esc(p.reason || '')}</div>
+      ${p.self_assessment ? `<div class="rs self">自己評価: ${esc(p.self_assessment)}</div>` : ''}
+      ${p.rule_text ? `<details class="ruledet"><summary>宣言したルールを見る</summary><pre>${esc(p.rule_text)}</pre>
+        <div class="hash">ルール文のSHA-256: ${esc(p.rule_hash || '')}</div></details>` : ''}
       <div class="rec">${esc(recLine)}</div>
     </div>`;
   }).join('') + '</div>';
@@ -430,10 +448,10 @@ function render(D){
 
 <section>
   <h2><span class="num">02</span>3つのAIの予想</h2>
-  <p>ChatGPT・Claude・Geminiに、同じ直近10回の当選番号だけを渡して予想させています。1回号につき1回だけ問い合わせ、結果は記録に残します。</p>
+  <p>3つのAIは、その場で数字を考えていません。<strong>抽選前にそれぞれが「選定ルール」を宣言し、そのルールが機械的に数字を決めています</strong>。同じ過去データから誰が計算しても同じ数字になり、後から理由を付け替えることはできません。</p>
   ${renderAI(D)}
   <div class="callout" style="margin-top:14px">
-    <strong>この3つも当たりません。</strong>本命3桁が当たる確率はどの予想でも1/1000＝0.1%、候補4数字に当選の1桁以上が含まれる確率は78.4%です。AIが選んでも、上のランダム選出と数学的にまったく同じ確率です。当たらないという事実を記録し続けるための欄です。
+    <strong>この3つも当たりません。</strong>本命3桁が当たる確率はどの予想でも1/1000＝0.1%、候補4数字に当選の1桁以上が含まれる確率は78.4%です。ルールを宣言しても的中率は変わりません。変わるのは<strong>「理由が後付けか、先にあったか」</strong>です。以前は数字を出してから理由を書いていましたが、今は宣言したルールが数字を決めています。ルール文を書き換えた場合は変更履歴に残ります。
   </div>
   ${renderAIRecords(D)}
 </section>
