@@ -1,5 +1,19 @@
 [
  {
+  "round": 7085,
+  "generated_at": "2026-10-03",
+  "candidates": [
+   "5",
+   "6",
+   "8",
+   "9"
+  ],
+  "result": null,
+  "covered": null,
+  "label": "抽選前",
+  "mini_hit": null
+ },
+ {
   "round": 7084,
   "generated_at": "2026-10-02",
   "candidates": [
@@ -8,10 +22,10 @@
    "5",
    "9"
   ],
-  "result": null,
-  "covered": null,
-  "label": "抽選前",
-  "mini_hit": null
+  "result": "869",
+  "covered": 1,
+  "label": "下2桁のうち一の位の「9」は候補にあったが、もう一方の「6」が候補外だった",
+  "mini_hit": false
  },
  {
   "round": 7083,
