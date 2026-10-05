@@ -1,27 +1,27 @@
 {
  "logic_version": "3.0.0-mini",
- "generated_at": "2026-10-03T04:42:56+09:00",
- "target_round": 7085,
+ "generated_at": "2026-10-06T06:46:18+09:00",
+ "target_round": 7086,
  "candidates": [
+  "1",
+  "2",
   "5",
-  "6",
-  "8",
   "9"
  ],
  "basis": {
-  "round": 7084,
-  "date": "2026-10-02",
+  "round": 7085,
+  "date": "2026-10-05",
   "number": "869"
  },
  "selection": {
   "method": "210通り(10C4)から抽選。宝島本の手法に該当する数字を多く含む組をexp(0.2×該当点)の比率でやや選ばれやすくしている",
-  "seed_material": "7085:869:2.1.0-tilted",
-  "hash": "fc6f7c30f75196051dcac01de4903447566af3650351d18a7789e205f20b4b20",
+  "seed_material": "7086:869:2.1.0-tilted",
+  "hash": "6e9c4f5ec68a56f4158490e8be825659f05e5d484f248fffb3eafefb04c95ed5",
   "combos": 210,
   "tilt_weight": 0.2,
-  "probability": 0.006156,
+  "probability": 0.004126,
   "probability_uniform": 0.004762,
-  "ratio_to_uniform": 1.29,
+  "ratio_to_uniform": 0.87,
   "spread": {
    "max": 1.58,
    "min": 0.58
@@ -47,8 +47,8 @@
   "cost": 3200,
   "mini_odds": 1.0,
   "mini_prize": {
-   "n": 1085,
-   "mean": 8636,
+   "n": 1086,
+   "mean": 8637,
    "median": 8600,
    "min": 2900,
    "max": 15700,
@@ -59,6 +59,25 @@
   "ref_expected_covered": 1.2
  },
  "tags": {
+  "1": [
+   {
+    "name": "裏数字",
+    "desc": "前回の当選番号に5を足した数字",
+    "hit_rate": 27.36
+   },
+   {
+    "name": "3回ご無沙汰",
+    "desc": "直近3回このデジットは出ていない",
+    "hit_rate": null
+   }
+  ],
+  "2": [
+   {
+    "name": "4回ご無沙汰",
+    "desc": "直近4回このデジットは出ていない",
+    "hit_rate": null
+   }
+  ],
   "5": [
    {
     "name": "スライド",
@@ -71,37 +90,8 @@
     "hit_rate": 26.94
    },
    {
-    "name": "2回ご無沙汰",
-    "desc": "直近2回このデジットは出ていない",
-    "hit_rate": null
-   }
-  ],
-  "6": [
-   {
-    "name": "ひっぱり",
-    "desc": "前回の当選番号に含まれていた数字",
-    "hit_rate": 27.26
-   },
-   {
-    "name": "前回登場",
-    "desc": "前回の当選番号に含まれていた",
-    "hit_rate": null
-   }
-  ],
-  "8": [
-   {
-    "name": "ひっぱり",
-    "desc": "前回の当選番号に含まれていた数字",
-    "hit_rate": 27.26
-   },
-   {
-    "name": "スライド",
-    "desc": "前回の当選番号の±1の数字",
-    "hit_rate": 27.12
-   },
-   {
-    "name": "前回登場",
-    "desc": "前回の当選番号に含まれていた",
+    "name": "3回ご無沙汰",
+    "desc": "直近3回このデジットは出ていない",
     "hit_rate": null
    }
   ],
@@ -124,9 +114,9 @@
   ]
  },
  "stats": {
-  "draws": 7084,
+  "draws": 7085,
   "mini": {
-   "chi2_last2": 72.8,
+   "chi2_last2": 72.9,
    "chi2_last2_limit": 123.2,
    "top": [
     {
@@ -160,7 +150,7 @@
   },
   "span": [
    "1994-10-07",
-   "2026-10-02"
+   "2026-10-05"
   ],
   "digit_counts": {
    "0": 2136,
@@ -169,17 +159,17 @@
    "3": 2146,
    "4": 2120,
    "5": 2013,
-   "6": 2103,
+   "6": 2104,
    "7": 2099,
-   "8": 2163,
-   "9": 2226
+   "8": 2164,
+   "9": 2227
   },
-  "digit_expected": 2125.2,
-  "chi2_all": 12.32,
+  "digit_expected": 2125.5,
+  "chi2_all": 12.43,
   "chi2_pos": [
-   13.87,
-   6.29,
-   7.65
+   13.92,
+   6.22,
+   7.73
   ],
   "chi2_limit_5": 16.92,
   "chi2_limit_1": 21.67,
@@ -193,7 +183,7 @@
     "5": 637,
     "6": 743,
     "7": 682,
-    "8": 725,
+    "8": 726,
     "9": 755
    },
    {
@@ -203,7 +193,7 @@
     "3": 745,
     "4": 717,
     "5": 692,
-    "6": 681,
+    "6": 682,
     "7": 706,
     "8": 684,
     "9": 733
@@ -218,16 +208,16 @@
     "6": 679,
     "7": 711,
     "8": 754,
-    "9": 738
+    "9": 739
    }
   ],
   "rules": [
    {
     "name": "ひっぱり",
-    "rate": 27.26,
+    "rate": 27.27,
     "base": 27.1,
-    "z": 0.49,
-    "n": 19192,
+    "z": 0.52,
+    "n": 19195,
     "verdict": "有意差なし"
    },
    {
@@ -235,23 +225,23 @@
     "rate": 27.12,
     "base": 27.1,
     "z": 0.07,
-    "n": 38384,
+    "n": 38390,
     "verdict": "有意差なし"
    },
    {
     "name": "裏数字",
     "rate": 27.37,
     "base": 27.1,
-    "z": 0.84,
-    "n": 19192,
+    "z": 0.83,
+    "n": 19195,
     "verdict": "有意差なし"
    },
    {
     "name": "合わせ数字",
-    "rate": 26.95,
+    "rate": 26.94,
     "base": 27.1,
-    "z": -0.47,
-    "n": 19192,
+    "z": -0.48,
+    "n": 19195,
     "verdict": "有意差なし"
    }
   ],
@@ -260,9 +250,9 @@
    "dry_draws": 2291,
    "homogeneity_chi2": 8.22
   },
-  "double_rate": 27.46,
+  "double_rate": 27.45,
   "triple_rate": 0.79,
-  "sum_mean": 13.553
+  "sum_mean": 13.555
  },
  "stale": null,
  "hypotheses": [
@@ -284,21 +274,26 @@
    ],
    "min_rounds": 1000,
    "threshold_p": 0.01,
-   "prediction": "976",
+   "prediction": "087",
    "record": {
-    "n": 1,
+    "n": 2,
     "hits": 0,
     "expected": 0.0,
     "rate": 0.0,
     "baseline_rate": 0.1,
     "p_value": 1.0,
-    "verdict": "検証中（1 / 1000回）",
-    "progress": 0.1
+    "verdict": "検証中（2 / 1000回）",
+    "progress": 0.2
    },
    "history": [
     {
      "round": 7084,
      "prediction": "248",
+     "result": "869"
+    },
+    {
+     "round": 7085,
+     "prediction": "976",
      "result": "869"
     }
    ]
@@ -306,19 +301,19 @@
  ],
  "ai": {
   "mode": "pre-committed-rules",
-  "decided_at": "2026-10-03T04:42:56+09:00",
+  "decided_at": "2026-10-06T06:46:18+09:00",
   "picks": {
    "gpt": {
     "label": "ChatGPT",
     "status": "ok",
     "version": "GPT-v1",
     "title": "検証可能な擬似ランダム基準",
-    "straight": "468",
-    "mini": "68",
+    "straight": "876",
+    "mini": "76",
     "candidates": [
-     "9",
-     "5",
-     "7",
+     "8",
+     "4",
+     "0",
      "6"
     ],
     "reason": "「もっともらしい統計理由」を作る癖を避けるため、あえて予測らしさを捨て、検証可能な擬似ランダムを選んだ。「読めないものを読んだふりしない」ことを自分の役割にするため。",
@@ -327,7 +322,7 @@
     "rule_hash": "50ca20d8a351f055d0f4957436557ef6bc4044441f543e443404219544b5d7d6",
     "detail": {},
     "basis": {
-     "round": 7084,
+     "round": 7085,
      "number": "869"
     }
    },
@@ -351,39 +346,39 @@
     "detail": {
      "gaps": [
       {
-       "0": 8,
-       "1": 7,
-       "2": 12,
-       "3": 3,
-       "4": 5,
-       "5": 2,
-       "6": 1,
-       "7": 4,
+       "0": 9,
+       "1": 8,
+       "2": 13,
+       "3": 4,
+       "4": 6,
+       "5": 3,
+       "6": 2,
+       "7": 5,
        "8": 0,
-       "9": 15
+       "9": 16
       },
       {
-       "0": 1,
-       "1": 2,
-       "2": 3,
-       "3": 6,
-       "4": 51,
-       "5": 8,
-       "6": 0,
-       "7": 24,
-       "8": 7,
-       "9": 18
-      },
-      {
-       "0": 3,
-       "1": 20,
+       "0": 2,
+       "1": 3,
        "2": 4,
-       "3": 13,
-       "4": 18,
-       "5": 73,
-       "6": 1,
-       "7": 7,
-       "8": 2,
+       "3": 7,
+       "4": 52,
+       "5": 9,
+       "6": 0,
+       "7": 25,
+       "8": 8,
+       "9": 19
+      },
+      {
+       "0": 4,
+       "1": 21,
+       "2": 5,
+       "3": 14,
+       "4": 19,
+       "5": 74,
+       "6": 2,
+       "7": 8,
+       "8": 3,
        "9": 0
       }
      ],
@@ -394,14 +389,14 @@
       "3": 2146,
       "4": 2120,
       "5": 2013,
-      "6": 2103,
+      "6": 2104,
       "7": 2099,
-      "8": 2163,
-      "9": 2226
+      "8": 2164,
+      "9": 2227
      }
     },
     "basis": {
-     "round": 7084,
+     "round": 7085,
      "number": "869"
     }
    },
@@ -410,13 +405,13 @@
     "status": "ok",
     "version": "Gemini-v1",
     "title": "重み付け周期相関フィルタ",
-    "straight": "444",
-    "mini": "44",
+    "straight": "333",
+    "mini": "33",
     "candidates": [
-     "4",
      "3",
-     "5",
-     "7"
+     "4",
+     "7",
+     "5"
     ],
     "reason": "GPTが「ランダムによる透明性」、Claudeが「心理的バイアスの可視化」を選んだため、データの中にある擬似的なパターンを最大限に搾り出す統計的アプローチをとる。多くのプレイヤーが「攻略」と考える王道的手法をあえて計算式として固定し、それがいかに無力かを実証する役割を担う。",
     "self_assessment": "的中率は期待していない。独立事象に対して周期性や頻度を追うことが理論的な誤りであることを、自らそのルールを体現し続けることで証明する。「分析すればするほど、もっともらしいが外れる」というAIの限界を示したい。",
@@ -424,23 +419,23 @@
     "rule_hash": "492146e86d59782bb94ba88c8e2622f21783a023f48420bfcd03bec06ae963a9",
     "detail": {
      "lag": 10,
-     "lag_rate": 10.296,
-     "boost_from": "682",
+     "lag_rate": 10.294,
+     "boost_from": "056",
      "freq30": {
       "0": 9,
       "1": 10,
       "2": 13,
-      "3": 4,
+      "3": 3,
       "4": 3,
       "5": 7,
-      "6": 14,
-      "7": 7,
-      "8": 15,
+      "6": 15,
+      "7": 6,
+      "8": 16,
       "9": 8
      }
     },
     "basis": {
-     "round": 7084,
+     "round": 7085,
      "number": "869"
     }
    }
@@ -456,10 +451,10 @@
  "ai_records": {
   "gpt": {
    "label": "ChatGPT",
-   "n": 3,
+   "n": 4,
    "straight": 0,
-   "covered": 2,
-   "atleast1": 2,
+   "covered": 4,
+   "atleast1": 3,
    "all3": 0,
    "history": [
     {
@@ -503,18 +498,32 @@
      "covered": 1,
      "straight_hit": false,
      "version": "GPT-v1"
+    },
+    {
+     "round": 7085,
+     "result": "869",
+     "straight": "468",
+     "candidates": [
+      "9",
+      "5",
+      "7",
+      "6"
+     ],
+     "covered": 2,
+     "straight_hit": false,
+     "version": "GPT-v1"
     }
    ],
-   "mean_covered": 0.667,
-   "atleast1_rate": 66.7,
+   "mean_covered": 1.0,
+   "atleast1_rate": 75.0,
    "all3_rate": 0.0
   },
   "claude": {
    "label": "Claude",
-   "n": 3,
+   "n": 4,
    "straight": 0,
-   "covered": 2,
-   "atleast1": 2,
+   "covered": 3,
+   "atleast1": 3,
    "all3": 0,
    "history": [
     {
@@ -558,15 +567,29 @@
      "covered": 1,
      "straight_hit": false,
      "version": "Claude-v1"
+    },
+    {
+     "round": 7085,
+     "result": "869",
+     "straight": "945",
+     "candidates": [
+      "5",
+      "7",
+      "6",
+      "1"
+     ],
+     "covered": 1,
+     "straight_hit": false,
+     "version": "Claude-v1"
     }
    ],
-   "mean_covered": 0.667,
-   "atleast1_rate": 66.7,
+   "mean_covered": 0.75,
+   "atleast1_rate": 75.0,
    "all3_rate": 0.0
   },
   "gemini": {
    "label": "Gemini",
-   "n": 3,
+   "n": 4,
    "straight": 0,
    "covered": 2,
    "atleast1": 1,
@@ -613,16 +636,30 @@
      "covered": 0,
      "straight_hit": false,
      "version": "Gemini-v1"
+    },
+    {
+     "round": 7085,
+     "result": "869",
+     "straight": "444",
+     "candidates": [
+      "4",
+      "3",
+      "5",
+      "7"
+     ],
+     "covered": 0,
+     "straight_hit": false,
+     "version": "Gemini-v1"
     }
    ],
-   "mean_covered": 0.667,
-   "atleast1_rate": 33.3,
+   "mean_covered": 0.5,
+   "atleast1_rate": 25.0,
    "all3_rate": 0.0
   }
  },
  "record": {
-  "count": 4,
+  "count": 5,
   "start_round": 7082,
-  "judged": 3
+  "judged": 4
  }
 }

@@ -1,5 +1,19 @@
 [
  {
+  "round": 7086,
+  "generated_at": "2026-10-06",
+  "candidates": [
+   "1",
+   "2",
+   "5",
+   "9"
+  ],
+  "result": null,
+  "covered": null,
+  "label": "抽選前",
+  "mini_hit": null
+ },
+ {
   "round": 7085,
   "generated_at": "2026-10-03",
   "candidates": [
@@ -8,10 +22,10 @@
    "8",
    "9"
   ],
-  "result": null,
-  "covered": null,
-  "label": "抽選前",
-  "mini_hit": null
+  "result": "869",
+  "covered": 3,
+  "label": "下2桁「69」は候補16通りの中にあった（ミニ的中）",
+  "mini_hit": true
  },
  {
   "round": 7084,
