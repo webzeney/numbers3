@@ -348,9 +348,15 @@ function renderSnapshot(S){
   <p>${S.demo ? 'ハズレたときの表示を確認するための見本ページです。候補も結果も架空です。'
     : `${esc(S.generated_at)} に生成。第${S.basis.round}回（${esc(S.basis.date)}・当選番号 ${esc(S.basis.number)}）の確定を受けて選出しました。`}</p>
   <div class="picks">${renderPicks(S)}</div>
+  <h3>この4数字で作った買い目（16通り）</h3>
+  ${renderTickets(S.candidates)}
   <h3>結果</h3>
   ${outcomeBox(S.outcome, S.result, S.demo)}
-  <p class="note">この予想が1桁も当たらない確率は ${pct(o.miss_all)} でした。候補の選び方によらず決まる値です。</p>
+  <p class="note">${o && o.mini_none !== undefined
+      ? `下2桁の両方が候補に入る確率は ${pct(o.mini_both)}、どちらも入らない確率は ${pct(o.mini_none)} でした。`
+      : (o && o.miss_all !== undefined
+          ? `この予想が1桁も当たらない確率は ${pct(o.miss_all)} でした。`
+          : '')}候補の選び方によらず決まる値です。</p>
 </section>
 
 <section>
