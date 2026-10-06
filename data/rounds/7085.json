@@ -293,11 +293,14 @@
  ],
  "result": {
   "number": "869",
-  "date": "2026-10-05"
+  "date": "2026-10-05",
+  "mini_prize": 9300
  },
  "outcome": {
   "mini_hit": true,
   "last2": "69",
+  "tickets": 16,
+  "cost": 3200,
   "covered": 3,
   "digits": [
    "6",
@@ -328,6 +331,8 @@
     "98",
     "99"
    ]
-  }
+  },
+  "prize": 9300,
+  "profit": 6100
  }
 }
