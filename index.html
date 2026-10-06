@@ -127,6 +127,18 @@ a.rlink:hover{text-decoration:underline}
 .ai-card .st{font:700 40px/1.2 var(--mono); letter-spacing:.04em; margin:12px 0 4px}
 .ai-card .cd{font:14.5px/1.6 var(--mono); color:var(--text2)}
 .ai-card .rs{font-size:13.5px; color:var(--text3); margin-top:10px; line-height:1.7}
+.ledger{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:18px 22px; margin-bottom:18px; display:grid;
+  grid-template-columns:auto repeat(3,auto); gap:10px 28px; align-items:center}
+.ledger .big{font:700 30px/1.1 var(--mono)}
+.ledger .big.plus{color:var(--ok)} .ledger .big.minus{color:var(--ng)}
+.ledger .lbl{font-size:12px; color:var(--text3); margin-top:4px}
+.ledger .sub{font:600 17px/1.2 var(--mono); color:var(--text2)}
+.ledger .cell{min-width:0}
+@media (max-width:560px){
+  .ledger{grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 14px; padding:15px}
+  .ledger .big{font-size:26px} .ledger .sub{font-size:16px} .ledger .lbl{font-size:11.5px}
+}
 .money{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:12px 0}
 .money .m{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px 16px}
 .money .m .v{font:700 24px/1.2 var(--mono)}
@@ -213,7 +225,19 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   .ai-card .st{font-size:31px}
   .ai-card .cd{font-size:14px}
   .ai-card .rs{font-size:13.5px}
-  .money{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:12px 0}
+  .ledger{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:18px 22px; margin-bottom:18px; display:grid;
+  grid-template-columns:auto repeat(3,auto); gap:10px 28px; align-items:center}
+.ledger .big{font:700 30px/1.1 var(--mono)}
+.ledger .big.plus{color:var(--ok)} .ledger .big.minus{color:var(--ng)}
+.ledger .lbl{font-size:12px; color:var(--text3); margin-top:4px}
+.ledger .sub{font:600 17px/1.2 var(--mono); color:var(--text2)}
+.ledger .cell{min-width:0}
+@media (max-width:560px){
+  .ledger{grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 14px; padding:15px}
+  .ledger .big{font-size:26px} .ledger .sub{font-size:16px} .ledger .lbl{font-size:11.5px}
+}
+.money{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:12px 0}
 .money .m{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px 16px}
 .money .m .v{font:700 24px/1.2 var(--mono)}
 .money .m .k{font-size:13px; color:var(--text3); margin-top:6px}
@@ -525,7 +549,16 @@ function render(D){
     st ? `<span><b>最終確認</b> ${esc(jdate(st.checked_at))}</span>` : '',
   ]);
 
-  $('#app').innerHTML = stale + `
+  const rec = D.record || {};
+  const ledger = rec.judged ? `<div class="ledger">
+    <div class="cell"><div class="big ${rec.total_profit >= 0 ? 'plus' : 'minus'}">${rec.total_profit >= 0 ? '+' : ''}${yen(rec.total_profit)}</div>
+      <div class="lbl">通算の収支（第${rec.start_round}回から${rec.judged}回分）</div></div>
+    <div class="cell"><div class="sub">${yen(rec.total_cost)}</div><div class="lbl">購入金額の合計</div></div>
+    <div class="cell"><div class="sub">${yen(rec.total_prize)}</div><div class="lbl">当選金額の合計（的中${rec.hits}回）</div></div>
+    <div class="cell"><div class="sub">${(rec.total_prize / Math.max(1, rec.total_cost) * 100).toFixed(1)}%</div><div class="lbl">回収率（理論値 約43%）</div></div>
+  </div>` : '';
+
+  $('#app').innerHTML = stale + ledger + `
 <section>
   <h2><span class="num">01</span>第${D.target_round}回の候補</h2>
   <p>第${D.basis.round}回（${esc(D.basis.date)}・当選番号 ${esc(D.basis.number)}）の確定を受けて選出しました。</p>
