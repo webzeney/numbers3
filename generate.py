@@ -31,6 +31,7 @@ ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
 CSV_PATH = DATA / "NUMBERS3_ALL.csv"
 ROUNDS = DATA / "rounds"          # 回ごとの保存版ページ用スナップショット
+SITE_CONF = DATA / "site.json"    # 計測タグなどの設定
 SOURCES_DIR = DATA / "sources"    # 取得元ごとの生データ
 TICKET_PRICE = 200                # ミニ1口の価格
 
@@ -46,7 +47,7 @@ SOURCES = [
 ]
 UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
-LOGIC_VERSION = "3.3.0-mini"      # サイト全体のバージョン（表示・記録用）
+LOGIC_VERSION = "3.4.0-mini"      # サイト全体のバージョン（表示・記録用）
 
 # 選出方式そのもののバージョン。乱数の種に使うため、方式を変えない限り凍結する。
 # ここを変えると同じ回でも候補が変わってしまう（2026-10-02に実際に起きた事故）。
@@ -801,6 +802,62 @@ def write_record_csv() -> int:
     return len(rows)
 
 
+def site_conf() -> dict:
+    if SITE_CONF.exists():
+        try:
+            return json.loads(SITE_CONF.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            pass
+    return {}
+
+
+def apply_analytics(conf: dict) -> bool:
+    """index.html のマーカー内に計測タグと所有権確認タグを埋め込む"""
+    f = ROOT / "index.html"
+    if not f.exists():
+        return False
+    html = f.read_text(encoding="utf-8")
+    begin, end = "<!-- ANALYTICS:BEGIN -->", "<!-- ANALYTICS:END -->"
+    if begin not in html or end not in html:
+        return False
+    block = [begin]
+    ver = (conf.get("search_console_verification") or "").strip()
+    if ver:
+        block.append(f'<meta name="google-site-verification" content="{ver}">')
+    ga = (conf.get("ga4_id") or "").strip()
+    if ga:
+        block.append(f'<script async src="https://www.googletagmanager.com/gtag/js?id={ga}"></script>')
+        block.append("<script>window.dataLayer=window.dataLayer||[];"
+                     "function gtag(){dataLayer.push(arguments);}gtag('js',new Date());"
+                     f"gtag('config','{ga}');</script>")
+    block.append(end)
+    new = html[:html.index(begin)] + "\n".join(block) + html[html.index(end) + len(end):]
+    if new != html:
+        f.write_text(new, encoding="utf-8")
+        return True
+    return False
+
+
+def write_seo_files(conf: dict, rounds_index: list[dict]) -> None:
+    """robots.txt と sitemap.xml を書き出す"""
+    base = (conf.get("base_url") or "https://numbers.ota9.site/").rstrip("/") + "/"
+    (ROOT / "robots.txt").write_text(
+        "User-agent: *\nAllow: /\nDisallow: /data/sources/\n"
+        f"\nSitemap: {base}sitemap.xml\n", encoding="utf-8")
+
+    today = now_jst().date().isoformat()
+    urls = [f"  <url><loc>{base}</loc><lastmod>{today}</lastmod>"
+            f"<changefreq>daily</changefreq><priority>1.0</priority></url>"]
+    for r in rounds_index[:60]:
+        d = (r.get("generated_at") or today)[:10]
+        urls.append(f"  <url><loc>{base}?round={r['round']}</loc>"
+                    f"<lastmod>{d}</lastmod><priority>0.6</priority></url>")
+    (ROOT / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(urls) + "\n</urlset>\n", encoding="utf-8")
+
+
 # ---------------------------------------------------------------- 生成
 
 def main() -> None:
@@ -967,6 +1024,10 @@ def main() -> None:
         r = h["record"]
         print(f"  仮説[{h['id']}] 今回の予測 {h['prediction']} / "
               f"{r['verdict']} 的中{r['hits']}回(期待{r['expected']})")
+    conf = site_conf()
+    if apply_analytics(conf):
+        print("  index.html に計測タグを埋め込んだ")
+    write_seo_files(conf, rounds_index)
     n_rec = write_record_csv()
     cmp_f = DATA / "comparison.json"
     if cmp_f.exists():

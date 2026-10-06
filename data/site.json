@@ -1,0 +1,6 @@
+{
+  "base_url": "https://numbers.ota9.site/",
+  "ga4_id": "",
+  "search_console_verification": "",
+  "note": "ga4_id に G-XXXXXXXXXX、search_console_verification に Search Console の確認コードを入れると、generate.py が index.html に埋め込みます"
+}

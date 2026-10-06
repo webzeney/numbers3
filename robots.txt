@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /data/sources/
+
+Sitemap: https://numbers.ota9.site/sitemap.xml
