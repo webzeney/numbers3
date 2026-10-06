@@ -4,5 +4,7 @@
  "search_console_verification": "",
  "note": "ga4_id に G-XXXXXXXXXX、search_console_verification に Search Console の確認コードを入れると、generate.py が index.html に埋め込みます",
  "ga4_property": "numbers.ota9.site（メディアサイト アカウント配下）",
- "ga4_stream": "ナンバーズ3ミニ 候補数字 / 16050989128"
+ "ga4_stream": "ナンバーズ3ミニ 候補数字 / 16050989128",
+ "search_console_file": "google42c714126b462f90.html",
+ "search_console_property": "https://numbers.ota9.site/ (URLプレフィックス)"
 }
