@@ -31,6 +31,7 @@ DATA = ROOT / "data"
 CSV_PATH = DATA / "NUMBERS3_ALL.csv"
 ROUNDS = DATA / "rounds"          # 回ごとの保存版ページ用スナップショット
 SOURCES_DIR = DATA / "sources"    # 取得元ごとの生データ
+TICKET_PRICE = 200                # ミニ1口の価格
 
 # 取得元。いずれか新しいものを採用し、重なる範囲の当選番号が一致するか照合する。
 # みずほ銀行(公式)は機械的なアクセスを403で拒否するため、中継サイトを使う。
@@ -44,7 +45,7 @@ SOURCES = [
 ]
 UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
-LOGIC_VERSION = "3.0.0-mini"      # サイト全体のバージョン（表示・記録用）
+LOGIC_VERSION = "3.1.0-mini"      # サイト全体のバージョン（表示・記録用）
 
 # 選出方式そのもののバージョン。乱数の種に使うため、方式を変えない限り凍結する。
 # ここを変えると同じ回でも候補が変わってしまう（2026-10-02に実際に起きた事故）。
@@ -298,6 +299,27 @@ def check_target_not_drawn(draws: list[dict], now: datetime | None = None) -> No
             kind=kind)
 
 
+def mini_prize_map() -> dict[int, int]:
+    """回号 → ミニの当選金額。取得元の生データから読む(無ければ空)"""
+    out = {}
+    for name, enc, col in (("loto-life", "cp932", 12), ("mk-mode", "utf-8", 13)):
+        f = SOURCES_DIR / f"{name}.csv"
+        if not f.exists():
+            continue
+        try:
+            rows = list(csv.reader(f.read_text(encoding=enc).splitlines()))[1:]
+        except (UnicodeDecodeError, OSError):
+            continue
+        for row in rows:
+            if row and row[0].strip().isdigit() and len(row) > col:
+                v = row[col].strip().replace(",", "")
+                if v.isdigit() and int(v) > 0:
+                    out.setdefault(int(row[0]), int(v))
+        if out:
+            break
+    return out
+
+
 def mini_prize_stats() -> dict:
     """取得元の生データからミニの当選金額を集計する(無ければNone)"""
     f = SOURCES_DIR / "loto-life.csv"
@@ -524,9 +546,12 @@ def judge(combo: list[str], number: str) -> dict:
     elif double:
         label += "【ダブル発生】"
 
+    tickets = sorted({a + b for a in combo for b in combo})
     return {
         "mini_hit": mini_hit,
         "last2": last2,
+        "tickets": len(tickets),
+        "cost": len(tickets) * TICKET_PRICE,
         "covered": len(covered), "digits": uniq,
         "all3": set(number) <= set(combo),
         "label": label,
@@ -567,16 +592,36 @@ def fill_results(draws: list[dict]) -> None:
     if not ROUNDS.exists():
         return
     results = {d["round"]: d for d in draws}
+    prizes = mini_prize_map()
     for f in ROUNDS.glob("*.json"):
         if f.name == "index.json":
             continue
         snap = json.loads(f.read_text(encoding="utf-8"))
         simulated = bool((snap.get("result") or {}).get("SIMULATED"))
-        if (snap.get("result") and not simulated) or snap["target_round"] not in results:
+        if snap.get("result") and not simulated:
+            # 既存の回でも、金額や収支が未記入なら補う
+            oc = snap.get("outcome") or {}
+            if "profit" not in oc and snap.get("candidates"):
+                oc = judge(snap["candidates"], snap["result"]["number"])
+                prize = prizes.get(snap["target_round"])
+                if prize:
+                    snap["result"]["mini_prize"] = prize
+                oc["prize"] = prize if (prize and oc["mini_hit"]) else 0
+                oc["profit"] = (oc["prize"] or 0) - oc["cost"]
+                snap["outcome"] = oc
+                f.write_text(json.dumps(snap, ensure_ascii=False, indent=1), encoding="utf-8")
+            continue
+        if snap["target_round"] not in results:
             continue
         d = results[snap["target_round"]]
         snap["result"] = {"number": d["number"], "date": str(d["date"])}
         snap["outcome"] = judge(snap["candidates"], d["number"])
+        prize = prizes.get(snap["target_round"])
+        if prize:
+            snap["result"]["mini_prize"] = prize
+        oc = snap["outcome"]
+        oc["prize"] = prize if (prize and oc["mini_hit"]) else 0
+        oc["profit"] = (oc["prize"] or 0) - oc["cost"]
         # AIの予想も同じ当選番号で採点する
         for name, pick in (snap.get("ai", {}).get("picks", {}) or {}).items():
             if pick.get("status") == "ok":
@@ -603,6 +648,9 @@ def build_rounds_index() -> list[dict]:
             "covered": (snap.get("outcome") or {}).get("covered"),
             "label": (snap.get("outcome") or {}).get("label", "抽選前"),
             "mini_hit": (snap.get("outcome") or {}).get("mini_hit"),
+            "cost": (snap.get("outcome") or {}).get("cost"),
+            "prize": (snap.get("outcome") or {}).get("prize"),
+            "profit": (snap.get("outcome") or {}).get("profit"),
         })
     (ROUNDS / "index.json").write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -802,10 +850,15 @@ def main() -> None:
     save_snapshot(latest)
     fill_results(draws)
     rounds_index = build_rounds_index()
+    judged = [r for r in rounds_index if r.get("profit") is not None]
     latest["record"] = {
         "count": len(rounds_index),
         "start_round": min((r["round"] for r in rounds_index), default=None),
-        "judged": sum(1 for r in rounds_index if r["result"]),
+        "judged": len(judged),
+        "total_cost": sum(r["cost"] or 0 for r in judged),
+        "total_prize": sum(r["prize"] or 0 for r in judged),
+        "total_profit": sum(r["profit"] or 0 for r in judged),
+        "hits": sum(1 for r in judged if r.get("mini_hit")),
     }
     (DATA / "latest.json").write_text(
         json.dumps(latest, ensure_ascii=False, indent=1), encoding="utf-8")

@@ -127,6 +127,11 @@ a.rlink:hover{text-decoration:underline}
 .ai-card .st{font:700 40px/1.2 var(--mono); letter-spacing:.04em; margin:12px 0 4px}
 .ai-card .cd{font:14.5px/1.6 var(--mono); color:var(--text2)}
 .ai-card .rs{font-size:13.5px; color:var(--text3); margin-top:10px; line-height:1.7}
+.money{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:12px 0}
+.money .m{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px 16px}
+.money .m .v{font:700 24px/1.2 var(--mono)}
+.money .m .k{font-size:13px; color:var(--text3); margin-top:6px}
+.money .m.plus .v{color:var(--ok)} .money .m.minus .v{color:var(--ng)}
 .tickets{display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:6px; margin:10px 0 14px}
 .tickets span{font:600 15px/1 var(--mono); text-align:center; padding:9px 0;
   background:var(--surface2); border:1px solid var(--line); border-radius:7px; letter-spacing:.04em}
@@ -208,7 +213,12 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   .ai-card .st{font-size:31px}
   .ai-card .cd{font-size:14px}
   .ai-card .rs{font-size:13.5px}
-  .tickets{display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:6px; margin:10px 0 14px}
+  .money{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:12px 0}
+.money .m{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px 16px}
+.money .m .v{font:700 24px/1.2 var(--mono)}
+.money .m .k{font-size:13px; color:var(--text3); margin-top:6px}
+.money .m.plus .v{color:var(--ok)} .money .m.minus .v{color:var(--ng)}
+.tickets{display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:6px; margin:10px 0 14px}
 .tickets span{font:600 15px/1 var(--mono); text-align:center; padding:9px 0;
   background:var(--surface2); border:1px solid var(--line); border-radius:7px; letter-spacing:.04em}
 @media (max-width:560px){ .tickets{grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px}
@@ -352,6 +362,7 @@ function renderSnapshot(S){
   ${renderTickets(S.candidates)}
   <h3>結果</h3>
   ${outcomeBox(S.outcome, S.result, S.demo)}
+  ${renderMoney(S.outcome, S.result)}
   <p class="note">${o && o.mini_none !== undefined
       ? `下2桁の両方が候補に入る確率は ${pct(o.mini_both)}、どちらも入らない確率は ${pct(o.mini_none)} でした。`
       : (o && o.miss_all !== undefined
@@ -426,6 +437,22 @@ function renderAIRecords(D){
       <td class="mono">${r.atleast1_rate}%<span class="dim"> / 78.4%</span></td>
       <td class="mono">${r.all3_rate}%<span class="dim"> / 6.4%</span></td>
     </tr>`).join('')}</tbody></table></div>`;
+}
+
+function yen(v){ return (v < 0 ? '−' : '') + '¥' + Math.abs(v).toLocaleString(); }
+
+function renderMoney(outcome, result){
+  if(!outcome || !result || outcome.cost === undefined) return '';
+  const prize = outcome.prize || 0, profit = outcome.profit || 0;
+  return `<h3>この回の収支</h3>
+  <div class="money">
+    <div class="m"><div class="v">${yen(outcome.cost)}</div><div class="k">購入金額（${outcome.tickets}通り × 200円）</div></div>
+    <div class="m ${prize ? 'plus' : ''}"><div class="v">${yen(prize)}</div><div class="k">${prize ? 'ミニの当選金額（1口あたり）' : '当選金額（的中なし）'}</div></div>
+    <div class="m ${profit >= 0 ? 'plus' : 'minus'}"><div class="v">${profit >= 0 ? '+' : ''}${yen(profit)}</div><div class="k">収支</div></div>
+  </div>
+  <p class="note">${prize
+    ? `下2桁「${esc(outcome.last2)}」が買い目16通りの中にあったため的中。1口200円で買っているので、当選金額 ${yen(prize)} から購入金額 ${yen(outcome.cost)} を引いて <strong>${profit >= 0 ? '+' : ''}${yen(profit)}</strong> です。`
+    : `下2桁「${esc(outcome.last2)}」は買い目16通りに無かったため、購入金額 ${yen(outcome.cost)} がそのまま損失になります。`}</p>`;
 }
 
 function renderTickets(cands){
@@ -587,6 +614,15 @@ function render(D){
   <h2><span class="num">07</span>保存版ページ</h2>
   <p>各回の予想ページをそのまま保存しています。候補・乱数の種・AIの予想・結果の検証が、当時の形で残ります。</p>
   ${D.record && D.record.start_round ? `<p class="note">記録は<strong>第${D.record.start_round}回から</strong>。現在 ${D.record.count}回分を保存し、うち${D.record.judged}回が結果確定済みです。</p>` : ''}
+  ${D.record && D.record.judged ? `
+  <h3>毎回16通りを買い続けた場合の累計</h3>
+  <div class="money">
+    <div class="m"><div class="v">${yen(D.record.total_cost)}</div><div class="k">購入金額の合計（${D.record.judged}回分）</div></div>
+    <div class="m ${D.record.total_prize ? 'plus' : ''}"><div class="v">${yen(D.record.total_prize)}</div><div class="k">当選金額の合計（的中${D.record.hits}回）</div></div>
+    <div class="m ${D.record.total_profit >= 0 ? 'plus' : 'minus'}"><div class="v">${D.record.total_profit >= 0 ? '+' : ''}${yen(D.record.total_profit)}</div><div class="k">通算の収支</div></div>
+    <div class="m"><div class="v">${(D.record.total_prize / Math.max(1, D.record.total_cost) * 100).toFixed(1)}%</div><div class="k">回収率（理論値は約43%）</div></div>
+  </div>
+  <p class="note">実際に買ったわけではなく、候補16通りを毎回1口ずつ買ったと仮定した計算です。記録が少ないうちは大きく振れます。長く続けるほど理論値の43%に近づきます。</p>` : ''}
   ${renderRounds(D.__rounds || [])}
 </section>
 
