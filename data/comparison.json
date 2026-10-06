@@ -1,0 +1,36 @@
+{
+ "generated_at": "2026-10-06T14:53:17+09:00",
+ "span": [
+  201,
+  7085
+ ],
+ "note": "Claudeの提案により、重み付け版と一様版を同じ条件で比較した。ミニ的中率の理論値は16.0%、平均カバー桁数は1.200、連続回のセット重複は1.60、有効候補数は210が一様の値。",
+ "variants": [
+  {
+   "weight": 0.2,
+   "n": 6885,
+   "mini_rate": 16.485,
+   "mean_covered": 1.2078,
+   "chi2": 3.8,
+   "overlap": 1.596,
+   "unique_sets": 210,
+   "rate_max": 40.7,
+   "rate_min": 39.4,
+   "effective_combos": 196.3,
+   "label": "重み0.2（現行）"
+  },
+  {
+   "weight": 0.0,
+   "n": 6885,
+   "mini_rate": 15.802,
+   "mean_covered": 1.1893,
+   "chi2": 8.0,
+   "overlap": 1.597,
+   "unique_sets": 210,
+   "rate_max": 40.7,
+   "rate_min": 38.9,
+   "effective_combos": 210.0,
+   "label": "重みなし（一様）"
+  }
+ ]
+}

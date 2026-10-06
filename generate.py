@@ -46,7 +46,7 @@ SOURCES = [
 ]
 UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
-LOGIC_VERSION = "3.2.0-mini"      # サイト全体のバージョン（表示・記録用）
+LOGIC_VERSION = "3.3.0-mini"      # サイト全体のバージョン（表示・記録用）
 
 # 選出方式そのもののバージョン。乱数の種に使うため、方式を変えない限り凍結する。
 # ここを変えると同じ回でも候補が変わってしまう（2026-10-02に実際に起きた事故）。
@@ -385,8 +385,11 @@ def pick(target_round: int, prev_number: str) -> dict:
             chosen, prob = combo, wt / total
             break
     uniform = 1 / len(COMBOS)
+    probs = [x / total for x in weights]
+    effective = 1 / sum(x * x for x in probs)   # 有効候補数(1/Σp²)。一様なら210
     return {
         "combo": list(chosen), "seed_material": material, "hash": h,
+        "effective_combos": round(effective, 1),
         "tilt_weight": TILT_WEIGHT,
         "tag_points": pts,
         "probability": round(prob, 6),
@@ -759,6 +762,45 @@ def build_hypotheses(draws: list[dict], target_round: int) -> list[dict]:
     return out
 
 
+RECORD_HEADER = (["回号", "生成日時", "候補", "種の材料", "ハッシュ", "選出確率",
+                  "一様比", "有効候補数"]
+                 + [f"原典pt_{d}" for d in DIGITS]
+                 + ["当選番号", "下2桁", "ミニ的中", "購入額", "当選額", "収支"])
+
+
+def write_record_csv() -> int:
+    """各回の候補を第三者が再現・検証できるCSVを書き出す
+
+    ChatGPT提案(selected/hit/payout/cost/ハッシュ)と
+    Gemini提案(各数字の重み合計)を1つの表にまとめたもの。
+    """
+    if not ROUNDS.exists():
+        return 0
+    rows = []
+    for f in sorted(ROUNDS.glob("[0-9]*.json"), key=lambda x: int(x.stem)):
+        snap = json.loads(f.read_text(encoding="utf-8"))
+        sel = snap.get("selection", {})
+        oc = snap.get("outcome") or {}
+        res = snap.get("result") or {}
+        pts = sel.get("tag_points") or {}
+        rows.append([
+            snap["target_round"], snap.get("generated_at", ""),
+            ",".join(snap.get("candidates", [])),
+            sel.get("seed_material", ""), sel.get("hash", ""),
+            sel.get("probability", ""), sel.get("ratio_to_uniform", ""),
+            sel.get("effective_combos", ""),
+            *[pts.get(d, "") for d in DIGITS],
+            res.get("number", ""), oc.get("last2", ""),
+            "" if not res else ("1" if oc.get("mini_hit") else "0"),
+            oc.get("cost", ""), oc.get("prize", ""), oc.get("profit", ""),
+        ])
+    with (DATA / "record.csv").open("w", encoding="utf-8-sig", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(RECORD_HEADER)
+        w.writerows(rows)
+    return len(rows)
+
+
 # ---------------------------------------------------------------- 生成
 
 def main() -> None:
@@ -842,6 +884,7 @@ def main() -> None:
             "ratio_to_uniform": picked["ratio_to_uniform"],
             "spread": picked["spread"],
             "tag_points": picked["tag_points"],
+            "effective_combos": picked["effective_combos"],
         },
         "odds": {
             # ミニ（下2桁一致）を基準にした確率。候補4数字で下2桁を組むと 4×4=16通り
@@ -924,6 +967,16 @@ def main() -> None:
         r = h["record"]
         print(f"  仮説[{h['id']}] 今回の予測 {h['prediction']} / "
               f"{r['verdict']} 的中{r['hits']}回(期待{r['expected']})")
+    n_rec = write_record_csv()
+    cmp_f = DATA / "comparison.json"
+    if cmp_f.exists():
+        try:
+            latest["comparison"] = json.loads(cmp_f.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            pass
+    (DATA / "latest.json").write_text(
+        json.dumps(latest, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"  再現検証用CSV {n_rec}行 (data/record.csv)")
     print(f"  保存版ページ {len(rounds_index)}件 (data/rounds/)")
     print("  data/latest.json を書き出した")
 
