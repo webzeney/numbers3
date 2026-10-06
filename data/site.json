@@ -1,6 +1,8 @@
 {
-  "base_url": "https://numbers.ota9.site/",
-  "ga4_id": "",
-  "search_console_verification": "",
-  "note": "ga4_id に G-XXXXXXXXXX、search_console_verification に Search Console の確認コードを入れると、generate.py が index.html に埋め込みます"
+ "base_url": "https://numbers.ota9.site/",
+ "ga4_id": "G-BDRDYG9JK7",
+ "search_console_verification": "",
+ "note": "ga4_id に G-XXXXXXXXXX、search_console_verification に Search Console の確認コードを入れると、generate.py が index.html に埋め込みます",
+ "ga4_property": "numbers.ota9.site（メディアサイト アカウント配下）",
+ "ga4_stream": "ナンバーズ3ミニ 候補数字 / 16050989128"
 }
