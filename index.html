@@ -25,6 +25,10 @@
   --accent:#5b8cff; --ok:#3fbd81; --warn:#e0a94a; --ng:#f0645c;
 }
 *{box-sizing:border-box}
+/* 日本語の改行位置を語句の切れ目に寄せる(対応ブラウザのみ) */
+p, .note, .callout, .lede, .odd .k, .ledger .lbl, .hyp .claim, .hyp ul, .ai-card .rs,
+.result .txt, footer, li{ word-break:auto-phrase; line-break:strict; }
+
 body{
   margin:0; background:var(--bg); color:var(--text);
   font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
@@ -45,7 +49,7 @@ section{
 h2{font-size:18px; margin:0 0 16px; display:flex; align-items:baseline; gap:10px}
 h2 .num{font:600 13px/1 var(--mono); color:var(--text3); letter-spacing:.1em}
 h3{font-size:16px; margin:26px 0 12px; color:var(--text2)}
-p{margin:0 0 14px; font-size:15px; color:var(--text2); max-width:80ch}
+p{margin:0 0 14px; font-size:15px; color:var(--text2)}
 .note{font-size:13.5px; color:var(--text3); line-height:1.8}
 
 /* 候補数字 */
@@ -170,14 +174,13 @@ a.rlink:hover{text-decoration:underline}
 .callout{
   border-left:4px solid var(--accent); background:var(--surface2);
   padding:16px 20px; border-radius:0 10px 10px 0; font-size:14.5px; color:var(--text2);
-  line-height:1.85; max-width:92ch;
+  line-height:1.85;
 }
 .callout strong{color:var(--text)}
 footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; line-height:1.8}
 .err{color:var(--ng); font-size:13px}
 .load{color:var(--text3); font-size:13px}
 @media (max-width:560px){
-  p, .callout{max-width:none}
   .wrap{padding:18px 13px 48px}
   section{padding:16px 13px; border-radius:10px}
   h1{font-size:22px}
