@@ -24,6 +24,7 @@ from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 
 import ai_rules
+import auto_debate
 import hypotheses
 
 ROOT = Path(__file__).resolve().parent
@@ -45,7 +46,7 @@ SOURCES = [
 ]
 UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
-LOGIC_VERSION = "3.1.0-mini"      # サイト全体のバージョン（表示・記録用）
+LOGIC_VERSION = "3.2.0-mini"      # サイト全体のバージョン（表示・記録用）
 
 # 選出方式そのもののバージョン。乱数の種に使うため、方式を変えない限り凍結する。
 # ここを変えると同じ回でも候補が変わってしまう（2026-10-02に実際に起きた事故）。
@@ -567,7 +568,8 @@ def judge(combo: list[str], number: str) -> dict:
 # ---------------------------------------------------------------- 保存版ページ
 
 SNAPSHOT_KEYS = ("logic_version", "generated_at", "target_round", "candidates",
-                 "basis", "selection", "odds", "tags", "ai", "hypotheses")
+                 "basis", "selection", "odds", "tags", "ai", "hypotheses",
+                 "ai_comments")
 
 
 def save_snapshot(latest: dict) -> None:
@@ -599,7 +601,21 @@ def fill_results(draws: list[dict]) -> None:
         snap = json.loads(f.read_text(encoding="utf-8"))
         simulated = bool((snap.get("result") or {}).get("SIMULATED"))
         if snap.get("result") and not simulated:
-            # 既存の回でも、金額や収支が未記入なら補う
+            # 既存の回でも、所見が未取得なら後から付ける
+            if "ai_comments" not in snap and "--no-ai" not in sys.argv and snap.get("candidates"):
+                oc0 = snap.get("outcome") or {}
+                num = snap["result"]["number"]
+                ctx = (f"第{snap['target_round']}回の結果が出ました。\n"
+                       f"- サイトの候補4数字: {','.join(snap['candidates'])}"
+                       f"（これで作る買い目は16通り、3,200円）\n"
+                       f"- 当選番号: {num}（ミニの対象は下2桁の {num[1:]}）\n"
+                       f"- 判定: {'ミニ的中' if oc0.get('mini_hit') else '外れ'}")
+                got = auto_debate.reflect(snap["target_round"], ctx)
+                if got:
+                    snap["ai_comments"] = got
+                    f.write_text(json.dumps(snap, ensure_ascii=False, indent=1), encoding="utf-8")
+                    print(f"  第{snap['target_round']}回への所見を追加")
+            # 金額や収支が未記入なら補う
             oc = snap.get("outcome") or {}
             if "profit" not in oc and snap.get("candidates"):
                 oc = judge(snap["candidates"], snap["result"]["number"])
@@ -616,6 +632,21 @@ def fill_results(draws: list[dict]) -> None:
         d = results[snap["target_round"]]
         snap["result"] = {"number": d["number"], "date": str(d["date"])}
         snap["outcome"] = judge(snap["candidates"], d["number"])
+        if "--no-ai" not in sys.argv:
+            oc0 = snap["outcome"]
+            ctx = (f"第{snap['target_round']}回の結果が出ました。\n"
+                   f"- サイトの候補4数字: {','.join(snap['candidates'])}"
+                   f"（これで作る買い目は16通り、3,200円）\n"
+                   f"- 当選番号: {d['number']}（ミニの対象は下2桁の {d['number'][1:]}）\n"
+                   f"- 判定: {'ミニ的中' if oc0['mini_hit'] else '外れ'}\n"
+                   f"- 3つのAIが宣言ルールで出した本命(下2桁): "
+                   + " / ".join(f"{p0['label']} {p0.get('mini', '—')}"
+                                for p0 in (snap.get("ai", {}).get("picks", {}) or {}).values()))
+            got = auto_debate.reflect(snap["target_round"], ctx)
+            if got:
+                snap["ai_comments"] = got
+                print(f"  第{snap['target_round']}回への所見: "
+                      + " / ".join(v["label"] for v in got.values()))
         prize = prizes.get(snap["target_round"])
         if prize:
             snap["result"]["mini_prize"] = prize
@@ -829,6 +860,28 @@ def main() -> None:
     }
     latest["stale"] = None
     latest["hypotheses"] = build_hypotheses(draws, target_round)
+
+    # 週1回、3者が設計について議論する（提案は保留扱いで自動適用しない）
+    if "--no-ai" not in args:
+        try:
+            rec = latest.get("record", {})
+            ctx = (f"現在の対象は第{target_round}回。候補は {','.join(picked['combo'])}。\n"
+                   f"選出方式: 210通りから抽選し、宝島本の手法に該当する数字を多く含む組を"
+                   f"exp(0.2×該当点)でやや優遇。種は「回号+直近当選番号」のSHA-256。\n"
+                   f"全履歴{len(draws)}回の検定では原典4手法いずれも基準27.10%と有意差なし。\n"
+                   f"記録: {rec.get('judged', 0)}回分が確定済み、的中{rec.get('hits', 0)}回、"
+                   f"通算収支{rec.get('total_profit', 0)}円、回収率は理論43%。\n"
+                   f"重要な制約: 提案はサイトに自動適用されない。依頼主が承認して初めて反映される。")
+            d = auto_debate.run_weekly(ctx, now_jst())
+            if d:
+                print(f"  週次討論を実施: 第{d['no']}回「{d['topic']}」"
+                      f"（{len(d['transcript'])}発言）")
+        except Exception as e:                      # noqa: BLE001
+            print(f"  週次討論に失敗: {str(e)[:100]}", file=sys.stderr)
+    latest["debates"] = auto_debate.build_index()[:10]
+    _d = sorted(auto_debate.DEBATES.glob("[0-9]*.json"),
+                key=lambda x: -int(x.stem)) if auto_debate.DEBATES.exists() else []
+    latest["debate_latest"] = json.loads(_d[0].read_text(encoding="utf-8")) if _d else None
 
     # 3つのAIの予想: 各AIが事前に宣言したルールを実行する(その場で考えない)
     if "--no-ai" not in args:

@@ -153,12 +153,23 @@ a.rlink:hover{text-decoration:underline}
   background:var(--surface2); border:1px solid var(--line); border-radius:7px; letter-spacing:.04em}
 @media (max-width:560px){ .tickets{grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px}
   .tickets span{font-size:14px; padding:8px 0} }
+.cmt{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin:10px 0 4px}
+.cmt .c{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px 16px}
+.cmt .c .who{font-size:13px; font-weight:600; margin-bottom:6px}
+.cmt .c .tx{font-size:14px; color:var(--text2); line-height:1.75}
+.deb{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:12px}
+.deb .topic{font-size:16px; font-weight:600; margin-bottom:4px}
+.deb .meta{font:11.5px/1.6 var(--mono); color:var(--text3); margin-bottom:12px}
+.deb .say{border-top:1px solid var(--line); padding-top:12px; margin-top:12px}
+.deb .say .who{font-size:13.5px; font-weight:600; margin-bottom:4px}
+.deb .say .tx{font-size:14px; color:var(--text2); line-height:1.8; white-space:pre-wrap}
+.deb .next{font-size:13px; color:var(--text3); margin-top:12px; padding-top:10px; border-top:1px dashed var(--line)}
 .hyp{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px}
 .hyp h4{margin:0 0 6px; font-size:16px}
 .hyp .claim{font-size:14px; color:var(--text2); margin:0 0 12px}
 .hyp .prog{height:8px; background:var(--bg); border-radius:4px; overflow:hidden; margin:10px 0 6px}
 .hyp .prog i{display:block; height:100%; background:var(--accent)}
-.hyp ul{margin:8px 0 0; padding-left:1.2em; font-size:13px; color:var(--text2); line-height:1.9}
+.hyp ul, ul.hyp-list{margin:8px 0 0; padding-left:1.2em; font-size:13px; color:var(--text2); line-height:1.9}
 .hyp .formula{font:13px/1.7 var(--mono); background:var(--bg); border:1px solid var(--line);
   border-radius:8px; padding:10px 12px; margin:10px 0; word-break:break-all}
 .hyp .verdict{font-weight:600}
@@ -250,12 +261,23 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   background:var(--surface2); border:1px solid var(--line); border-radius:7px; letter-spacing:.04em}
 @media (max-width:560px){ .tickets{grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px}
   .tickets span{font-size:14px; padding:8px 0} }
+.cmt{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin:10px 0 4px}
+.cmt .c{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px 16px}
+.cmt .c .who{font-size:13px; font-weight:600; margin-bottom:6px}
+.cmt .c .tx{font-size:14px; color:var(--text2); line-height:1.75}
+.deb{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:12px}
+.deb .topic{font-size:16px; font-weight:600; margin-bottom:4px}
+.deb .meta{font:11.5px/1.6 var(--mono); color:var(--text3); margin-bottom:12px}
+.deb .say{border-top:1px solid var(--line); padding-top:12px; margin-top:12px}
+.deb .say .who{font-size:13.5px; font-weight:600; margin-bottom:4px}
+.deb .say .tx{font-size:14px; color:var(--text2); line-height:1.8; white-space:pre-wrap}
+.deb .next{font-size:13px; color:var(--text3); margin-top:12px; padding-top:10px; border-top:1px dashed var(--line)}
 .hyp{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:18px 20px}
 .hyp h4{margin:0 0 6px; font-size:16px}
 .hyp .claim{font-size:14px; color:var(--text2); margin:0 0 12px}
 .hyp .prog{height:8px; background:var(--bg); border-radius:4px; overflow:hidden; margin:10px 0 6px}
 .hyp .prog i{display:block; height:100%; background:var(--accent)}
-.hyp ul{margin:8px 0 0; padding-left:1.2em; font-size:13px; color:var(--text2); line-height:1.9}
+.hyp ul, ul.hyp-list{margin:8px 0 0; padding-left:1.2em; font-size:13px; color:var(--text2); line-height:1.9}
 .hyp .formula{font:13px/1.7 var(--mono); background:var(--bg); border:1px solid var(--line);
   border-radius:8px; padding:10px 12px; margin:10px 0; word-break:break-all}
 .hyp .verdict{font-weight:600}
@@ -390,6 +412,7 @@ function renderSnapshot(S){
   <h3>結果</h3>
   ${outcomeBox(S.outcome, S.result, S.demo)}
   ${renderMoney(S.outcome, S.result)}
+  ${renderComments(S.ai_comments)}
   <p class="note">${o && o.mini_none !== undefined
       ? `下2桁の両方が候補に入る確率は ${pct(o.mini_both)}、どちらも入らない確率は ${pct(o.mini_none)} でした。`
       : (o && o.miss_all !== undefined
@@ -467,6 +490,28 @@ function renderAIRecords(D){
 }
 
 function yen(v){ return (v < 0 ? '−' : '') + '¥' + Math.abs(v).toLocaleString(); }
+
+function renderComments(c){
+  if(!c || !Object.keys(c).length) return '';
+  return `<h3>3つのAIの所見</h3>
+  <p class="note">結果が出たあと、3つのAIが自動で書いたものです。人間は指示していません。</p>
+  <div class="cmt">` + ['gpt','claude','gemini'].filter(k => c[k]).map(k =>
+    `<div class="c"><div class="who">${esc(c[k].label)}</div><div class="tx">${esc(c[k].text)}</div></div>`
+  ).join('') + '</div>';
+}
+
+function renderDebate(d, list){
+  if(!d) return '<p class="note">まだ討論は行われていません。</p>';
+  return `<p>3つのAIが週1回、人間の指示なしで設計について議論します。<strong>ここで出た提案がサイトに自動で反映されることはありません</strong>。採用するかどうかは人間が決めます。</p>
+  <div class="deb">
+    <div class="topic">第${d.no}回「${esc(d.topic)}」</div>
+    <div class="meta">${esc(String(d.at).replace('T',' ').slice(0,16))}</div>
+    ${d.transcript.map(t => `<div class="say"><div class="who">${esc(t.label)}</div><div class="tx">${esc(t.text)}</div></div>`).join('')}
+    ${d.next_topic ? `<div class="next">次回の論点: ${esc(d.next_topic)}</div>` : ''}
+  </div>` + (list && list.length > 1 ? `<h3>これまでの議題</h3><ul class="hyp-list">${
+    list.slice(1, 8).map(x => `<li>第${x.no}回 ${esc(x.topic)}（${esc(String(x.at).slice(0,10))}）</li>`).join('')
+  }</ul>` : '');
+}
 
 function renderMoney(outcome, result){
   if(!outcome || !result || outcome.cost === undefined) return '';
@@ -642,12 +687,17 @@ function render(D){
 </section>
 
 <section>
-  <h2><span class="num">06</span>登録した仮説</h2>
+  <h2><span class="num">06</span>AI同士の自動討論</h2>
+  ${renderDebate(D.debate_latest, D.debates)}
+</section>
+
+<section>
+  <h2><span class="num">07</span>登録した仮説</h2>
   ${renderHypotheses(D.hypotheses || [], D.target_round)}
 </section>
 
 <section>
-  <h2><span class="num">07</span>保存版ページ</h2>
+  <h2><span class="num">08</span>保存版ページ</h2>
   <p>各回の予想ページをそのまま保存しています。候補・乱数の種・AIの予想・結果の検証が、当時の形で残ります。</p>
   ${D.record && D.record.start_round ? `<p class="note">記録は<strong>第${D.record.start_round}回から</strong>。現在 ${D.record.count}回分を保存し、うち${D.record.judged}回が結果確定済みです。</p>` : ''}
   ${D.record && D.record.judged ? `
