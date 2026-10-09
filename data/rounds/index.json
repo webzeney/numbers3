@@ -1,12 +1,12 @@
 [
  {
-  "round": 7089,
-  "generated_at": "2026-10-09",
+  "round": 7090,
+  "generated_at": "2026-10-10",
   "candidates": [
-   "3",
-   "5",
-   "6",
-   "8"
+   "0",
+   "2",
+   "4",
+   "7"
   ],
   "result": null,
   "covered": null,
@@ -15,6 +15,23 @@
   "cost": null,
   "prize": null,
   "profit": null
+ },
+ {
+  "round": 7089,
+  "generated_at": "2026-10-09",
+  "candidates": [
+   "3",
+   "5",
+   "6",
+   "8"
+  ],
+  "result": "431",
+  "covered": 1,
+  "label": "下2桁のうち十の位の「3」は候補にあったが、もう一方の「1」が候補外だった",
+  "mini_hit": false,
+  "cost": 3200,
+  "prize": 0,
+  "profit": -3200
  },
  {
   "round": 7088,
