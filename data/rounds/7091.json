@@ -149,6 +149,10 @@
     "basis": {
      "round": 7090,
      "number": "910"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -223,6 +227,10 @@
     "basis": {
      "round": 7090,
      "number": "910"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -262,6 +270,10 @@
     "basis": {
      "round": 7090,
      "number": "910"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -279,5 +291,63 @@
    "prediction": "881",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "552",
+  "date": "2026-10-13",
+  "mini_prize": 9900
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "52",
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 2,
+  "digits": [
+   "5"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「5」は候補にあったが、もう一方の「2」が候補外だった【ダブル発生】",
+  "detail": {
+   "sum": 12,
+   "pattern": "ダブル",
+   "missed": [
+    "2"
+   ],
+   "mini_tickets": [
+    "00",
+    "03",
+    "05",
+    "09",
+    "30",
+    "33",
+    "35",
+    "39",
+    "50",
+    "53",
+    "55",
+    "59",
+    "90",
+    "93",
+    "95",
+    "99"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "gpt": {
+   "label": "ChatGPT",
+   "text": "今回はサイト候補・各AI本命とも対象外でした。確率上起こる通常の外れで、選出方法の評価材料にはなりません。"
+  },
+  "claude": {
+   "label": "Claude",
+   "text": "第7091回は候補・本命とも外れ。3AIの本命が重複せず分散した点以外、特筆すべき点はない。16通りという選択数自体は的中確率に直結する情報だが、今回の結果はその範囲内で起きた一事象に過ぎない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7091回の抽選において、ミニの当選番号は52でした。確率1/100の事象が発生したという事実のみが確認され、特筆すべき点はありません。"
+  }
+ }
 }
