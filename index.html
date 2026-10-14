@@ -353,7 +353,8 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
 .about ol li{margin:6px 0; line-height:1.8}
 .about .concl{margin:0; padding:12px 14px; border-radius:10px; background:var(--bg); line-height:1.9}
 .rule .rh .src{font-size:12px; color:var(--dim); margin-left:auto}
-.rule .plain{margin:10px 0 2px; padding:10px 12px; border-radius:8px; background:var(--bg); line-height:1.9}
+.rule .plain,.hyp .plain{margin:10px 0 2px; padding:12px 14px; border-radius:8px;
+  background:var(--bg); line-height:1.9}
 .tag-arithmetic,.tag-none,.tag-hindsight{display:inline-block; padding:2px 9px; border-radius:999px;
   font-size:12px; font-weight:700}
 .tag-none{background:rgba(120,120,120,.16); color:var(--dim)}
@@ -444,27 +445,56 @@ function outcomeBox(outcome, result, demo){
 }
 
 function renderHypotheses(list, targetRound){
-  if(!list.length) return '<p class="note">登録されている仮説はありません。</p>';
-  return `<p>バックテストで「当たっているように見える現象」が見つかったとき、<strong>後から都合よく解釈できない形で検証する</strong>ための欄です。条件を先に固定し、登録した回以降の実データだけで判定します。</p>` +
-  list.map(h => {
+  const intro = `<p>03で見たとおり、<strong>過去のデータから「よく当たったもの」を選べば、そのデータの中では必ず当たって見えます</strong>（黄金数字がそうでした）。では、自分が同じことをやっていないと、どうやって示せばいいのか。</p>
+  <p>方法は1つしかありません。<strong>ルールを先に決めて公開し、それ以降のデータだけで数える。</strong>この欄は、このサイトが自分自身に同じ検証を課している場所です。都合が悪くなっても式は変えません。途中でやめることもしません。</p>`;
+  if(!list.length) return intro + '<p class="note">いま登録されている仮説はありません。</p>';
+
+  return intro + list.map(h => {
     const r = h.record;
+    const left = Math.max(0, h.min_rounds - r.n);
+    const years = (left / 250).toFixed(1);     // ナンバーズ3は平日のみ=年およそ250回
+    const hist = (h.history || []).slice(-10).reverse();
+
     return `<div class="hyp">
       <h4>${esc(h.title)}</h4>
       <p class="claim">${esc(h.claim)}</p>
       <div class="formula">${esc(h.formula)}</div>
+
+      <h3>いま何が起きているか</h3>
       <div class="odds">
-        <div class="odd"><div class="v">${esc(h.prediction)}</div><div class="k">今回の予測（第${targetRound}回）</div></div>
-        <div class="odd"><div class="v">${r.hits} / ${r.n}</div><div class="k">的中 / 検証回数（期待 ${r.expected}回）</div></div>
-        <div class="odd"><div class="v">${r.p_value === null ? '—' : r.p_value}</div><div class="k">p値（閾値 ${h.threshold_p}）</div></div>
-        <div class="odd"><div class="v">${r.progress}%</div><div class="k">${h.min_rounds}回までの進捗</div></div>
+        <div class="odd"><div class="v">${esc(h.prediction)}</div><div class="k">この式が出した第${targetRound}回の予測</div></div>
+        <div class="odd"><div class="v">${r.hits} / ${r.n}回</div><div class="k">登録してからの的中 / 検証回数</div></div>
+        <div class="odd"><div class="v">${r.progress}%</div><div class="k">結論が出る${h.min_rounds.toLocaleString()}回までの進み具合</div></div>
+        <div class="odd"><div class="v">${years}年</div><div class="k">残り${left.toLocaleString()}回。結論までのおおよその年数</div></div>
       </div>
-      <div class="prog"><i style="width:${Math.min(100, r.progress)}%"></i></div>
-      <p class="note verdict">現在の判定: ${esc(r.verdict)}</p>
-      <h3>なぜ登録したか</h3>
-      <p class="note">${esc(h.origin)}</p>
-      <h3>事前に固定した条件</h3>
+      <div class="prog"><i style="width:${Math.min(100, Math.max(0.6, r.progress))}%"></i></div>
+      <p class="plain"><strong>かみくだくと:</strong> この式が3桁をぴたりと当てる確率は、何の力もなければ1回あたり${r.baseline_rate}%（${Math.round(100 / r.baseline_rate).toLocaleString()}分の1）です。
+      ${r.n}回では当たりが<strong>${r.expected}回</strong>しか期待できないので、<strong>いま${r.hits}回でも当然</strong>です。
+      当たっても外れても、まだ何も分かりません。${h.min_rounds.toLocaleString()}回まで数えて初めて判断できます。
+      ナンバーズ3は平日だけの抽選なので1年およそ250回。<strong>結論が出るのは約${years}年後</strong>です。
+      「すぐに結果が出る」と言う予想法が信用できないのは、本来これだけの回数が必要だからです。</p>
+
+      ${hist.length ? `<h3>予測と結果の記録（直近${hist.length}回）</h3>
+      <p class="note">毎回この式が出した3桁と、実際の当選番号です。当たっていなくても消しません。</p>
+      <div class="scroll"><table>
+        <thead><tr><th>回</th><th>この式の予測</th><th>実際の当選番号</th><th>判定</th></tr></thead>
+        <tbody>${hist.map(x => `<tr>
+          <td>第${x.round}回</td>
+          <td class="mono">${esc(x.prediction)}</td>
+          <td class="mono">${x.result ? esc(x.result) : '<span class="dim">抽選前</span>'}</td>
+          <td class="${x.result && x.prediction === x.result ? 'ok' : 'dim'}">${x.result ? (x.prediction === x.result ? '完全一致' : '外れ') : '—'}</td>
+        </tr>`).join('')}</tbody></table></div>` : ''}
+
+      <h3>p値 ${r.p_value === null ? '—' : r.p_value}（${h.threshold_p}を下回ったら「本物かもしれない」）</h3>
+      ${pHelp()}
+
+      <h3>なぜ登録したのか</h3>
+      ${h.origin_plain ? `<p class="plain"><strong>かみくだくと:</strong> ${h.origin_plain}</p>` : ''}
+      <p class="note">登録時の記録: ${esc(h.origin)}</p>
+
+      <h3>先に固定した条件（あとから変えません）</h3>
       <ul>${h.conditions.map(c => `<li>${esc(c)}</li>`).join('')}</ul>
-      <p class="note">第${h.registered_round}回から登録（${esc(h.registered_at)}）。登録前の的中は数えません。</p>
+      <p class="note">第${h.registered_round}回から登録（${esc(h.registered_at)}）。<strong>登録前の的中は1回も数えていません。</strong>現在の判定: ${esc(r.verdict)}</p>
     </div>`;
   }).join('');
 }
@@ -717,6 +747,23 @@ function zHelp(open){
     </ul>
     <p>このサイトでは<strong>±1.96（およそ±2）</strong>を境目にしています。
     これを超えなければ「<strong>効果なし</strong>」、つまり何も考えずに数字を選んだ場合と区別がつかない、という意味です。</p>
+  </details>`;
+}
+
+let pHelpShown = false;
+function pHelp(){
+  if(pHelpShown) return '';
+  pHelpShown = true;
+  return `<details class="zhelp">
+    <summary>「p値」ってなに？（クリックで開きます）</summary>
+    <p><strong>クラス40人に「今日の天気を当ててみて」と言ったら、1人が当てたとします。</strong>その人に予知能力があるのでしょうか。違います。40人もいれば1人くらい当てるからです。</p>
+    <p><strong>p値は「その力が本当は無いとしたら、これくらいのことが偶然どれだけ起きるか」</strong>を表す数字です。</p>
+    <ul>
+      <li><strong>1.0に近い</strong> … 偶然で何の問題もなく説明がつく</li>
+      <li><strong>0.05くらい</strong> … 20回に1回は偶然でも起きる程度。まだ弱い</li>
+      <li><strong>0.01より小さい</strong> … 100回に1回未満。さすがに偶然とは考えにくい</li>
+    </ul>
+    <p>この仮説では<strong>0.01</strong>を境目にしています。ただしp値が小さくても、<strong>たくさん試した中から一番良いものを選んでいたら意味がありません</strong>（それが03の黄金数字で起きていたことです）。だからこの欄では、<strong>式を先に1つだけ決めて公開してから</strong>数えています。</p>
   </details>`;
 }
 

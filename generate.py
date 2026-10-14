@@ -1186,7 +1186,8 @@ def build_hypotheses(draws: list[dict], target_round: int) -> list[dict]:
         out.append({
             "id": h["id"], "title": h["title"],
             "registered_round": h["registered_round"], "registered_at": h["registered_at"],
-            "claim": h["claim"], "origin": h["origin"], "formula": h["formula"],
+            "claim": h["claim"], "origin": h["origin"],
+            "origin_plain": h.get("origin_plain", ""), "formula": h["formula"],
             "conditions": h["conditions"], "min_rounds": h["min_rounds"],
             "threshold_p": h["threshold_p"],
             "prediction": hypotheses.predict(h, draws[-1]["number"], target_round),
