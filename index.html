@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ナンバーズ3 ミニ 候補数字</title>
-<meta name="description" content="ナンバーズ3ミニ（下2桁）の候補数字を、検証可能な抽選で選出します。全履歴7000回超の検定結果も公開しています。">
+<meta name="description" content="ナンバーズ3の攻略本・攻略サイトで「当たる」と言われている手法が本当に当たるのかを、全履歴7000回超で項目ごとに検証しています。ひっぱり・裏数字・黄金数字・合計値の法則など22項目を検定。ミニ（下2桁）の候補数字と毎回の収支も公開。">
 <link rel="canonical" href="https://numbers.ota9.site/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://numbers.ota9.site/">
 <meta property="og:title" content="ナンバーズ3 ミニ 候補数字">
-<meta property="og:description" content="下2桁（ミニ）の候補を検証可能な抽選で選出。全履歴7000回超の検定結果、AI同士の討論、毎回の収支をすべて公開しています。">
+<meta property="og:description" content="攻略本・攻略サイトで言われている手法が本当に当たるのかを全履歴7000回超で検証。ひっぱり・裏数字・黄金数字など22項目を検定しました。ミニの候補数字と毎回の収支も公開しています。">
 <meta name="twitter:card" content="summary">
 <!-- ANALYTICS:BEGIN -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BDRDYG9JK7"></script>
@@ -312,6 +312,64 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   .pick .d{font-size:29px}
   .pick .tg span{font-size:9.5px; padding:2px 1px}
 }
+/* --- 位ごとの候補（十の位 / 一の位）と鉄則の検証表 --- */
+.posgrid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:4px 0 18px}
+.posbox{border:1px solid var(--line); border-radius:12px; padding:12px 12px 4px; background:var(--card)}
+.posbox > .ttl{font-size:13px; font-weight:700; color:var(--accent); margin:0 0 10px; letter-spacing:.04em}
+.posbox .picks{grid-template-columns:repeat(3,minmax(0,1fr)); margin:0 0 10px}
+.posbox .pick .d{font-size:44px}
+.rule{border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:12px 0; background:var(--card)}
+.rule .rh{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px}
+.rule .rh h4{margin:0; font-size:18px}
+.rule .claim{margin:0 0 10px; color:var(--dim)}
+.rule .nums{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:10px 0 4px}
+.rule .nums > div{text-align:center; padding:8px 4px; border-radius:8px; background:var(--bg)}
+.rule .nums .v{font:700 20px/1.2 var(--mono)}
+.rule .nums .k{font-size:11px; color:var(--dim); margin-top:4px}
+.tag-ng{display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:700;
+        background:rgba(120,120,120,.16); color:var(--dim)}
+.tag-ok{display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:700;
+        background:rgba(230,120,60,.18); color:var(--warn)}
+@media (max-width:560px){
+  .posgrid{grid-template-columns:1fr; gap:12px}
+  .posbox .pick .d{font-size:40px}
+  .rule .nums{grid-template-columns:1fr; gap:6px}
+}
+/* --- サイトの定義ブロック / 攻略法の検証カード / 用語解説 --- */
+.about{border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px;
+       background:var(--card)}
+.about h2{margin:0 0 10px; font-size:20px}
+.about .big{font-size:17px; line-height:1.9; margin:0 0 14px}
+.about ol{margin:0 0 14px; padding-left:1.3em}
+.about ol li{margin:6px 0; line-height:1.8}
+.about .concl{margin:0; padding:12px 14px; border-radius:10px; background:var(--bg); line-height:1.9}
+.rule .rh .src{font-size:12px; color:var(--dim); margin-left:auto}
+.rule .plain{margin:10px 0 2px; padding:10px 12px; border-radius:8px; background:var(--bg); line-height:1.9}
+.tag-arithmetic,.tag-none,.tag-hindsight{display:inline-block; padding:2px 9px; border-radius:999px;
+  font-size:12px; font-weight:700}
+.tag-none{background:rgba(120,120,120,.16); color:var(--dim)}
+.tag-arithmetic{background:rgba(70,120,200,.16); color:#3d6fb5}
+.tag-hindsight{background:rgba(230,120,60,.18); color:var(--warn)}
+.zhelp{border:1px dashed var(--line); border-radius:10px; padding:10px 14px; margin:14px 0;
+       background:var(--card)}
+.zhelp summary{cursor:pointer; font-weight:700; font-size:15px}
+.zhelp p,.zhelp ul{line-height:1.9; margin:10px 0}
+.zhelp ul{padding-left:1.3em}
+.split{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0}
+.half{border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center;
+      background:var(--card)}
+.half .hl{font-size:13px; color:var(--dim); font-weight:700}
+.half .hv{font:700 38px/1.2 var(--mono); margin:8px 0}
+.half .hv.ng{color:var(--warn)}
+.half .hk{font-size:12px; color:var(--dim); line-height:1.8}
+@media (max-width:560px){
+  .about{padding:16px}
+  .about .big{font-size:16px}
+  .split{grid-template-columns:1fr}
+  .rule .rh .src{margin-left:0; width:100%}
+}
+.srclist{margin:10px 0 14px; padding-left:1.3em; color:var(--dim); font-size:14px}
+.srclist li{margin:6px 0; line-height:1.8}
 </style>
 </head>
 <body>
@@ -319,7 +377,7 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
 <header>
   <div class="eyebrow">Numbers3 Selection System</div>
   <h1>ナンバーズ3 ミニ 候補数字</h1>
-  <p class="lede">下2桁（ミニ）を狙う候補です。検証可能な抽選で選びます。当たりやすさは主張しません。</p>
+  <p class="lede">攻略本やネットで「当たる」と言われている手法が、本当に当たるのかを全履歴で検証しています。ミニ（下2桁）の候補も出しますが、当たりやすさは主張しません。収支も隠さず載せます。</p>
   <div class="stamp" id="stamp"></div>
 </header>
 <main id="app"><p class="load">読み込み中…</p></main>
@@ -338,13 +396,27 @@ function stampLine(parts){ $('#stamp').innerHTML = parts.filter(Boolean).join(''
 
 function verdictClass(v){ return v === '有意差なし' ? 'dim' : 'ng'; }
 
-function renderPicks(D){
-  return D.candidates.map(d => {
+function pickCards(D, list){
+  return list.map(d => {
     const tags = (D.tags[d] || []).map(t =>
       `<span title="${esc(t.desc)}${t.hit_rate ? ` / 実測的中率${t.hit_rate}%（基準27.1%）` : ''}">${esc(t.name)}</span>`
     ).join('');
     return `<div class="pick"><div class="d">${esc(d)}</div><div class="tg">${tags}</div></div>`;
   }).join('');
+}
+
+// 第7093回から、十の位と一の位で別々の3数字を選んでいる。
+// それ以前の回は1組の4数字を両方の位に流用していたので、保存値の形で描き分ける。
+function isPos(D){ return !!(D.candidates_ten && D.candidates_one); }
+
+function renderPicks(D){
+  if(!isPos(D)) return `<div class="picks">${pickCards(D, D.candidates)}</div>`;
+  return `<div class="posgrid">
+    <div class="posbox"><div class="ttl">十の位の候補</div>
+      <div class="picks">${pickCards(D, D.candidates_ten)}</div></div>
+    <div class="posbox"><div class="ttl">一の位の候補</div>
+      <div class="picks">${pickCards(D, D.candidates_one)}</div></div>
+  </div>`;
 }
 
 function outcomeBox(outcome, result, demo){
@@ -393,7 +465,9 @@ function renderRounds(list){
     <thead><tr><th>回</th><th>候補</th><th>当選</th><th>一致</th><th>検証</th></tr></thead>
     <tbody>${list.slice(0,60).map(r => `<tr>
       <td><a class="rlink" href="?round=${r.round}">第${r.round}回</a></td>
-      <td class="mono">${r.candidates.join(',')}</td>
+      <td class="mono">${r.candidates_ten
+        ? r.candidates_ten.join('') + '／' + r.candidates_one.join('')
+        : r.candidates.join(',')}</td>
       <td class="mono">${r.result ? esc(r.result) : '<span class="dim">抽選前</span>'}</td>
       <td class="mono ${r.covered ? 'ok' : 'dim'}">${r.result ? r.covered + '桁' : '—'}</td>
       <td style="text-align:left;white-space:normal" class="${r.covered ? 'ok' : 'dim'}">${esc(r.label)}</td>
@@ -416,9 +490,9 @@ function renderSnapshot(S){
   <h2><span class="num">${S.demo ? '見本' : '保存版'}</span>${esc(title)}</h2>
   <p>${S.demo ? 'ハズレたときの表示を確認するための見本ページです。候補も結果も架空です。'
     : `${esc(S.generated_at)} に生成。第${S.basis.round}回（${esc(S.basis.date)}・当選番号 ${esc(S.basis.number)}）の確定を受けて選出しました。`}</p>
-  <div class="picks">${renderPicks(S)}</div>
-  <h3>この4数字で作った買い目（16通り）</h3>
-  ${renderTickets(S.candidates)}
+  ${renderPicks(S)}
+  <h3>${isPos(S) ? '十の位 × 一の位で作った買い目' : 'この4数字で作った買い目'}（${(S.odds && S.odds.tickets) || 16}通り）</h3>
+  ${renderTickets(S)}
   <h3>結果</h3>
   ${outcomeBox(S.outcome, S.result, S.demo)}
   ${renderMoney(S.outcome, S.result)}
@@ -443,7 +517,7 @@ function renderSnapshot(S){
     <dt>種の材料</dt><dd>${esc(sel.seed_material)}</dd>
     <dt>SHA-256</dt><dd>${esc(sel.hash)}</dd>
     <dt>傾きの重み</dt><dd>${sel.tilt_weight}</dd>
-    ${sel.effective_combos ? `<dt>有効候補数</dt><dd>${sel.effective_combos} / 210（重みを考慮した実質的な選択肢の数）</dd>` : ''}
+    ${sel.effective_combos ? `<dt>有効候補数</dt><dd>${sel.effective_combos.toLocaleString()} / ${(sel.combos || 210).toLocaleString()}（重みを考慮した実質的な選択肢の数）</dd>` : ''}
     <dt>選出確率</dt><dd>${(sel.probability * 100).toFixed(4)}% (一様の${sel.ratio_to_uniform}倍)</dd>
     <dt>ロジック版</dt><dd>${esc(S.logic_version)}</dd>
   </dl>
@@ -505,24 +579,38 @@ function yen(v){ return (v < 0 ? '−' : '') + '¥' + Math.abs(v).toLocaleString
 function renderComparison(cmp){
   if(!cmp || !cmp.variants || cmp.variants.length < 2) return '<p class="note">比較データはまだありません。</p>';
   const [a, b] = cmp.variants;
-  const row = (label, key, unit, base) => `<tr>
-    <td style="text-align:left">${esc(label)}</td>
-    <td class="mono">${a[key]}${unit}</td>
-    <td class="mono">${b[key]}${unit}</td>
-    <td class="mono dim">${base}</td></tr>`;
-  return `<p>宝島本の手法に該当する数字を多く含む組をわずかに優遇していますが、それが結果にどう効いているかを、<strong>重みなし（完全な一様抽選）と同じ条件で比べました</strong>。対象は第${cmp.span[0]}回〜第${cmp.span[1]}回（${a.n.toLocaleString()}回）。</p>
-  <div class="scroll"><table>
+  // 行の定義はデータ側が持つ（選出方式を変えても表示が食い違わないように）
+  const rows = cmp.rows || [
+    {label:'ミニ的中率', key:'mini_rate', unit:'%', base:'16.0%'},
+    {label:'平均カバー桁数', key:'mean_covered', unit:'', base:'1.200'},
+    {label:'採用回数のχ²', key:'chi2', unit:'', base:'0'},
+    {label:'連続回の数字の重複', key:'overlap', unit:'', base:'1.60'},
+    {label:'有効候補数', key:'effective_combos', unit:'', base:'210'},
+    {label:'最多採用率', key:'rate_max', unit:'%', base:'40.0%'},
+  ];
+  const num = v => typeof v === 'number' ? v.toLocaleString() : v;
+  const d = cmp.diff;
+  return `<p>宝島本の手法に該当する数字を多く含む組をわずかに優遇していますが、それが結果にどう効いているかを、<strong>重みなし（完全な一様抽選）と同じ乱数の種・同じ全履歴で比べました</strong>。対象は第${cmp.span[0]}回〜第${cmp.span[1]}回（${a.n.toLocaleString()}回）。</p>
+  <p class="hint">← 横にスクロールできます</p><div class="scroll"><table>
     <thead><tr><th style="text-align:left">指標</th><th>${esc(a.label)}</th><th>${esc(b.label)}</th><th>理論値</th></tr></thead>
-    <tbody>
-      ${row('ミニ的中率', 'mini_rate', '%', '16.0%')}
-      ${row('平均カバー桁数', 'mean_covered', '', '1.200')}
-      ${row('採用回数のχ²', 'chi2', '', '0')}
-      ${row('連続回のセット重複', 'overlap', '', '1.60')}
-      ${row('有効候補数', 'effective_combos', '', '210')}
-      ${row('最多採用率', 'rate_max', '%', '40.0%')}
+    <tbody>${rows.filter(r => a[r.key] !== undefined).map(r => `<tr>
+      <td style="text-align:left">${esc(r.label)}</td>
+      <td class="mono">${num(a[r.key])}${r.unit}</td>
+      <td class="mono">${num(b[r.key])}${r.unit}</td>
+      <td class="mono dim">${esc(r.base)}</td></tr>`).join('')}
     </tbody>
   </table></div>
-  <p class="note">的中率の差（${a.mini_rate}% と ${b.mini_rate}%）は、${a.n.toLocaleString()}回でも誤差の範囲です（標準誤差は約0.44ポイント）。<strong>重みを入れても当たりやすさは変わりません。</strong>変わるのは有効候補数で、${a.effective_combos}（一様なら210）。つまり原典への配慮は、選択肢を約${(100 - a.effective_combos / 210 * 100).toFixed(0)}%狭める代わりに、読み物としての理由を与えているということです。</p>`;
+  ${d ? `<div class="callout" style="margin-top:14px">
+    <strong>重み付けは、当たりやすさを改善していません。</strong><br>
+    的中率は ${a.mini_rate}%（重みあり）と ${b.mini_rate}%（一様）。差は <strong>${d.mini_rate > 0 ? '+' : ''}${d.mini_rate}ポイント</strong>です。<br><br>
+    <strong>体重計にたとえます。</strong>2人の体重が0.9kg違っていたとして、使っている体重計が${d.se}kg単位でしか測れないなら、「どちらが重い」とは言い切れません。
+    この比較も同じで、測り方そのものが ${d.se}ポイントくらい平気でブレます。
+    差の ${Math.abs(d.mini_rate)}ポイントは、<strong>そのブレ ${Math.abs(d.z)}個分</strong>にあたります（これがz値です）。
+    ブレ2個分を超えなければ差とは認めない決まりなので、判定は<strong>${esc(d.verdict)}</strong>です。
+    ${d.mini_rate < 0 ? '<br><br>なお数字の上では<strong>一様のほうが高く出ています</strong>。これも誤差の範囲なので「一様のほうが当たる」とは言えませんが、少なくとも<strong>重み付けが役に立っている証拠はどこにもありません</strong>。この傾向が続くようなら、重み付けはやめて完全な一様抽選にします。' : ''}
+  </div>
+  ${zHelp(false)}` : ''}
+  <p class="note">変わるのは有効候補数です。${num(a.effective_combos)}（一様なら${num(cmp.uniform_space || 210)}）。つまり原典への配慮は、選択肢を約${(100 - a.effective_combos / (cmp.uniform_space || 210) * 100).toFixed(0)}%狭める代わりに、読み物としての理由を与えているだけ、ということです。${esc(cmp.note || '')}</p>`;
 }
 
 function renderComments(c){
@@ -557,20 +645,22 @@ function renderMoney(outcome, result){
     <div class="m ${profit >= 0 ? 'plus' : 'minus'}"><div class="v">${profit >= 0 ? '+' : ''}${yen(profit)}</div><div class="k">収支</div></div>
   </div>
   <p class="note">${prize
-    ? `下2桁「${esc(outcome.last2)}」が買い目16通りの中にあったため的中。1口200円で買っているので、当選金額 ${yen(prize)} から購入金額 ${yen(outcome.cost)} を引いて <strong>${profit >= 0 ? '+' : ''}${yen(profit)}</strong> です。`
-    : `下2桁「${esc(outcome.last2)}」は買い目16通りに無かったため、購入金額 ${yen(outcome.cost)} がそのまま損失になります。`}</p>`;
+    ? `下2桁「${esc(outcome.last2)}」が買い目${outcome.tickets}通りの中にあったため的中。1口200円で買っているので、当選金額 ${yen(prize)} から購入金額 ${yen(outcome.cost)} を引いて <strong>${profit >= 0 ? '+' : ''}${yen(profit)}</strong> です。`
+    : `下2桁「${esc(outcome.last2)}」は買い目${outcome.tickets}通りに無かったため、購入金額 ${yen(outcome.cost)} がそのまま損失になります。`}</p>`;
 }
 
-function renderTickets(cands){
-  const sorted = [...cands].sort();
-  return '<div class="tickets">' + sorted.map(a => sorted.map(b =>
+function renderTickets(D){
+  const ten = isPos(D) ? [...D.candidates_ten].sort() : [...D.candidates].sort();
+  const one = isPos(D) ? [...D.candidates_one].sort() : ten;
+  return '<div class="tickets">' + ten.map(a => one.map(b =>
     `<span>${esc(a)}${esc(b)}</span>`).join('')).join('') + '</div>';
 }
 
 function renderTagPoints(pts, chosen){
   if(!pts) return '';
   return '<div class="bars">' + Object.keys(pts).map(d => {
-    const p = pts[d], w = (p / 4 * 100).toFixed(0);
+    const max = Math.max(4, ...Object.values(pts));
+    const p = pts[d], w = (p / max * 100).toFixed(0);
     const on = chosen.includes(d);
     return `<div class="bar" style="grid-template-columns:18px 1fr 84px">
       <div class="l" style="${on ? 'color:var(--accent);font-weight:700' : ''}">${d}</div>
@@ -598,17 +688,138 @@ function renderDist(counts, expected){
   <p class="note">中央の線が期待値 ${Math.round(expected).toLocaleString()}回。右に伸びるほど多く出ていて、左に伸びるほど出ていない数字です。最大でも${Math.round(maxAbs)}回の差しかなく、統計的には誤差の範囲です。</p>`;
 }
 
-function renderRules(rules){
-  return `<p class="hint">← 横にスクロールできます</p><div class="scroll"><table>
-    <thead><tr><th>原典の鉄則</th><th>実測</th><th>基準</th><th class="mono">z値</th><th>判定</th><th>検定数</th></tr></thead>
-    <tbody>${rules.map(r => `<tr>
-      <td>${esc(r.name)}</td>
-      <td class="mono">${r.rate}%</td>
-      <td class="mono dim">${r.base}%</td>
-      <td class="mono">${r.z > 0 ? '+' : ''}${r.z}</td>
+// 統計の用語は、たとえ話を添えないと伝わらない。各所で使い回す
+function zHelp(open){
+  return `<details class="zhelp"${open ? ' open' : ''}>
+    <summary>「z値」ってなに？（クリックで開きます）</summary>
+    <p><strong>コインを100回投げて、表が55回出たとします。</strong>このコイン、表が出やすいと言えるでしょうか。
+    言えません。ふつうのコインでも55回くらいは当たり前に起きるからです。では60回なら？ 70回なら？
+    ——この「どこからが当たり前でないか」を測る物差しが <strong>z値</strong>です。</p>
+    <p>z値は<strong>「いつものブレ何個分、ズレているか」</strong>を表します。</p>
+    <ul>
+      <li><strong>0に近い</strong> … まったくふつう。何も起きていない</li>
+      <li><strong>±1くらい</strong> … よくあるブレの範囲</li>
+      <li><strong>±2を超える</strong> … ふつうのブレでは説明しにくい。ここで初めて「何かあるかも」と考える</li>
+    </ul>
+    <p>このサイトでは<strong>±1.96（およそ±2）</strong>を境目にしています。
+    これを超えなければ「<strong>効果なし</strong>」、つまり何も考えずに数字を選んだ場合と区別がつかない、という意味です。</p>
+  </details>`;
+}
+
+// ネットの攻略サイトが主張している手法の検証
+function renderClaims(c){
+  if(!c || !c.items) return '';
+  const KIND = {
+    arithmetic: ['算数で決まる', '主張自体は正しいが、計算すれば必ずそうなる数字。予想には使えない'],
+    none:       ['効果なし',   '何も考えずに数字を選んだ場合と区別がつかない'],
+    hindsight:  ['後知恵',     '過去のデータから「多かったもの」を選んだので、そのデータの中でだけ当たって見える'],
+  };
+  const z = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v).toFixed(2);
+  const cards = c.items.map(i => {
+    const [label, desc] = KIND[i.kind] || ['—', ''];
+    return `<div class="rule">
+      <div class="rh"><h4>${esc(i.name)}</h4>
+        <span class="tag-${i.kind}">${esc(label)}</span>
+        <span class="src">出典: ${esc(i.source)}</span></div>
+      <p class="claim">サイトの主張: 「${esc(i.claim)}」</p>
+      <div class="nums">
+        <div><div class="v">${i.rate.toFixed(2)}%</div><div class="k">実際にそうだった割合</div></div>
+        <div><div class="v dim">${i.base.toFixed(2)}%</div><div class="k">何も考えない場合（基準）</div></div>
+        <div><div class="v ${Math.abs(i.z) < 1.96 ? '' : 'ng'}">${z(i.z)}</div><div class="k">z値（${esc(i.verdict)}）</div></div>
+      </div>
+      <p class="plain"><strong>かみくだくと:</strong> ${esc(i.plain)}</p>
+      <p class="note">検証方法: ${esc(i.how)}（${i.n.toLocaleString()}回で検定）／ ${esc(desc)}</p>
+    </div>`;
+  }).join('');
+
+  const g = c.gold;
+  const gold = g ? `
+  <h3>「黄金数字」で起きていること — 後知恵の見本</h3>
+  <p>「過去によく出た下2桁10個（${g.numbers.join('・')}）を狙え」という手法があります。これを<strong>2つの期間に分けて</strong>調べると、何が起きているかがはっきりします。</p>
+  <div class="split">
+    <div class="half"><div class="hl">第1〜${g.source_rounds}回</div>
+      <div class="hv ng">${g.in_sample.rate}%</div>
+      <div class="hk">この10個を選ぶのに使った期間<br>z=${z(g.in_sample.z)} → <strong>${esc(g.in_sample.verdict)}</strong></div></div>
+    <div class="half"><div class="hl">第${g.source_rounds + 1}回以降</div>
+      <div class="hv">${g.out_sample.rate}%</div>
+      <div class="hk">選んだ<strong>あと</strong>の期間（${g.out_sample.n.toLocaleString()}回）<br>z=${z(g.out_sample.z)} → <strong>${esc(g.out_sample.verdict)}</strong></div></div>
+  </div>
+  <div class="callout">
+    <strong>クラスで一番背の高い人を選んでから「この人は背が高い」と言っているのと同じです。</strong>
+    選んだ本人について言えば必ず正しいのですが、その人が<strong>来年も伸び続ける</strong>わけではありません。<br><br>
+    黄金数字も同じで、選ぶのに使った期間では ${g.in_sample.rate}%（基準10%）と確かに多いのに、
+    <strong>選んだ後の期間では ${g.out_sample.rate}% と、ぴたりと基準に戻ります。</strong>
+    この10個に何の力もなかったことが、これではっきり分かります。
+  </div>` : '';
+
+  const cold = (c.cold && c.cold.length) ? `
+  <h3>「長く出ていない数字」はどうなのか</h3>
+  <p>この点については、攻略サイトの主張が<strong>真っ二つに割れています</strong>。「長く出ていない数字は出にくいから避けろ」と書くサイトと、「そろそろ出るから狙え」と書くサイトが両方あります。実際に数えました。</p>
+  <p class="hint">← 横にスクロールできます</p><div class="scroll"><table>
+    <thead><tr><th>何回出ていないか</th>${c.cold.map(r => `<th>${r.gap}${r.gap >= 15 ? '回〜' : '回'}</th>`).join('')}</tr></thead>
+    <tbody><tr><td style="text-align:left">次回に出た割合</td>${c.cold.map(r => `<td class="mono">${r.rate}%</td>`).join('')}</tr></tbody>
+  </table></div>
+  <p class="note">どの列も基準の27.10%の周りに並ぶだけで、<strong>ご無沙汰の長さと次回の出やすさには関係がありません</strong>。避けても狙っても同じです。両方の主張が同時に流通していること自体が、どちらにも根拠がないことを示しています。</p>` : '';
+
+  const wd = (c.weekday && c.weekday.length) ? `
+  <h3>曜日によって変わるのか</h3>
+  <p>「金曜は62.7%で引っ張る」という主張があったので、曜日ごとに分けて調べました。</p>
+  <p class="hint">← 横にスクロールできます</p><div class="scroll"><table>
+    <thead><tr><th>曜日</th><th>実測</th><th>基準</th><th class="mono">z値</th><th>判定</th><th>回数</th></tr></thead>
+    <tbody>${c.weekday.map(r => `<tr><td>${esc(r.name)}</td><td class="mono">${r.rate.toFixed(2)}%</td>
+      <td class="mono dim">${r.base.toFixed(2)}%</td><td class="mono">${z(r.z)}</td>
+      <td class="${verdictClass(r.verdict)}">${esc(r.verdict)}</td>
+      <td class="mono dim">${r.n.toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
+  <p class="note"><strong>5つの曜日を調べれば、そのうち1つくらいは偶然±2を超えます。</strong>「5%の確率で起きること」を5回試せば、1回は起きるからです。これは「くじを5枚引いて1枚当たった」のと同じで、曜日に意味があることの証拠にはなりません。本当に調べたいなら、<strong>先に曜日を1つ決めてから</strong>検証する必要があります。</p>` : '';
+
+  return cards + gold + cold + wd;
+}
+
+// 原典の鉄則を項目ごとに検証する。全履歴(3桁)とミニ(下2桁)の両方を並べる
+function renderMiniRules(m, rules){
+  if(!m) return '';
+  const byName = {};
+  (rules || []).forEach(r => { byName[r.name] = r; });
+  const badge = v => v === '有意差なし'
+    ? '<span class="tag-ng">効果なし</span>' : '<span class="tag-ok">要確認</span>';
+  const z = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v).toFixed(2);
+  const pc = v => v.toFixed(2) + '%';
+
+  const cards = m.rules.map(r => {
+    const all = byName[r.name];
+    return `<div class="rule">
+      <div class="rh"><h4>${esc(r.name)}</h4>${badge(r.both.verdict)}</div>
+      <p class="claim">原典の主張: ${esc(r.claim)}</p>
+      <dl class="kv">
+        <dt>検証方法</dt><dd>${esc(r.how)}を「次回に出る数字」とみなし、実際に出たかを数える</dd>
+        ${all ? `<dt>全履歴（3桁すべて）</dt><dd class="mono">${pc(all.rate)}（基準 ${pc(all.base)}）z=${z(all.z)} → ${esc(all.verdict)}</dd>` : ''}
+      </dl>
+      <div class="nums">
+        <div><div class="v">${pc(r.per_digit.rate)}</div><div class="k">ミニの各位が入っていた割合<br>（基準 ${pc(r.per_digit.base)}）</div></div>
+        <div><div class="v">${pc(r.both.rate)}</div><div class="k">下2桁の<strong>両方</strong>が入っていた割合<br>（基準 ${pc(r.both.base)}）</div></div>
+        <div><div class="v ${Math.abs(r.both.z) < 1.96 ? '' : 'ng'}">${z(r.both.z)}</div><div class="k">z値<br>（±1.96を超えたら偏り）</div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const posRows = m.pos_pull.map(r => `<tr>
+      <td>${esc(r.name)}</td><td class="mono">${pc(r.rate)}</td>
+      <td class="mono dim">${pc(r.base)}</td><td class="mono">${z(r.z)}</td>
       <td class="${verdictClass(r.verdict)}">${esc(r.verdict)}</td>
       <td class="mono dim">${r.n.toLocaleString()}</td>
-    </tr>`).join('')}</tbody></table></div>`;
+    </tr>`).join('');
+
+  return cards + `
+  <h3>桁別ひっぱり（同じ位に同じ数字が続くか）</h3>
+  <p>原典の鉄則の中で、これだけが<strong>「位」を指定した主張</strong>です。ミニは十の位と一の位の2つで決まるので、本来いちばん効いてほしい項目です。</p>
+  <p class="hint">← 横にスクロールできます</p><div class="scroll"><table>
+    <thead><tr><th>項目</th><th>実測</th><th>基準</th><th class="mono">z値</th><th>判定</th><th>検定数</th></tr></thead>
+    <tbody>${posRows}
+      <tr><td>ゾロ目（11・22など）</td><td class="mono">${pc(m.zoro.rate)}</td>
+        <td class="mono dim">${pc(m.zoro.base)}</td><td class="mono">${z(m.zoro.z)}</td>
+        <td class="${verdictClass(m.zoro.verdict)}">${esc(m.zoro.verdict)}</td>
+        <td class="mono dim">${(m.n + 1).toLocaleString()}</td></tr>
+    </tbody></table></div>`;
 }
 
 function render(D){
@@ -640,50 +851,112 @@ function render(D){
     <div class="cell"><div class="sub">${(rec.total_prize / Math.max(1, rec.total_cost) * 100).toFixed(1)}%</div><div class="lbl">回収率（理論値 約43%）</div></div>
   </div>` : '';
 
-  $('#app').innerHTML = stale + ledger + `
+  const cl = s.claims;
+  const about = `<section class="about">
+  <h2>このサイトは何をしているか</h2>
+  <p class="big">攻略本やネットの攻略サイトで「当たる」と言われている手法が、<strong>本当に当たるのかを実データで検証するサイト</strong>です。ナンバーズ3の全履歴${s.draws.toLocaleString()}回（${esc(s.span[0])}〜${esc(s.span[1])}）を使い、手法を1つずつ数えています。</p>
+  <ol>
+    <li><strong>言われている手法を検証する</strong> — 攻略本『別冊宝島271』の鉄則と、ネットの攻略サイトが主張している手法を、項目ごとに検定します（02・03）</li>
+    <li><strong>候補数字も出す</strong> — ミニ（下2桁）の候補を、誰でも再現できる抽選で選びます。<strong>当たりやすいとは主張しません</strong>（01）</li>
+    <li><strong>自分の収支を隠さない</strong> — 毎回いくら買っていくら戻ったか、通算でいくら負けているかを、いちばん上に出します</li>
+  </ol>
+  <p class="concl">${cl ? `<strong>いまのところの結論。</strong>攻略本の鉄則${s.mini_rules ? s.mini_rules.total : 0}項目と、ネットで見つけた手法${cl.items.length}項目を調べて、<strong>何も考えずに数字を選ぶより当たりやすかった手法は1つもありませんでした。</strong>当たるように見える主張は、（1）計算すれば必ずそうなる数字か、（2）過去のデータから都合よく選んだものか、のどちらかでした。`
+    : '検証結果を集計中です。'}</p>
+</section>`;
+
+  $('#app').innerHTML = stale + about + ledger + `
 <section>
   <h2><span class="num">01</span>第${D.target_round}回の候補</h2>
   <p>第${D.basis.round}回（${esc(D.basis.date)}・当選番号 ${esc(D.basis.number)}）の確定を受けて選出しました。</p>
-  <div class="picks">${renderPicks(D)}</div>
+  ${renderPicks(D)}
   <div class="odds">
     <div class="odd"><div class="v">${pct(o.mini_both)}</div><div class="k">下2桁の<strong>両方</strong>が候補に入る確率（＝ミニ的中）</div></div>
     <div class="odd"><div class="v">${pct(o.mini_either)}</div><div class="k">どちらか片方が入る確率</div></div>
     <div class="odd miss"><div class="v">${pct(o.mini_none)}</div><div class="k">どちらも入らない確率</div></div>
     <div class="odd"><div class="v">${o.tickets}口</div><div class="k">全部買うと ${o.cost.toLocaleString()}円</div></div>
   </div>
-  <h3>この4数字で作る買い目（${o.tickets}通り）</h3>
-  ${renderTickets(D.candidates)}
+  <h3>${isPos(D) ? '十の位 × 一の位で作る買い目' : 'この4数字で作る買い目'}（${o.tickets}通り）</h3>
+  ${renderTickets(D)}
   ${o.mini_prize && o.mini_prize.mean ? `<p class="note">ミニ1口（200円）の的中確率は1.0%、当選金額の平均は ${o.mini_prize.mean.toLocaleString()}円（直近${o.mini_prize.n}回の実測／中央値 ${o.mini_prize.median.toLocaleString()}円）。<strong>1口あたりの期待値は約${o.mini_prize.expected_value}円</strong>で、200円を払って平均86円が戻る計算です。</p>` : ''}
-  <p class="note">これらは4数字を選んだ時点で決まる数学的な確率で、候補の選び方によって変わりません。どんな選出方法でも同じ値になります。</p>
+  <p class="note">これらは候補を選んだ時点で決まる数学的な確率で、選び方によって変わりません。どんな選出方法でも同じ値になります。<strong>口数を増やしても減らしても、期待回収率は約43%で一定</strong>です（1口が押さえるのは100通りのうち1通りだけなので、口数に比例して購入額も当選確率も増えるため）。</p>
 </section>
 
 <section>
-  <h2><span class="num">02</span>3つのAIの予想</h2>
+  <h2><span class="num">02</span>検証①：攻略本『別冊宝島271』の鉄則</h2>
+  <p>このサイトの出発点は『別冊宝島271 宝くじ＆ナンバーズ大当り鉄則読本』です。そこに書かれた手法を、<strong>項目ごとに全履歴${s.draws.toLocaleString()}回で検定しました</strong>。ミニ（下2桁）に当てはめた場合の数字も併記しています。</p>
+  <div class="callout">
+    <strong>結論を先に書きます。${s.mini_rules ? `検証した${s.mini_rules.total}項目のうち、基準と差があったものは${s.mini_rules.significant}項目でした。` : ''}</strong><br>
+    どの鉄則も、何も考えずに数字を選んだ場合と区別がつきません。候補数字そのものに予測力はありません。
+  </div>
+  ${zHelp(false)}
+  ${renderMiniRules(s.mini_rules, s.rules)}
+  <p class="note" style="margin-top:12px">z値は「偶然のばらつきから何個分離れているか」を表します。±1.96以内なら、その差は偶然の範囲です。基準値は鉄則が指す数字の<strong>個数から決まる</strong>値で、たとえば「ひっぱり」は前回の番号に平均2.7個の数字が含まれるため、何も考えなくても27.1%の確率で当てはまってしまいます。鉄則が当たっているように見えるのは、この<strong>最初から当たる分</strong>を差し引いていないからです。</p>
+</section>
+
+<section>
+  <h2><span class="num">03</span>検証②：ネットの攻略サイトが言う手法</h2>
+  <p>「ナンバーズ3 攻略法」で検索して出てくるサイトを実際に読み、そこで紹介されている手法を集めました（2026年10月調査）。<strong>サイトが書いている主張の数値をそのまま載せ、同じものを全履歴で数え直しています。</strong></p>
+  <div class="callout">
+    <strong>${cl ? `${cl.items.length}項目を調べて、何も考えない場合より当たりやすかった手法は ${cl.useful}個でした。` : ''}</strong><br>
+    「当たる」と言われている主張は、大きく2種類に分かれました。
+    <strong>①算数で決まる数字</strong>（主張は正しいが、計算すれば必ずそうなるので予想に使えない。${cl ? cl.arithmetic : 0}項目）と、
+    <strong>②後知恵</strong>（過去のデータから「多かったもの」を選んだので、そのデータの中でだけ当たって見える）です。
+  </div>
+  ${zHelp(false)}
+  ${renderClaims(cl)}
+  <h3>調べたサイト</h3>
+  <p class="note">2026年10月時点で「ナンバーズ3 攻略法」「ナンバーズ3 法則」などで上位に出てくるサイトを読み、紹介されている手法を集めました。<strong>特定のサイトを批判する目的ではありません。</strong>同じ手法が複数のサイトで繰り返し紹介されているため、数値が具体的に書かれている記述を代表として引用しています。</p>
+  <ul class="srclist">
+    <li>umasaku「ナンバーズ3の数字の選び方と5つのポイント」— 引っ張り・前数字・後数字・裏数字の各確率</li>
+    <li>aetheria「ナンバーズ3の法則性をデータで証明！」— 合計値・偶奇・大小・ダブル・トリプル</li>
+    <li>適中攻略ナビ「2つの勝利の法則」— 偶奇の組み合わせ・低数字高数字の組み合わせ</li>
+    <li>宝くじ検証「ナンバーズ3の攻略法を6つ厳選」「ナンバーズ3の法則性とは？」— 黄金数字・足し算理論・連番・前回番号の回避</li>
+    <li>ユメドリのネタ帳「ナンバーズは6つの法則から」— 未出現数字・連続数字・裏数字</li>
+  </ul>
+  <p class="note">なお、これらのサイトが挙げる手法の多くは、このサイトの土台である『別冊宝島271』（1996年）と同じものです。<strong>30年間、同じ手法が形を変えて紹介され続けていますが、その間に積み上がった7,000回分のデータで確かめた記録は見当たりませんでした。</strong>それがこのサイトを作っている理由です。</p>
+</section>
+
+<section>
+  <h2><span class="num">04</span>3つのAIの予想</h2>
   <p>3つのAIは、その場で数字を考えていません。<strong>抽選前にそれぞれが「選定ルール」を宣言し、そのルールが機械的に数字を決めています</strong>。大きく出ているのが<strong>ミニの本命（下2桁）</strong>です。同じ過去データから誰が計算しても同じ数字になり、後から理由を付け替えることはできません。</p>
   ${renderAI(D)}
   <div class="callout" style="margin-top:14px">
-    <strong>この3つも当たりません。</strong>ミニの本命2桁が当たる確率はどの予想でも1/100＝1.0%、候補4数字で作る16通りが当たる確率は16.0%です。ルールを宣言しても的中率は変わりません。変わるのは<strong>「理由が後付けか、先にあったか」</strong>です。以前は数字を出してから理由を書いていましたが、今は宣言したルールが数字を決めています。ルール文を書き換えた場合は変更履歴に残ります。
+    <strong>この3つも当たりません。</strong>ミニの本命2桁が当たる確率はどの予想でも1/100＝1.0%、このサイトの買い目${o.tickets}通りが当たる確率は${pct(o.mini_both)}です。ルールを宣言しても的中率は変わりません。変わるのは<strong>「理由が後付けか、先にあったか」</strong>です。以前は数字を出してから理由を書いていましたが、今は宣言したルールが数字を決めています。ルール文を書き換えた場合は変更履歴に残ります。
   </div>
   ${renderAIRecords(D)}
 </section>
 
 <section>
-  <h2><span class="num">03</span>どう選んでいるか</h2>
+  <h2><span class="num">05</span>どう選んでいるか</h2>
+  ${isPos(D) ? `
+  <p>ミニは<strong>十の位と一の位の2桁</strong>で決まります。そこで<strong>位ごとに別々の3数字</strong>を選んでいます。0〜9から3つを選ぶ組み合わせは120通り（10C3）なので、十の位と一の位の組み合わせは <strong>120 × 120 = 14,400通り</strong>です。</p>
+  <p>完全な等確率ではなく、<strong>宝島本の手法（ひっぱり・スライド・裏数字・合わせ数字）に該当する数字を多く含む組を、わずかに選ばれやすく</strong>しています。位ごとの採点では、原典で唯一「位」を指定している<strong>桁別ひっぱり</strong>（前回と同じ位に同じ数字が出るという主張）を1点として加えています。選ばれた組は一様の場合の <strong>${sel.ratio_to_uniform}倍</strong>でした。</p>
+  <div class="callout" style="border-left-color:var(--warn)">
+    <strong>第7093回から、この方式に変えました。</strong>それ以前は4数字を1組だけ選び、十の位にも一の位にも同じ4数字を使っていました（買い目16通り・3,200円）。ミニは2桁あり、原典の鉄則の中心も桁ごとの主張なのに、桁を区別していなかったためです。<br><br>
+    買い目は <strong>3×3=9通り（1,800円）</strong>になります。的中率は16%から9%に下がりますが、<strong>期待回収率は約43%のまま変わりません</strong>。1口が押さえるのは100通りのうち1通りだけなので、口数を増減しても率は動きません。<br><br>
+    <strong>すでに公開した回の候補と判定方式は変更していません。</strong>第7092回までは当時の方式のまま保存版ページに残っています。
+  </div>` : `
   <p>0〜9から4つを選ぶ組み合わせは <strong>210通り</strong>（10C4）です。この210通りから抽選で1組を選びます。</p>
-  <p>完全な等確率ではなく、<strong>宝島本の手法（ひっぱり・スライド・裏数字・合わせ数字）に該当する数字を多く含む組を、わずかに選ばれやすく</strong>しています。今回の範囲は ${sel.spread.min}〜${sel.spread.max}倍で、選ばれた組は一様の場合の <strong>${sel.ratio_to_uniform}倍</strong>（確率 ${(sel.probability * 100).toFixed(3)}%、一様なら${(sel.probability_uniform * 100).toFixed(3)}%）でした。</p>
+  <p>完全な等確率ではなく、<strong>宝島本の手法（ひっぱり・スライド・裏数字・合わせ数字）に該当する数字を多く含む組を、わずかに選ばれやすく</strong>しています。今回の範囲は ${sel.spread.min}〜${sel.spread.max}倍で、選ばれた組は一様の場合の <strong>${sel.ratio_to_uniform}倍</strong>（確率 ${(sel.probability * 100).toFixed(3)}%、一様なら${(sel.probability_uniform * 100).toFixed(3)}%）でした。</p>`}
   <div class="callout">
     この傾きは<strong>前回の当選番号との関係</strong>で決まるため、特定の数字が固定的に有利になることはありません。全履歴3000回で検証したところ、傾きを入れても数字ごとの採用率の偏り（χ²=4.8）は一様ランダム（χ²=4.0）とほぼ変わらず、いずれも5%限界16.92を大きく下回りました。<br><br>
     乱数の種は「<strong>回号 + 直近の当選番号</strong>」のSHA-256です。前回の結果が確定するまで次回の候補は計算できず、確定後は誰でも同じ値を再現できます。日時や実行環境には依存しません。
   </div>
   <h3>今回の原典ポイント（前回 ${esc(D.basis.number)} から見た各数字）</h3>
-  ${renderTagPoints(sel.tag_points, D.candidates)}
+  ${isPos(D) && sel.pos ? `
+    <p class="note">位ごとに採点が違います。十の位では前回の十の位の数字に、一の位では前回の一の位の数字に、桁別ひっぱりの1点が加わります。</p>
+    <h4 style="margin:14px 0 6px">十の位</h4>
+    ${renderTagPoints(sel.pos.ten.tag_points, D.candidates_ten)}
+    <h4 style="margin:14px 0 6px">一の位</h4>
+    ${renderTagPoints(sel.pos.one.tag_points, D.candidates_one)}`
+  : renderTagPoints(sel.tag_points, D.candidates)}
   <h3>この回の選出記録</h3>
   <dl class="kv">
     <dt>方式</dt><dd>${esc(sel.method)}</dd>
     <dt>種の材料</dt><dd>${esc(sel.seed_material)}</dd>
     <dt>SHA-256</dt><dd>${esc(sel.hash)}</dd>
     <dt>傾きの重み</dt><dd>${sel.tilt_weight}</dd>
-    ${sel.effective_combos ? `<dt>有効候補数</dt><dd>${sel.effective_combos} / 210（重みを考慮した実質的な選択肢の数）</dd>` : ''}
+    ${sel.effective_combos ? `<dt>有効候補数</dt><dd>${sel.effective_combos.toLocaleString()} / ${(sel.combos || 210).toLocaleString()}（重みを考慮した実質的な選択肢の数）</dd>` : ''}
     <dt>選出確率</dt><dd>${(sel.probability * 100).toFixed(4)}% (一様の${sel.ratio_to_uniform}倍)</dd>
     <dt>ロジック版</dt><dd>${esc(D.logic_version)}</dd>
     <dt>生成時刻</dt><dd>${esc(D.generated_at)}</dd>
@@ -691,7 +964,7 @@ function render(D){
 </section>
 
 <section>
-  <h2><span class="num">04</span>この選び方は一様ランダムと何が違うのか</h2>
+  <h2><span class="num">06</span>この選び方は一様ランダムと何が違うのか</h2>
   ${renderComparison(D.comparison)}
   <h3>再現検証用のデータ</h3>
   <p>各回の候補・乱数の種・ハッシュ・原典ポイント・結果・収支を1つの表にまとめています。表計算ソフトで開いて、ご自身で再計算できます。</p>
@@ -699,14 +972,7 @@ function render(D){
 </section>
 
 <section>
-  <h2><span class="num">05</span>攻略本の鉄則を全履歴で検定した結果</h2>
-  <p>${s.draws.toLocaleString()}回（${esc(s.span[0])}〜${esc(s.span[1])}）で検定しました。基準の27.1%は「どの数字も3桁のどこかに出る確率」（1−0.9³）です。</p>
-  ${renderRules(s.rules)}
-  <p class="note" style="margin-top:12px">z値が±1.96以内なら偏りは偶然の範囲です。<strong>4つの鉄則すべてが基準値と区別できません</strong>。だからこの候補選出では、これらを点数に使わず、選ばれた後の「読み物」としてタグ表示するだけにしています。</p>
-</section>
-
-<section>
-  <h2><span class="num">06</span>抽選の偏りの監視</h2>
+  <h2><span class="num">07</span>抽選の偏りの監視</h2>
   <p>抽選機に偏りが出ていないかを毎回検定しています。χ²が5%限界の${s.chi2_limit_5}を超えたら偏りの疑いが出ます。</p>
   <div class="odds">
     <div class="odd"><div class="v ${s.chi2_all < s.chi2_limit_5 ? 'ok' : 'ng'}">${s.chi2_all}</div><div class="k">全体のχ²（限界${s.chi2_limit_5}）</div></div>
@@ -730,17 +996,17 @@ function render(D){
 </section>
 
 <section>
-  <h2><span class="num">07</span>AI同士の自動討論</h2>
+  <h2><span class="num">08</span>AI同士の自動討論</h2>
   ${renderDebate(D.debate_latest, D.debates)}
 </section>
 
 <section>
-  <h2><span class="num">08</span>登録した仮説</h2>
+  <h2><span class="num">09</span>登録した仮説</h2>
   ${renderHypotheses(D.hypotheses || [], D.target_round)}
 </section>
 
 <section>
-  <h2><span class="num">09</span>保存版ページ</h2>
+  <h2><span class="num">10</span>保存版ページ</h2>
   <p>各回の予想ページをそのまま保存しています。候補・乱数の種・AIの予想・結果の検証が、当時の形で残ります。</p>
   ${D.record && D.record.start_round ? `<p class="note">記録は<strong>第${D.record.start_round}回から</strong>。現在 ${D.record.count}回分を保存し、うち${D.record.judged}回が結果確定済みです。</p>` : ''}
   ${D.record && D.record.judged ? `
@@ -758,7 +1024,7 @@ function render(D){
 `;
 
   $('#foot').innerHTML = `ロジック版 ${esc(D.logic_version)} ／ 生成 ${esc(D.generated_at)}<br>
-    ナンバーズ3の当選番号は予測できません。このサイトは候補の提示と統計の可視化のみを行い、当選を保証しません。<br>
+    ナンバーズ3の当選番号は予測できません。このサイトは<strong>世の中で言われている手法の検証</strong>と候補の提示を行うもので、当選を保証しません。宝くじの購入は余裕資金の範囲で行ってください。<br>
     当選番号データの取得元: <a class="rlink" href="https://loto-life.net/" rel="noopener">loto-life.net</a> ／
     <a class="rlink" href="https://www.mk-mode.com/" rel="noopener">mk-mode.com</a>`;
 }

@@ -47,14 +47,24 @@ SOURCES = [
 ]
 UA = "numbers3-bot/2.1 (+https://numbers.ota9.site/)"   # 素性を明かす
 
-LOGIC_VERSION = "3.4.0-mini"      # サイト全体のバージョン（表示・記録用）
+LOGIC_VERSION = "4.0.0-mini-pos"   # サイト全体のバージョン（表示・記録用）
 
 # 選出方式そのもののバージョン。乱数の種に使うため、方式を変えない限り凍結する。
 # ここを変えると同じ回でも候補が変わってしまう（2026-10-02に実際に起きた事故）。
+#
+# 2.1.0-tilted : 4数字を1組だけ選び、十の位にも一の位にも流用する（〜第7092回）
+# 3.0.0-pos3   : 十の位と一の位で別々に3数字ずつ選ぶ（第7093回〜）
+#   ミニは2桁あり、原典の鉄則の中心である「桁別ひっぱり」も桁ごとの主張であるのに、
+#   旧方式は桁を区別していなかった。それを設計に反映した。
+#   買い目は 3×3=9口(1,800円)。期待回収率は口数によらず43.2%で旧方式と変わらない。
 SELECTION_VERSION = "2.1.0-tilted"
+SELECTION_VERSION_POS = "3.0.0-pos3"
+POS_SWITCH_ROUND = 7093   # この回から位ごと方式。公開済みの回は旧方式のまま動かさない
+PICK_N = 3                # 1つの位あたりに選ぶ数字の個数
 TILT_WEIGHT = 0.2         # 宝島本の手法に該当する数字への傾き。0なら完全な一様ランダム
 DIGITS = "0123456789"
-COMBOS = [tuple(c) for c in itertools.combinations(DIGITS, 4)]   # 210通り
+COMBOS = [tuple(c) for c in itertools.combinations(DIGITS, 4)]        # 210通り(旧方式)
+COMBOS_N = [tuple(c) for c in itertools.combinations(DIGITS, PICK_N)]  # 120通り(位ごと)
 JST = timezone(timedelta(hours=9))
 MAX_GAP_DAYS = 5          # 最新抽選日からこれ以上経っていたら停止
 DRAW_TIME = (18, 45)      # 抽選時刻 (JST)。この時刻を過ぎた平日は、その回が抽選済みとみなす
@@ -401,6 +411,71 @@ def pick(target_round: int, prev_number: str) -> dict:
     }
 
 
+def tag_points_pos(prev_number: str, pos: int) -> dict:
+    """位ごとの原典ポイント。4手法に加えて「桁別ひっぱり」を1点として数える
+
+    桁別ひっぱり = 前回のその位にあった数字が、今回も同じ位に出るという主張。
+    原典の鉄則の中でこれだけが位を指定しているため、位ごとの選出でのみ使える。
+    (全履歴の実測では 十の位10.01% / 一の位10.08% = 基準10.00% で差はない)
+    """
+    pts = tag_points(prev_number)
+    pts[prev_number[pos]] += 1
+    return pts
+
+
+def pick_pos(target_round: int, prev_number: str) -> dict:
+    """十の位と一の位に、それぞれ別の3数字を選ぶ (120通り × 120通り = 14,400通り)
+
+    乱数の種は旧方式と同じく「回号 + 直近確定番号 + 選出バージョン」。
+    1つのSHA-256から前半64bit・後半64bitを取り出し、2つの位に割り当てる。
+    """
+    material = f"{target_round}:{prev_number}:{SELECTION_VERSION_POS}"
+    h = hashlib.sha256(material.encode()).hexdigest()
+    out = {"seed_material": material, "hash": h, "tilt_weight": TILT_WEIGHT,
+           "combos_per_pos": len(COMBOS_N), "pos": {}}
+    for i, (key, pos) in enumerate((("ten", 1), ("one", 2))):
+        pts = tag_points_pos(prev_number, pos)
+        weights = [math.exp(TILT_WEIGHT * sum(pts[d] for d in c)) for c in COMBOS_N]
+        total = sum(weights)
+        u = int(h[i * 16:(i + 1) * 16], 16) / 2 ** 64      # [0,1)の一様乱数
+        acc = 0.0
+        chosen, prob = COMBOS_N[-1], weights[-1] / total
+        for combo, wt in zip(COMBOS_N, weights):
+            acc += wt / total
+            if u < acc:
+                chosen, prob = combo, wt / total
+                break
+        probs = [x / total for x in weights]
+        uniform = 1 / len(COMBOS_N)
+        out["pos"][key] = {
+            "combo": list(chosen),
+            "tag_points": pts,
+            "probability": round(prob, 6),
+            "probability_uniform": round(uniform, 6),
+            "ratio_to_uniform": round(prob / uniform, 2),
+            "effective_combos": round(1 / sum(x * x for x in probs), 1),
+            "spread": {"max": round(max(weights) / total / uniform, 2),
+                       "min": round(min(weights) / total / uniform, 2)},
+        }
+    ten, one = out["pos"]["ten"], out["pos"]["one"]
+    out["combo_ten"] = ten["combo"]
+    out["combo_one"] = one["combo"]
+    out["combo"] = sorted(set(ten["combo"]) | set(one["combo"]))   # 旧表示との互換用
+    out["effective_combos"] = round(
+        ten["effective_combos"] * one["effective_combos"], 1)
+    out["probability"] = round(ten["probability"] * one["probability"], 8)
+    out["probability_uniform"] = round(1 / len(COMBOS_N) ** 2, 8)
+    out["ratio_to_uniform"] = round(
+        out["probability"] / out["probability_uniform"], 2)
+    out["tag_points"] = tag_points(prev_number)    # 位を混ぜない素の4手法ポイント
+    return out
+
+
+def use_pos(target_round: int) -> bool:
+    """この回を位ごと方式で選ぶか。公開済みの回は旧方式のまま動かさない"""
+    return target_round >= POS_SWITCH_ROUND
+
+
 # ---------------------------------------------------------------- 後付けタグ
 
 # 各タグの「実測的中率」は全履歴7080回の検定値。基準27.10%と比べて差がないことを
@@ -484,6 +559,326 @@ def rule_tests(numbers: list[str]) -> list[dict]:
     return out
 
 
+# 原典の鉄則を「項目ごと」に検証するための定義。
+# 各ルールは「前回の当選番号」から今回出そうな数字の集合を作る、という形で表せる。
+# ミニ(下2桁)に限定して検証するため、集合の大きさが回ごとに変わることを織り込んで
+# 期待値を1回ずつ積み上げ、合計と比べる(集合サイズが一定でないため単純な比較は誤り)。
+MINI_RULES = [
+    {"id": "pull", "name": "ひっぱり",
+     "claim": "前回出た数字は次回も出やすい",
+     "how": "前回の当選番号に含まれる数字（平均2.7個）"},
+    {"id": "slide", "name": "スライド",
+     "claim": "前回の数字の隣（±1）が出やすい",
+     "how": "前回の各桁に±1した数字（平均4.9個）"},
+    {"id": "ura", "name": "裏数字",
+     "claim": "前回の数字に5を足した数字が出やすい",
+     "how": "前回の各桁に+5した数字（平均2.7個）"},
+    {"id": "awase", "name": "合わせ数字",
+     "claim": "前回の桁同士を足した下1桁が出やすい",
+     "how": "a+b, b+c, a+c の各下1桁（平均2.7個）"},
+    {"id": "all4", "name": "4手法すべて",
+     "claim": "4つを併用すれば当たりやすくなる",
+     "how": "上の4つの和集合（平均8.4個）"},
+]
+
+
+def _rule_sets(prev: str) -> dict:
+    a, b, c = (int(x) for x in prev)
+    pull = {int(x) for x in prev}
+    slide = {(int(x) + s) % 10 for x in prev for s in (1, -1)}
+    ura = {(int(x) + 5) % 10 for x in prev}
+    awase = {(a + b) % 10, (b + c) % 10, (a + c) % 10}
+    return {"pull": pull, "slide": slide, "ura": ura, "awase": awase,
+            "all4": pull | slide | ura | awase}
+
+
+def mini_rule_tests(numbers: list[str]) -> dict:
+    """原典の鉄則を、ミニ(下2桁)に限定して項目ごとに検定する
+
+    2つの見方を出す:
+      per_digit … 下2桁の「各位」がルールの集合に入っていたか
+      both      … 下2桁の「両方」が入っていたか（＝ミニが当たる条件そのもの）
+    どちらも、回ごとに変わる集合サイズから期待値と分散を積み上げてzを出す。
+    """
+    N = len(numbers)
+    acc = {r["id"]: {"obs1": 0, "exp1": 0.0, "var1": 0.0,
+                     "obs2": 0, "exp2": 0.0, "var2": 0.0, "size": 0}
+           for r in MINI_RULES}
+    for t in range(1, N):
+        sets = _rule_sets(numbers[t - 1])
+        ten, one = int(numbers[t][1]), int(numbers[t][2])
+        for rid, S in sets.items():
+            a = acc[rid]
+            k = len(S)
+            a["size"] += k
+            p1 = k / 10
+            for d in (ten, one):
+                a["obs1"] += d in S
+                a["exp1"] += p1
+                a["var1"] += p1 * (1 - p1)
+            p2 = p1 * p1
+            a["obs2"] += (ten in S) and (one in S)
+            a["exp2"] += p2
+            a["var2"] += p2 * (1 - p2)
+
+    def fin(obs, exp, var, n):
+        z = (obs - exp) / math.sqrt(var) if var > 0 else 0.0
+        return {"obs": obs, "exp": round(exp, 1),
+                "rate": round(obs / n * 100, 2), "base": round(exp / n * 100, 2),
+                "z": round(z, 2),
+                "verdict": "有意差なし" if abs(z) < 1.96 else "有意"}
+
+    out = []
+    for r in MINI_RULES:
+        a = acc[r["id"]]
+        out.append({**r, "avg_size": round(a["size"] / (N - 1), 2),
+                    "per_digit": fin(a["obs1"], a["exp1"], a["var1"], (N - 1) * 2),
+                    "both": fin(a["obs2"], a["exp2"], a["var2"], N - 1)})
+
+    # 桁別ひっぱり（同じ位に同じ数字が連続する）。原典で唯一「位」を指定する主張
+    pos_pull = []
+    for pos, label in ((0, "百の位"), (1, "十の位"), (2, "一の位")):
+        obs = sum(1 for t in range(1, N) if numbers[t][pos] == numbers[t - 1][pos])
+        exp, var = (N - 1) * 0.1, (N - 1) * 0.1 * 0.9
+        z = (obs - exp) / math.sqrt(var)
+        pos_pull.append({"name": label, "obs": obs, "n": N - 1,
+                         "rate": round(obs / (N - 1) * 100, 2), "base": 10.0,
+                         "z": round(z, 2),
+                         "verdict": "有意差なし" if abs(z) < 1.96 else "有意"})
+    obs = sum(1 for t in range(1, N) if numbers[t][1:] == numbers[t - 1][1:])
+    exp, var = (N - 1) * 0.01, (N - 1) * 0.01 * 0.99
+    pos_pull.append({"name": "下2桁が丸ごと連続", "obs": obs, "n": N - 1,
+                     "rate": round(obs / (N - 1) * 100, 2), "base": 1.0,
+                     "z": round((obs - exp) / math.sqrt(var), 2),
+                     "verdict": "有意差なし" if abs((obs - exp) / math.sqrt(var)) < 1.96
+                                else "有意"})
+
+    c2 = Counter(n[1:] for n in numbers)
+    zoro = sum(c2.get(f"{d}{d}", 0) for d in range(10))
+    exp, var = N * 0.1, N * 0.1 * 0.9
+    return {
+        "n": N - 1, "rules": out, "pos_pull": pos_pull,
+        "zoro": {"obs": zoro, "rate": round(zoro / N * 100, 2), "base": 10.0,
+                 "z": round((zoro - exp) / math.sqrt(var), 2),
+                 "verdict": "有意差なし" if abs((zoro - exp) / math.sqrt(var)) < 1.96
+                            else "有意"},
+        "significant": sum(
+            1 for r in out if r["both"]["verdict"] == "有意")
+        + sum(1 for r in pos_pull if r["verdict"] == "有意"),
+        "total": len(out) + len(pos_pull) + 1,
+    }
+
+
+# ネット上のナンバーズ攻略サイトが主張している手法。
+# 2026-10-14に実際にクロールして収集した。出典は docs/手段カタログ.md に記載。
+# 各項目は「主張」「検証できる形の定義」「何も考えない場合の基準」をセットで持つ。
+GOLD_LAST2 = {"14", "17", "18", "32", "33", "42", "66", "74", "75", "98"}
+GOLD_SOURCE_ROUNDS = 4297      # 黄金数字が選ばれた元データの範囲(第1〜4297回)
+
+
+def claim_tests(numbers: list[str], dates: list) -> dict:
+    """攻略サイトの主張を1つずつ検定する
+
+    判定の種類:
+      arithmetic … 主張は正しいが、計算すれば必ずそうなる値。予想の材料にならない
+      none       … 何も考えない場合の基準と差がない
+      hindsight  … 過去データから選んだから当たって見えるだけ(後知恵)
+    """
+    N = len(numbers)
+    items = []
+
+    def add(**kw):
+        z = (kw["obs"] - kw["exp"]) / math.sqrt(kw["var"]) if kw["var"] > 0 else 0.0
+        n = kw.pop("n")
+        kw["rate"] = round(kw.pop("obs") / n * 100, 2)
+        kw["base"] = round(kw.pop("exp") / n * 100, 2)
+        kw.pop("var")
+        items.append({**kw, "z": round(z, 2), "n": n,
+                      "verdict": "基準と差なし" if abs(z) < 1.96 else "差あり"})
+
+    # 前回の番号から集合を作り、3桁のどこかに1つ以上入るか（出やすさを主張する系）
+    def anyof(fn):
+        obs = exp = var = 0
+        for t in range(1, N):
+            S = fn(numbers[t - 1])
+            p = 1 - (1 - len(S) / 10) ** 3
+            obs += any(int(c) in S for c in numbers[t])
+            exp += p
+            var += p * (1 - p)
+        return {"obs": obs, "exp": exp, "var": var, "n": N - 1}
+
+    add(id="pull_any", kind="none",
+        name="引っ張り（前回の数字が次回も出る）",
+        source="umasaku",
+        claim="60.7%の確率で前回の数字が継続出現する",
+        how="前回の当選番号に含まれる数字が、次回の3桁のどこかに1つ以上出たか",
+        plain="前回の番号には平均2.7個の数字が入っています。それが次の3桁のどこかに引っかかる確率は、"
+              "何も考えなくても約61%あります。主張されている60.7%は、その「何もしない場合」と同じ値です。",
+        **anyof(lambda p: {int(x) for x in p}))
+
+    add(id="mae", kind="none", name="前数字（前回の各桁 −1）", source="umasaku",
+        claim="61.2%で前数字が出現する",
+        how="前回の各桁から1を引いた数字が、次回の3桁のどこかに出たか",
+        plain="−1した数字も3個あるので、基準は引っ張りと同じ約61%です。数字をずらしても確率は動きません。",
+        **anyof(lambda p: {(int(x) - 1) % 10 for x in p}))
+
+    add(id="ato", kind="none", name="後数字（前回の各桁 +1）", source="umasaku",
+        claim="59.5%で後数字が出現する",
+        how="前回の各桁に1を足した数字が、次回の3桁のどこかに出たか",
+        plain="これも基準は約61%。主張値の59.5%は、むしろ基準より低い数字です。",
+        **anyof(lambda p: {(int(x) + 1) % 10 for x in p}))
+
+    # 裏数字は「桁ごと」で主張されているので、桁ごとに数える
+    obs = exp = var = 0
+    for t in range(1, N):
+        S = {(int(x) + 5) % 10 for x in numbers[t - 1]}
+        p = len(S) / 10
+        for c in numbers[t]:
+            obs += int(c) in S
+            exp += p
+            var += p * (1 - p)
+    add(id="ura", kind="none", name="裏数字（風車盤の対角 = +5）", source="umasaku ほか複数",
+        claim="26.1%で裏数字が出現する",
+        how="前回の各桁に5を足した数字が、次回の各桁に出たか（桁ごとに数える）",
+        plain="基準は27.1%です。つまり主張されている26.1%は、何も考えずに数字を選んだ場合よりも"
+              "むしろ低い値です。根拠として挙げられている数値そのものが、効果がないことを示しています。",
+        obs=obs, exp=exp, var=var, n=(N - 1) * 3)
+
+    # 合計値（和の分布は中央が厚い山になる）
+    tri = Counter()
+    for a in range(10):
+        for b in range(10):
+            for c in range(10):
+                tri[a + b + c] += 1
+    p_sum = sum(tri[k] for k in range(10, 18)) / 1000
+    obs = sum(1 for n in numbers if 10 <= sum(int(c) for c in n) <= 17)
+    add(id="sum1017", kind="arithmetic", name="合計値の法則（3桁の和が10〜17）",
+        source="aetheria", claim="約56%がこの範囲に集中する",
+        how="当選番号3桁の合計が10〜17だったか",
+        plain="サイコロ3個の合計が真ん中あたりに集まるのと同じです。1000通りのうち560通りが10〜17なので、"
+              "何もしなくても56%になります。正しい主張ですが、1000通りを560通りに絞っただけで、"
+              "そこから先は変わりません。",
+        obs=obs, exp=N * p_sum, var=N * p_sum * (1 - p_sum), n=N)
+
+    obs = sum(1 for n in numbers if 0 < sum(int(c) % 2 for c in n) < 3)
+    add(id="evenodd", kind="arithmetic", name="偶数・奇数の混合", source="適中攻略ナビ / aetheria",
+        claim="【偶数2・奇数1】か【偶数1・奇数2】が7割以上（750/1000）",
+        how="3桁がオール偶数・オール奇数のどちらでもなかったか",
+        plain="コインを3回投げて「全部表」か「全部裏」になるのが4回に1回なのと同じ理屈です。"
+              "計算すると必ず75%になります。法則ではなく、ただの算数です。",
+        obs=obs, exp=N * 0.75, var=N * 0.75 * 0.25, n=N)
+
+    obs = sum(1 for n in numbers if 0 < sum(1 for c in n if int(c) >= 5) < 3)
+    add(id="highlow", kind="arithmetic", name="低数字・高数字の混合", source="適中攻略ナビ",
+        claim="【低2・高1】か【低1・高2】が7割以上",
+        how="0〜4と5〜9が混ざっていたか",
+        plain="0〜4と5〜9に分けただけなので、偶数・奇数とまったく同じ計算になります。やはり必ず75%です。",
+        obs=obs, exp=N * 0.75, var=N * 0.75 * 0.25, n=N)
+
+    obs = sum(1 for n in numbers if len(set(n)) == 2)
+    add(id="double", kind="arithmetic", name="ダブル（2桁が同じ）", source="aetheria",
+        claim="約27%・4回に1回のペースで出る",
+        how="3桁のうち2桁だけが同じ数字だったか",
+        plain="計算すると必ず27%です。正しい主張ですが、「次がダブルかどうか」は分かりません。",
+        obs=obs, exp=N * 0.27, var=N * 0.27 * 0.73, n=N)
+
+    obs = sum(1 for n in numbers if len(set(n)) == 1)
+    add(id="triple", kind="arithmetic", name="トリプル（3桁とも同じ）", source="aetheria",
+        claim="わずか1%",
+        how="3桁すべてが同じ数字だったか",
+        plain="000〜999の1000通りのうち10通りなので、計算どおり1%です。",
+        obs=obs, exp=N * 0.01, var=N * 0.01 * 0.99, n=N)
+
+    def is_seq(n):
+        v = sorted(int(c) for c in n)
+        return v[1] == v[0] + 1 and v[2] == v[1] + 1
+    obs = sum(1 for n in numbers if is_seq(n))
+    p_seq = 8 * 6 / 1000
+    add(id="seq", kind="arithmetic", name="連番は当たりにくい", source="宝くじ検証",
+        claim="012・123のような連番は避けるべき",
+        how="3桁が連続する数字の並び替えだったか",
+        plain="連番はそもそも1000通りのうち48通り（4.8%）しかありません。"
+              "「めったに出ない」のは当たり前で、避けても当たりやすくはなりません。"
+              "むしろ連番を買っても、他の数字を買っても、当たる確率は同じ1/1000です。",
+        obs=obs, exp=N * p_seq, var=N * p_seq * (1 - p_seq), n=N)
+
+    pk = 0.0
+    for t in range(1, N):
+        u = len(set(numbers[t - 1]))
+        pk += (6 if u == 3 else 3 if u == 2 else 1) / 1000
+    obs = sum(1 for t in range(1, N) if sorted(numbers[t]) == sorted(numbers[t - 1]))
+    add(id="norepeat", kind="arithmetic", name="前回と同じ数字の組は出ない", source="宝くじ検証",
+        claim="6000回超で7回しか起きていない",
+        how="前回とまったく同じ3つの数字の組だったか（並び順は問わない）",
+        plain="そもそも1回あたり0.5%しか起きない出来事です。"
+              "1000通りから6通りを除いても、残り994通りから当てなければならないことは変わりません。",
+        obs=obs, exp=pk, var=pk * (1 - pk / (N - 1)), n=N - 1)
+
+    # 黄金数字: 選んだ元データと、選んだ後のデータを分けて見る（後知恵の見本）
+    def gold_seg(lo, hi):
+        seg = numbers[lo:hi]
+        m = len(seg)
+        g = sum(1 for x in seg if x[1:] in GOLD_LAST2)
+        z = (g - m * 0.1) / math.sqrt(m * 0.1 * 0.9)
+        return {"n": m, "rate": round(g / m * 100, 2), "z": round(z, 2),
+                "verdict": "基準と差なし" if abs(z) < 1.96 else "差あり"}
+    gold = {"in_sample": gold_seg(0, GOLD_SOURCE_ROUNDS),
+            "out_sample": gold_seg(GOLD_SOURCE_ROUNDS, N),
+            "source_rounds": GOLD_SOURCE_ROUNDS,
+            "numbers": sorted(GOLD_LAST2)}
+    g = sum(1 for x in numbers if x[1:] in GOLD_LAST2)
+    add(id="gold", kind="hindsight", name="黄金数字（よく出る下2桁10個）", source="宝くじ検証",
+        claim="第1〜4297回のデータから、出現率の高い下2桁10個を選んだ",
+        how="当選番号の下2桁が、その10個のどれかだったか",
+        plain="過去のデータを見て「多かったもの」を選べば、そのデータの中では必ず多く見えます。"
+              "選んだ後のデータで試すと基準どおりに戻ります。これが「後知恵」です。",
+        obs=g, exp=N * 0.1, var=N * 0.1 * 0.9, n=N)
+
+    # コールドナンバー（長く出ていない数字）。最後に出た位置を持ち回って O(N) で数える
+    last_seen = {d: None for d in DIGITS}
+    cold = {}
+    for t, num in enumerate(numbers):
+        if t >= 50:
+            for d in DIGITS:
+                gap = t - last_seen[d] - 1 if last_seen[d] is not None else t
+                b = min(gap, 15)
+                r = cold.setdefault(b, [0, 0])
+                r[0] += d in num
+                r[1] += 1
+        for d in set(num):
+            last_seen[d] = t
+    cold_rows = [{"gap": b, "rate": round(v[0] / v[1] * 100, 2), "n": v[1]}
+                 for b, v in sorted(cold.items()) if v[1] >= 200]
+
+    # 曜日別の引っ張り率
+    wd_names = "月火水木金土日"
+    agg = {}
+    for t in range(1, N):
+        S = {int(x) for x in numbers[t - 1]}
+        p = 1 - (1 - len(S) / 10) ** 3
+        a = agg.setdefault(wd_names[dates[t].weekday()], [0, 0.0, 0.0, 0])
+        a[0] += any(int(c) in S for c in numbers[t])
+        a[1] += p
+        a[2] += p * (1 - p)
+        a[3] += 1
+    weekday = []
+    for w in wd_names:
+        if w not in agg:
+            continue
+        h, e, v, n = agg[w]
+        z = (h - e) / math.sqrt(v)
+        weekday.append({"name": f"{w}曜", "rate": round(h / n * 100, 2),
+                        "base": round(e / n * 100, 2), "z": round(z, 2), "n": n,
+                        "verdict": "基準と差なし" if abs(z) < 1.96 else "差あり"})
+
+    return {
+        "n": N, "items": items, "gold": gold, "cold": cold_rows, "weekday": weekday,
+        "arithmetic": sum(1 for i in items if i["kind"] == "arithmetic"),
+        "useful": sum(1 for i in items
+                      if i["kind"] == "none" and i["verdict"] == "差あり"),
+    }
+
+
 def build_stats(draws: list[dict]) -> dict:
     numbers = [d["number"] for d in draws]
     N = len(numbers)
@@ -515,6 +910,8 @@ def build_stats(draws: list[dict]) -> dict:
         "chi2_limit_1": 21.67,
         "pos_counts": [{d: c[d] for d in DIGITS} for c in pos],
         "rules": rule_tests(numbers),
+        "mini_rules": mini_rule_tests(numbers),
+        "claims": claim_tests(numbers, [d["date"] for d in draws]),
         "season": {"humid_draws": sum(hi.values()) // 3, "dry_draws": sum(lo.values()) // 3,
                    "homogeneity_chi2": round(homo, 2)},
         "double_rate": round(sum(1 for n in numbers if len(set(n)) == 2) / N * 100, 2),
@@ -525,25 +922,41 @@ def build_stats(draws: list[dict]) -> dict:
 
 # ---------------------------------------------------------------- 結果の判定
 
-def judge(combo: list[str], number: str) -> dict:
-    """候補と当選番号を突き合わせる(ミニ=下2桁が判定の主役)"""
+def judge(combo: list[str], number: str,
+          combo_ten: list[str] | None = None,
+          combo_one: list[str] | None = None) -> dict:
+    """候補と当選番号を突き合わせる(ミニ=下2桁が判定の主役)
+
+    combo_ten / combo_one が渡されたら位ごと方式(3×3=9口)として判定する。
+    渡されなければ旧方式(1組の4数字を両方の位に流用、4×4=16口)。
+    公開済みの回を後から別方式で判定し直さないために、この分岐は必ず保存値で決める。
+    """
+    pos_mode = bool(combo_ten and combo_one)
+    if pos_mode:
+        tickets = sorted({a + b for a in combo_ten for b in combo_one})
+        pool = sorted(set(combo_ten) | set(combo_one))
+    else:
+        tickets = sorted({a + b for a in combo for b in combo})
+        pool = list(combo)
     counts = Counter(number)
     last2 = number[1:]                       # 十の位・一の位
-    in_set = [ch in combo for ch in last2]
-    mini_hit = all(in_set)                   # 16通りの買い目に入っていたか
-    covered = [ch for ch in number if ch in combo]
+    in_set = ([last2[0] in combo_ten, last2[1] in combo_one] if pos_mode
+              else [ch in combo for ch in last2])
+    mini_hit = all(in_set)                   # 買い目に入っていたか
+    covered = [ch for ch in number if ch in pool]
     uniq = sorted(set(covered))
     triple = [d for d, c in counts.items() if c == 3]
     double = [d for d, c in counts.items() if c == 2]
 
     if mini_hit:
-        label = f"下2桁「{last2}」は候補16通りの中にあった（ミニ的中）"
+        label = f"下2桁「{last2}」は候補{len(tickets)}通りの中にあった（ミニ的中）"
     elif any(in_set):
         got = last2[0] if in_set[0] else last2[1]
         miss = last2[1] if in_set[0] else last2[0]
         pos = "十の位" if in_set[0] else "一の位"
+        other = "一の位" if in_set[0] else "十の位"
         label = (f"下2桁のうち{pos}の「{got}」は候補にあったが、"
-                 f"もう一方の「{miss}」が候補外だった")
+                 f"{other}の「{miss}」が候補外だった")
     else:
         label = f"下2桁「{last2}」はどちらも候補外だった"
     if triple:
@@ -551,20 +964,20 @@ def judge(combo: list[str], number: str) -> dict:
     elif double:
         label += "【ダブル発生】"
 
-    tickets = sorted({a + b for a in combo for b in combo})
     return {
         "mini_hit": mini_hit,
         "last2": last2,
+        "pos_mode": pos_mode,
         "tickets": len(tickets),
         "cost": len(tickets) * TICKET_PRICE,
         "covered": len(covered), "digits": uniq,
-        "all3": set(number) <= set(combo),
+        "all3": set(number) <= set(pool),
         "label": label,
         "detail": {
             "sum": sum(int(c) for c in number),
             "pattern": "トリプル" if triple else "ダブル" if double else "3桁すべて異なる",
-            "missed": sorted(set(number) - set(combo)),
-            "mini_tickets": [a + b for a in sorted(combo) for b in sorted(combo)],
+            "missed": sorted(set(number) - set(pool)),
+            "mini_tickets": tickets,
         },
     }
 
@@ -572,6 +985,7 @@ def judge(combo: list[str], number: str) -> dict:
 # ---------------------------------------------------------------- 保存版ページ
 
 SNAPSHOT_KEYS = ("logic_version", "generated_at", "target_round", "candidates",
+                 "candidates_ten", "candidates_one",
                  "basis", "selection", "odds", "tags", "ai", "hypotheses",
                  "ai_comments")
 
@@ -593,6 +1007,25 @@ def save_snapshot(latest: dict) -> None:
     f.write_text(json.dumps(snap, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
+def judge_snap(snap: dict, number: str) -> dict:
+    """スナップショットに保存された方式で判定する（後から方式を変えない）"""
+    return judge(snap.get("candidates", []), number,
+                 snap.get("candidates_ten"), snap.get("candidates_one"))
+
+
+def snap_candidates_line(snap: dict) -> str:
+    """AIへ渡す候補の説明。方式によって書き分ける"""
+    if snap.get("candidates_ten"):
+        t, o = snap["candidates_ten"], snap["candidates_one"]
+        return (f"- サイトの候補: 十の位 {','.join(t)} / 一の位 {','.join(o)}"
+                f"（これで作る買い目は{len(t) * len(o)}通り、"
+                f"{len(t) * len(o) * TICKET_PRICE:,}円）")
+    c = snap.get("candidates", [])
+    return (f"- サイトの候補{len(c)}数字: {','.join(c)}"
+            f"（これで作る買い目は{len(c) ** 2}通り、"
+            f"{len(c) ** 2 * TICKET_PRICE:,}円）")
+
+
 def fill_results(draws: list[dict]) -> None:
     """抽選が終わった回のスナップショットに、実際の結果と検証を書き足す"""
     if not ROUNDS.exists():
@@ -610,8 +1043,7 @@ def fill_results(draws: list[dict]) -> None:
                 oc0 = snap.get("outcome") or {}
                 num = snap["result"]["number"]
                 ctx = (f"第{snap['target_round']}回の結果が出ました。\n"
-                       f"- サイトの候補4数字: {','.join(snap['candidates'])}"
-                       f"（これで作る買い目は16通り、3,200円）\n"
+                       + snap_candidates_line(snap) + "\n"
                        f"- 当選番号: {num}（ミニの対象は下2桁の {num[1:]}）\n"
                        f"- 判定: {'ミニ的中' if oc0.get('mini_hit') else '外れ'}")
                 got = auto_debate.reflect(snap["target_round"], ctx)
@@ -622,7 +1054,7 @@ def fill_results(draws: list[dict]) -> None:
             # 金額や収支が未記入なら補う
             oc = snap.get("outcome") or {}
             if "profit" not in oc and snap.get("candidates"):
-                oc = judge(snap["candidates"], snap["result"]["number"])
+                oc = judge_snap(snap, snap["result"]["number"])
                 prize = prizes.get(snap["target_round"])
                 if prize:
                     snap["result"]["mini_prize"] = prize
@@ -635,12 +1067,11 @@ def fill_results(draws: list[dict]) -> None:
             continue
         d = results[snap["target_round"]]
         snap["result"] = {"number": d["number"], "date": str(d["date"])}
-        snap["outcome"] = judge(snap["candidates"], d["number"])
+        snap["outcome"] = judge_snap(snap, d["number"])
         if "--no-ai" not in sys.argv:
             oc0 = snap["outcome"]
             ctx = (f"第{snap['target_round']}回の結果が出ました。\n"
-                   f"- サイトの候補4数字: {','.join(snap['candidates'])}"
-                   f"（これで作る買い目は16通り、3,200円）\n"
+                   + snap_candidates_line(snap) + "\n"
                    f"- 当選番号: {d['number']}（ミニの対象は下2桁の {d['number'][1:]}）\n"
                    f"- 判定: {'ミニ的中' if oc0['mini_hit'] else '外れ'}\n"
                    f"- 3つのAIが宣言ルールで出した本命(下2桁): "
@@ -679,6 +1110,8 @@ def build_rounds_index() -> list[dict]:
             "round": snap["target_round"],
             "generated_at": snap["generated_at"][:10],
             "candidates": snap["candidates"],
+            "candidates_ten": snap.get("candidates_ten"),
+            "candidates_one": snap.get("candidates_one"),
             "result": (snap.get("result") or {}).get("number"),
             "covered": (snap.get("outcome") or {}).get("covered"),
             "label": (snap.get("outcome") or {}).get("label", "抽選前"),
@@ -763,8 +1196,8 @@ def build_hypotheses(draws: list[dict], target_round: int) -> list[dict]:
     return out
 
 
-RECORD_HEADER = (["回号", "生成日時", "候補", "種の材料", "ハッシュ", "選出確率",
-                  "一様比", "有効候補数"]
+RECORD_HEADER = (["回号", "生成日時", "候補", "候補_十の位", "候補_一の位", "口数",
+                  "種の材料", "ハッシュ", "選出確率", "一様比", "有効候補数"]
                  + [f"原典pt_{d}" for d in DIGITS]
                  + ["当選番号", "下2桁", "ミニ的中", "購入額", "当選額", "収支"])
 
@@ -787,6 +1220,9 @@ def write_record_csv() -> int:
         rows.append([
             snap["target_round"], snap.get("generated_at", ""),
             ",".join(snap.get("candidates", [])),
+            ",".join(snap.get("candidates_ten") or []),
+            ",".join(snap.get("candidates_one") or []),
+            oc.get("tickets") or (snap.get("odds") or {}).get("tickets", ""),
             sel.get("seed_material", ""), sel.get("hash", ""),
             sel.get("probability", ""), sel.get("ratio_to_uniform", ""),
             sel.get("effective_combos", ""),
@@ -871,9 +1307,17 @@ def main() -> None:
 
     if "--verify" in args:
         latest = json.loads((DATA / "latest.json").read_text(encoding="utf-8"))
-        p = pick(latest["target_round"], latest["basis"]["number"])
-        ok = p["combo"] == latest["candidates"]
-        print(f"再現性: {'一致' if ok else '不一致'} / 候補 {latest['candidates']}")
+        tr, prev = latest["target_round"], latest["basis"]["number"]
+        if latest.get("candidates_ten"):
+            p = pick_pos(tr, prev)
+            ok = (p["combo_ten"] == latest["candidates_ten"]
+                  and p["combo_one"] == latest["candidates_one"])
+            print(f"再現性: {'一致' if ok else '不一致'} / "
+                  f"十の位 {latest['candidates_ten']} 一の位 {latest['candidates_one']}")
+        else:
+            p = pick(tr, prev)
+            ok = p["combo"] == latest["candidates"]
+            print(f"再現性: {'一致' if ok else '不一致'} / 候補 {latest['candidates']}")
         sys.exit(0 if ok else 1)
 
     print("ナンバーズ3 候補生成")
@@ -901,26 +1345,70 @@ def main() -> None:
             if done == target_round:
                 print(f"  第{target_round}回向けは生成済み。何もしない")
                 sys.exit(3)
-    picked = pick(target_round, last["number"])
+    pos_mode = use_pos(target_round)
+    picked = pick_pos(target_round, last["number"]) if pos_mode \
+        else pick(target_round, last["number"])
 
-    # 公開済みの回は候補を作り直さない。最初に出した値を必ず維持する
+    # 公開済みの回は候補を作り直さない。最初に出した値を必ず維持する。
+    # 方式そのものも保存値に従う（後から別方式で上書きしないため）
     existing = ROUNDS / f"{target_round}.json"
     if existing.exists():
         try:
             prev_snap = json.loads(existing.read_text(encoding="utf-8"))
-            if prev_snap.get("candidates"):
+            if prev_snap.get("candidates_ten") and prev_snap.get("candidates_one"):
+                if not pos_mode:
+                    picked = pick_pos(target_round, last["number"])
+                    pos_mode = True
+                if (prev_snap["candidates_ten"] != picked["combo_ten"]
+                        or prev_snap["candidates_one"] != picked["combo_one"]):
+                    print(f"  公開済みの候補を維持: 十の位 "
+                          f"{','.join(prev_snap['candidates_ten'])} / 一の位 "
+                          f"{','.join(prev_snap['candidates_one'])}", file=sys.stderr)
+                picked["combo_ten"] = prev_snap["candidates_ten"]
+                picked["combo_one"] = prev_snap["candidates_one"]
+                picked["combo"] = sorted(set(picked["combo_ten"])
+                                         | set(picked["combo_one"]))
+            elif prev_snap.get("candidates"):
+                if pos_mode:                    # 旧方式で公開済み → 旧方式のまま
+                    picked = pick(target_round, last["number"])
+                    pos_mode = False
                 if prev_snap["candidates"] != picked["combo"]:
                     print(f"  公開済みの候補を維持: {','.join(prev_snap['candidates'])}"
                           f" (再計算値 {','.join(picked['combo'])} は破棄)", file=sys.stderr)
                 picked["combo"] = prev_snap["candidates"]
-                if prev_snap.get("selection"):
-                    picked["seed_material"] = prev_snap["selection"].get(
-                        "seed_material", picked["seed_material"])
-                    picked["hash"] = prev_snap["selection"].get("hash", picked["hash"])
+            if prev_snap.get("selection"):
+                picked["seed_material"] = prev_snap["selection"].get(
+                    "seed_material", picked["seed_material"])
+                picked["hash"] = prev_snap["selection"].get("hash", picked["hash"])
         except json.JSONDecodeError:
             pass
 
     hist = [d["number"] for d in draws]
+
+    # ミニ(下2桁一致)を基準にした確率。
+    #   位ごと方式: 十の位3通り × 一の位3通り = 9口。各位の的中率は 3/10
+    #   旧方式    : 1組の4数字を両方の位に流用 = 16口。各位の的中率は 4/10
+    _k = PICK_N / 10 if pos_mode else 0.4
+    _tickets = PICK_N ** 2 if pos_mode else 16
+    odds = {
+        "mini_both": round(_k * _k * 100, 1),              # 下2桁の両方が候補に入る
+        "mini_either": round((1 - (1 - _k) ** 2) * 100, 1),  # どちらかが入る
+        "mini_none": round((1 - _k) ** 2 * 100, 1),          # どちらも入らない
+        "tickets": _tickets,
+        "cost": _tickets * TICKET_PRICE,
+        "mini_odds": 1.0,                 # ミニ1口の的中確率(%)。口数によらず一定
+        "mini_prize": mini_prize_stats(),
+        # 参考: 3桁(ストレート/ボックス)の確率。union の個数で決まる
+        "ref_atleast1": 78.4, "ref_all3": 6.4, "ref_expected_covered": 1.2,
+    }
+    if pos_mode:
+        odds["pos"] = {"ten": picked["combo_ten"], "one": picked["combo_one"]}
+        odds["mini_tickets"] = sorted(
+            a + b for a in picked["combo_ten"] for b in picked["combo_one"])
+        n_union = len(picked["combo"])
+        odds["ref_atleast1"] = round((1 - (1 - n_union / 10) ** 3) * 100, 1)
+        odds["ref_all3"] = round((n_union / 10) ** 3 * 100, 1)
+        odds["ref_expected_covered"] = round(3 * n_union / 10, 1)
 
     latest = {
         "logic_version": LOGIC_VERSION,
@@ -930,34 +1418,33 @@ def main() -> None:
         "basis": {"round": last["round"], "date": str(last["date"]),
                   "number": last["number"]},
         "selection": {
-            "method": f"210通り(10C4)から抽選。宝島本の手法に該当する数字を多く含む組を"
-                      f"exp({TILT_WEIGHT}×該当点)の比率でやや選ばれやすくしている",
+            "method": (
+                f"十の位・一の位それぞれ120通り(10C3)から抽選（組み合わせは14,400通り）。"
+                f"宝島本の手法に該当する数字を多く含む組を"
+                f"exp({TILT_WEIGHT}×該当点)の比率でやや選ばれやすくしている。"
+                f"位ごとの採点では「桁別ひっぱり」を1点として加える"
+                if pos_mode else
+                f"210通り(10C4)から抽選。宝島本の手法に該当する数字を多く含む組を"
+                f"exp({TILT_WEIGHT}×該当点)の比率でやや選ばれやすくしている"),
             "seed_material": picked["seed_material"],
             "hash": picked["hash"],
-            "combos": len(COMBOS),
+            "combos": len(COMBOS_N) ** 2 if pos_mode else len(COMBOS),
             "tilt_weight": picked["tilt_weight"],
             "probability": picked["probability"],
             "probability_uniform": picked["probability_uniform"],
             "ratio_to_uniform": picked["ratio_to_uniform"],
-            "spread": picked["spread"],
+            "spread": picked.get("spread"),
             "tag_points": picked["tag_points"],
             "effective_combos": picked["effective_combos"],
         },
-        "odds": {
-            # ミニ（下2桁一致）を基準にした確率。候補4数字で下2桁を組むと 4×4=16通り
-            "mini_both": 16.0,        # 下2桁の両方が候補に含まれる
-            "mini_either": 64.0,      # 下2桁のどちらかが候補に含まれる
-            "mini_none": 36.0,        # どちらも含まれない
-            "tickets": 16,            # 16通りを全部買う場合の口数
-            "cost": 16 * 200,
-            "mini_odds": 1.0,         # ミニ1口の的中確率(%)
-            "mini_prize": mini_prize_stats(),
-            # 参考: 3桁(ストレート/ボックス)の確率
-            "ref_atleast1": 78.4, "ref_all3": 6.4, "ref_expected_covered": 1.2,
-        },
+        "odds": odds,
         "tags": {d: tags_for(d, hist, picked["combo"]) for d in picked["combo"]},
         "stats": build_stats(draws),
     }
+    if pos_mode:
+        latest["candidates_ten"] = picked["combo_ten"]
+        latest["candidates_one"] = picked["combo_one"]
+        latest["selection"]["pos"] = picked["pos"]
     latest["stale"] = None
     latest["hypotheses"] = build_hypotheses(draws, target_round)
 
@@ -965,8 +1452,13 @@ def main() -> None:
     if "--no-ai" not in args:
         try:
             rec = latest.get("record", {})
-            ctx = (f"現在の対象は第{target_round}回。候補は {','.join(picked['combo'])}。\n"
-                   f"選出方式: 210通りから抽選し、宝島本の手法に該当する数字を多く含む組を"
+            _cand = (f"十の位 {','.join(picked['combo_ten'])} / "
+                     f"一の位 {','.join(picked['combo_one'])}（9口1,800円）"
+                     if pos_mode else f"{','.join(picked['combo'])}（16口3,200円）")
+            _how = ("十の位・一の位それぞれ120通り(10C3)から抽選（計14,400通り）"
+                    if pos_mode else "210通り(10C4)から抽選")
+            ctx = (f"現在の対象は第{target_round}回。候補は {_cand}。\n"
+                   f"選出方式: {_how}し、宝島本の手法に該当する数字を多く含む組を"
                    f"exp(0.2×該当点)でやや優遇。種は「回号+直近当選番号」のSHA-256。\n"
                    f"全履歴{len(draws)}回の検定では原典4手法いずれも基準27.10%と有意差なし。\n"
                    f"記録: {rec.get('judged', 0)}回分が確定済み、的中{rec.get('hits', 0)}回、"
@@ -1016,10 +1508,20 @@ def main() -> None:
     (DATA / "latest.json").write_text(
         json.dumps(latest, ensure_ascii=False, indent=1), encoding="utf-8")
 
-    print(f"  第{target_round}回の候補: {','.join(picked['combo'])}")
+    if pos_mode:
+        print(f"  第{target_round}回の候補: 十の位 {','.join(picked['combo_ten'])}"
+              f" / 一の位 {','.join(picked['combo_one'])}"
+              f" → 買い目{PICK_N ** 2}口 {PICK_N ** 2 * TICKET_PRICE:,}円")
+    else:
+        print(f"  第{target_round}回の候補: {','.join(picked['combo'])}")
     print(f"  hash: {picked['hash'][:32]}…")
-    print(f"  選ばれやすさ: 一様の{picked['ratio_to_uniform']}倍 "
-          f"(この回の範囲 {picked['spread']['min']}〜{picked['spread']['max']}倍)")
+    if pos_mode:
+        _t, _o = picked["pos"]["ten"], picked["pos"]["one"]
+        print(f"  選ばれやすさ: 一様の{picked['ratio_to_uniform']}倍 "
+              f"(十の位 {_t['ratio_to_uniform']}倍 / 一の位 {_o['ratio_to_uniform']}倍)")
+    else:
+        print(f"  選ばれやすさ: 一様の{picked['ratio_to_uniform']}倍 "
+              f"(この回の範囲 {picked['spread']['min']}〜{picked['spread']['max']}倍)")
     for h in latest.get("hypotheses", []):
         r = h["record"]
         print(f"  仮説[{h['id']}] 今回の予測 {h['prediction']} / "
