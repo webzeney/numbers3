@@ -144,6 +144,10 @@
     "basis": {
      "round": 7091,
      "number": "552"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -218,6 +222,10 @@
     "basis": {
      "round": 7091,
      "number": "552"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -257,6 +265,10 @@
     "basis": {
      "round": 7091,
      "number": "552"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -274,5 +286,65 @@
    "prediction": "770",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "215",
+  "date": "2026-10-14",
+  "mini_prize": 7500
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "15",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "1"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「1」は候補にあったが、一の位の「5」が候補外だった",
+  "detail": {
+   "sum": 8,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "2",
+    "5"
+   ],
+   "mini_tickets": [
+    "00",
+    "01",
+    "06",
+    "07",
+    "10",
+    "11",
+    "16",
+    "17",
+    "60",
+    "61",
+    "66",
+    "67",
+    "70",
+    "71",
+    "76",
+    "77"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "gpt": {
+   "label": "ChatGPT",
+   "text": "今回は候補16通りに含まれず外れ。16%程度の試行結果の一つで、方法の良否は判断できない。"
+  },
+  "claude": {
+   "label": "Claude",
+   "text": "第7092回は候補4数字・本命3者ともに外れ。210通りからの一様抽選である以上、各候補とも的中確率は想定通りの範囲内であり、今回の結果自体に特筆すべき点はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7092回の抽選は下2桁15で確定しました。今回の結果は210通りの中からランダムに一つが選ばれた事象であり、統計的な期待値の範囲内です。特筆すべき点はない。"
+  }
+ }
 }
