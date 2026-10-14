@@ -11,6 +11,10 @@
 <meta property="og:title" content="ナンバーズ3 ミニ 候補数字">
 <meta property="og:description" content="攻略本・攻略サイトで言われている手法が本当に当たるのかを全履歴7000回超で検証。ひっぱり・裏数字・黄金数字など22項目を検定しました。ミニの候補数字と毎回の収支も公開しています。">
 <meta name="twitter:card" content="summary">
+<!-- セクション番号に使う見出し用フォント（細長い大文字専用書体） -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 <!-- ANALYTICS:BEGIN -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BDRDYG9JK7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BDRDYG9JK7');</script>
@@ -58,13 +62,12 @@ section{
 }
 h2{font-size:18px; margin:0 0 16px; display:flex; align-items:baseline; gap:12px}
 /* セクション番号はタイトルより大きく、縦長に。
-   scaleX で潰すと見た目だけ細くなり場所は元のままなので、
-   幅を ch 単位（= 数字1文字分）で指定して詰める。フォントが変わってもずれない */
+   Anton は字形そのものが細長いので、変形せずそのまま使う。
+   読み込み前は Arial Narrow 系にフォールバックして幅が暴れないようにする */
 h2 .num{
-  font:700 36px/1 var(--mono); color:var(--text3); letter-spacing:0;
-  display:inline-block; width:1.3ch;        /* 2文字 × 0.62 ≒ 1.24ch */
-  transform:scaleX(.62); transform-origin:left baseline;
-  flex:none;
+  font-family:"Anton","Arial Narrow","Liberation Sans Narrow",var(--mono),sans-serif;
+  font-size:40px; font-weight:400; line-height:1; letter-spacing:.015em;
+  color:var(--text3); flex:none; position:relative; top:1px;
 }
 h3{font-size:16px; margin:26px 0 12px; color:var(--text2)}
 p{margin:0 0 14px; font-size:15px; color:var(--text2)}
@@ -217,7 +220,7 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   p{font-size:15px; line-height:1.85}
   .note{font-size:13.5px; line-height:1.75}
   h2{font-size:16px; gap:10px}
-  h2 .num{font-size:30px}
+  h2 .num{font-size:33px}
   h3{font-size:15px}
 
   /* 候補4数字: 4列を維持したまま数字とタグを大きく */
