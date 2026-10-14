@@ -56,8 +56,16 @@ section{
   background:var(--surface); border:1px solid var(--line); border-radius:14px;
   padding:26px 28px; margin-bottom:18px;
 }
-h2{font-size:18px; margin:0 0 16px; display:flex; align-items:baseline; gap:10px}
-h2 .num{font:600 13px/1 var(--mono); color:var(--text3); letter-spacing:.1em}
+h2{font-size:18px; margin:0 0 16px; display:flex; align-items:baseline; gap:12px}
+/* セクション番号はタイトルより大きく、縦長に。
+   scaleX で潰すと見た目だけ細くなり場所は元のままなので、
+   幅を ch 単位（= 数字1文字分）で指定して詰める。フォントが変わってもずれない */
+h2 .num{
+  font:700 36px/1 var(--mono); color:var(--text3); letter-spacing:0;
+  display:inline-block; width:1.3ch;        /* 2文字 × 0.62 ≒ 1.24ch */
+  transform:scaleX(.62); transform-origin:left baseline;
+  flex:none;
+}
 h3{font-size:16px; margin:26px 0 12px; color:var(--text2)}
 p{margin:0 0 14px; font-size:15px; color:var(--text2)}
 .note{font-size:13.5px; color:var(--text3); line-height:1.8}
@@ -208,7 +216,8 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
   .lede{font-size:14.5px}
   p{font-size:15px; line-height:1.85}
   .note{font-size:13.5px; line-height:1.75}
-  h2{font-size:16px}
+  h2{font-size:16px; gap:10px}
+  h2 .num{font-size:30px}
   h3{font-size:15px}
 
   /* 候補4数字: 4列を維持したまま数字とタグを大きく */
@@ -370,6 +379,7 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
 }
 .srclist{margin:10px 0 14px; padding-left:1.3em; color:var(--dim); font-size:14px}
 .srclist li{margin:6px 0; line-height:1.8}
+h2 .tagnum{font:600 13px/1 var(--mono); color:var(--text3); letter-spacing:.1em; flex:none}
 </style>
 </head>
 <body>
@@ -487,7 +497,7 @@ function renderSnapshot(S){
   $('#app').innerHTML = `
 <a class="back" href="./">← 最新の予想に戻る</a>
 <section>
-  <h2><span class="num">${S.demo ? '見本' : '保存版'}</span>${esc(title)}</h2>
+  <h2><span class="tagnum">${S.demo ? '見本' : '保存版'}</span>${esc(title)}</h2>
   <p>${S.demo ? 'ハズレたときの表示を確認するための見本ページです。候補も結果も架空です。'
     : `${esc(S.generated_at)} に生成。第${S.basis.round}回（${esc(S.basis.date)}・当選番号 ${esc(S.basis.number)}）の確定を受けて選出しました。`}</p>
   ${renderPicks(S)}
@@ -688,8 +698,12 @@ function renderDist(counts, expected){
   <p class="note">中央の線が期待値 ${Math.round(expected).toLocaleString()}回。右に伸びるほど多く出ていて、左に伸びるほど出ていない数字です。最大でも${Math.round(maxAbs)}回の差しかなく、統計的には誤差の範囲です。</p>`;
 }
 
-// 統計の用語は、たとえ話を添えないと伝わらない。各所で使い回す
+// 統計の用語は、たとえ話を添えないと伝わらない。
+// 同じ説明を何度も出さないよう、1ページにつき最初の1回だけ描画する
+let zHelpShown = false;
 function zHelp(open){
+  if(zHelpShown) return '';
+  zHelpShown = true;
   return `<details class="zhelp"${open ? ' open' : ''}>
     <summary>「z値」ってなに？（クリックで開きます）</summary>
     <p><strong>コインを100回投げて、表が55回出たとします。</strong>このコイン、表が出やすいと言えるでしょうか。
