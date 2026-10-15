@@ -238,6 +238,10 @@
     "basis": {
      "round": 7092,
      "number": "215"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -312,6 +316,10 @@
     "basis": {
      "round": 7092,
      "number": "215"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -351,6 +359,10 @@
     "basis": {
      "round": 7092,
      "number": "215"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    }
   },
@@ -368,5 +380,58 @@
    "prediction": "908",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "745",
+  "date": "2026-10-15",
+  "mini_prize": 10800
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "45",
+  "pos_mode": true,
+  "tickets": 9,
+  "cost": 1800,
+  "covered": 1,
+  "digits": [
+   "4"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「4」は候補にあったが、一の位の「5」が候補外だった",
+  "detail": {
+   "sum": 16,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "5",
+    "7"
+   ],
+   "mini_tickets": [
+    "00",
+    "08",
+    "09",
+    "40",
+    "48",
+    "49",
+    "60",
+    "68",
+    "69"
+   ]
+  },
+  "prize": 0,
+  "profit": -1800
+ },
+ "ai_comments": {
+  "gpt": {
+   "label": "ChatGPT",
+   "text": "第7093回はサイト候補・各AI本命とも対象外でした。確率上の一結果であり、選出方法の評価材料ではありません。"
+  },
+  "claude": {
+   "label": "Claude",
+   "text": "第7093回は外れ。下2桁45は候補の十の位・一の位いずれの集合にも含まれておらず、3本命も全て不一致。210通りからの一様抽選であり、この結果に因果的な意味はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7093回のミニの対象数字は45でした。選出した9通りの候補および各AIの本命は、いずれも当選番号と一致しませんでした。今回の結果は210通りの中から特定の組み合わせが選択されたという確率的事象であり、選出方法の良し悪しとは無関係です。"
+  }
+ }
 }
