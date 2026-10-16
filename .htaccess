@@ -2,6 +2,10 @@
 <FilesMatch "^\.env|\.py$|^base\.csv$|^NUMBERS3_ALL\.csv$">
   Require all denied
 </FilesMatch>
+# 引き継ぎ書は運用メモなのでサーバーには上がるが外部には見せない
+<Files "引き継ぎ.md">
+  Require all denied
+</Files>
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
 </IfModule>
