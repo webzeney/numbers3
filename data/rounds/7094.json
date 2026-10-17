@@ -238,6 +238,10 @@
     "basis": {
      "round": 7093,
      "number": "745"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -312,6 +316,10 @@
     "basis": {
      "round": 7093,
      "number": "745"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -351,6 +359,10 @@
     "basis": {
      "round": 7093,
      "number": "745"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -368,5 +380,56 @@
    "prediction": "529",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "011",
+  "date": "2026-10-16",
+  "mini_prize": 9600
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "11",
+  "pos_mode": true,
+  "tickets": 9,
+  "cost": 1800,
+  "covered": 3,
+  "digits": [
+   "0",
+   "1"
+  ],
+  "all3": true,
+  "label": "下2桁のうち一の位の「1」は候補にあったが、十の位の「1」が候補外だった【ダブル発生】",
+  "detail": {
+   "sum": 2,
+   "pattern": "ダブル",
+   "missed": [],
+   "mini_tickets": [
+    "01",
+    "02",
+    "06",
+    "61",
+    "62",
+    "66",
+    "81",
+    "82",
+    "86"
+   ]
+  },
+  "prize": 0,
+  "profit": -1800
+ },
+ "ai_comments": {
+  "gpt": {
+   "label": "ChatGPT",
+   "text": "第7094回はサイト候補・各AI本命とも対象外でした。これは1回の確率事象で、選出方法の良否を示しません。"
+  },
+  "claude": {
+   "label": "Claude",
+   "text": "第7094回は外れ。下2桁「11」は候補9通りのいずれにも含まれず、3AIの本命(61/94/33)とも一致しない結果でした。210通りからの一様抽選である以上、こうした結果も確率的に起こり得る範囲内です。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7094回の抽選結果において、下2桁の当選番号は11でした。本件は全210通りのうちの1つが選ばれたという確率的な事象であり、的中・外れともに選定アルゴリズムの良し悪しとは無関係です。"
+  }
+ }
 }
