@@ -261,6 +261,10 @@
     "basis": {
      "round": 7095,
      "number": "208"
+    },
+    "outcome": {
+     "covered": 3,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -335,6 +339,10 @@
     "basis": {
      "round": 7095,
      "number": "208"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -374,6 +382,10 @@
     "basis": {
      "round": 7095,
      "number": "208"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -391,5 +403,58 @@
    "prediction": "268",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "986",
+  "date": "2026-10-20",
+  "mini_prize": 12200
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "86",
+  "pos_mode": true,
+  "tickets": 9,
+  "cost": 1800,
+  "covered": 2,
+  "digits": [
+   "6",
+   "8"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「8」は候補にあったが、一の位の「6」が候補外だった",
+  "detail": {
+   "sum": 23,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "9"
+   ],
+   "mini_tickets": [
+    "30",
+    "31",
+    "37",
+    "60",
+    "61",
+    "67",
+    "80",
+    "81",
+    "87"
+   ]
+  },
+  "prize": 0,
+  "profit": -1800
+ },
+ "ai_comments": {
+  "gpt": {
+   "label": "ChatGPT",
+   "text": "今回は買い目に含まれず外れ。抽選上起こり得る結果の一つで、選出方法の良否を示すものではない。"
+  },
+  "claude": {
+   "label": "Claude",
+   "text": "第7096回は外れ。候補9通り・本命3つともに下2桁「86」を含まず、確率16%の事象が今回は起きなかっただけで、特筆すべき点はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "今回は不的中となりましたが、9通りの選出において外れる確率は約91%であり、確率通りの通常の推移です。特筆すべき点はありません。"
+  }
+ }
 }
