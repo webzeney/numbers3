@@ -1195,7 +1195,8 @@ def build_hypotheses(draws: list[dict], target_round: int) -> list[dict]:
                 for rec in snap.get("hypotheses", []):
                     if rec.get("id") == h["id"]:
                         records.append({"round": rnd, "prediction": rec["prediction"],
-                                        "result": results[rnd]})
+                                        "result": results[rnd],
+                                        "prev": (snap.get("basis") or {}).get("number")})
         out.append({
             "id": h["id"], "title": h["title"],
             "registered_round": h["registered_round"], "registered_at": h["registered_at"],
@@ -1206,6 +1207,14 @@ def build_hypotheses(draws: list[dict], target_round: int) -> list[dict]:
             "prediction": hypotheses.predict(h, draws[-1]["number"], target_round),
             "record": hypotheses.evaluate(h, records),
             "history": records[-30:],
+            # 「どう計算しているか」をサイトに1行ずつ出すための内訳
+            "example": {
+                "round": target_round,
+                "prev_round": draws[-1]["round"],
+                "prev": draws[-1]["number"],
+                "steps": h["steps"](draws[-1]["number"], target_round)
+                         if h.get("steps") else [],
+            },
         })
     return out
 

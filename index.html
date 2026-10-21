@@ -384,6 +384,20 @@ footer{margin-top:32px; font-size:13px; color:var(--text3); text-align:center; l
 .srclist{margin:10px 0 14px; padding-left:1.3em; color:var(--dim); font-size:14px}
 .srclist li{margin:6px 0; line-height:1.8}
 h2 .tagnum{font:600 13px/1 var(--mono); color:var(--text3); letter-spacing:.1em; flex:none}
+/* 仮説の式の途中式。表にすると狭い画面で横スクロールになるので行で組む */
+.calcsteps{margin:12px 0 14px; border:1px solid var(--line); border-radius:10px;
+           background:var(--card); overflow:hidden}
+.cs{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+    padding:11px 14px; border-bottom:1px solid var(--line)}
+.cs:last-child{border-bottom:0}
+.cs .p{font-weight:700; min-width:4.5em; flex:none}
+.cs .e{color:var(--text2); font-size:14px}
+.cs .r{margin-left:auto; font-weight:700; font-size:19px; color:var(--accent); flex:none}
+@media (max-width:560px){
+  .cs{gap:8px; padding:10px 12px}
+  .cs .e{font-size:13.5px}
+  .cs .r{margin-left:0}
+}
 </style>
 </head>
 <body>
@@ -457,6 +471,7 @@ function renderHypotheses(list, targetRound){
     const left = Math.max(0, h.min_rounds - r.n);
     const years = (left / 250).toFixed(1);     // ナンバーズ3は平日のみ=年およそ250回
     const hist = (h.history || []).slice(-10).reverse();
+    const ex = h.example;
 
     return `<div class="hyp">
       <h4>${esc(h.title)}</h4>
@@ -477,12 +492,24 @@ function renderHypotheses(list, targetRound){
       ナンバーズ3は平日だけの抽選なので1年およそ250回。<strong>結論が出るのは約${years}年後</strong>です。
       「すぐに結果が出る」と言う予想法が信用できないのは、本来これだけの回数が必要だからです。</p>
 
-      ${hist.length ? `<h3>予測と結果の記録（直近${hist.length}回）</h3>
-      <p class="note">毎回この式が出した3桁と、実際の当選番号です。当たっていなくても消しません。</p>
+      ${ex && ex.steps && ex.steps.length ? `<h3>この式がどう3桁を作るか（第${ex.round}回の実例）</h3>
+      <p>前回（第${ex.prev_round}回）の当選番号は <strong class="mono">${esc(ex.prev)}</strong> でした。この3桁と回号だけを使って、次の3桁を決めます。計算は<strong>「前回のその位の数字 × 決まった係数 ＋ 回号」の下1桁をとる</strong>だけです。</p>
+      <div class="calcsteps">${ex.steps.map(st => `<div class="cs">
+          <span class="p">${esc(st.pos)}</span>
+          <span class="e mono">${esc(st.calc)}</span>
+          <span class="r mono">→ ${esc(st.value)}</span>
+        </div>`).join('')}</div>
+      <p class="plain">つなげて <strong class="mono" style="font-size:20px">${esc(h.prediction)}</strong> が、この式の第${ex.round}回の答えです。
+      当たったと言えるのは<strong>3桁が並び順まで完全に一致したときだけ</strong>で、1桁や2桁合っていても外れです。<br>
+      <strong>これは01の候補数字とは別物です。</strong>01はミニ（下2桁）を狙って抽選で選んだ数字、ここは登録した式が機械的に出した3桁で、計算も目的も違います。</p>` : ''}
+
+      ${hist.length ? `<h3>登録した式が出した3桁と、実際の当選番号（直近${hist.length}回）</h3>
+      <p class="note">当たっていなくても消しません。${hist[0] && hist[0].prev ? '「もとにした番号」は、その回を計算するのに使った前回の当選番号です。' : ''}</p>
       <div class="scroll"><table>
-        <thead><tr><th>回</th><th>この式の予測</th><th>実際の当選番号</th><th>判定</th></tr></thead>
+        <thead><tr><th>回</th>${hist[0] && hist[0].prev ? '<th>もとにした番号</th>' : ''}<th>式が出した3桁</th><th>実際の当選番号</th><th>判定</th></tr></thead>
         <tbody>${hist.map(x => `<tr>
           <td>第${x.round}回</td>
+          ${x.prev !== undefined ? `<td class="mono dim">${x.prev ? esc(x.prev) : '—'}</td>` : ''}
           <td class="mono">${esc(x.prediction)}</td>
           <td class="mono">${x.result ? esc(x.result) : '<span class="dim">抽選前</span>'}</td>
           <td class="${x.result && x.prediction === x.result ? 'ok' : 'dim'}">${x.result ? (x.prediction === x.result ? '完全一致' : '外れ') : '—'}</td>

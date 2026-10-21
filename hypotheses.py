@@ -27,6 +27,27 @@ def claude_v2_straight(prev_number: str, target_round: int) -> str:
     return f"{g(a, 3)}{g(b, 7)}{g(c, 9)}"
 
 
+COEF_379 = (3, 7, 9)
+
+
+def claude_v2_steps(prev_number: str, target_round: int) -> list[dict]:
+    """サイトに「どう計算しているか」を1行ずつ出すための内訳
+
+    式そのものは claude_v2_straight と同じ。表示のためだけに途中式を返す。
+    """
+    out = []
+    for i, (name, k) in enumerate(zip(("百の位", "十の位", "一の位"), COEF_379)):
+        d = int(prev_number[i])
+        total = d * k + target_round
+        out.append({
+            "pos": name,
+            "src": str(d),                       # 前回のその位の数字
+            "calc": f"{d} × {k} ＋ {target_round} ＝ {total:,}",
+            "value": str(total % 10),
+        })
+    return out
+
+
 REGISTRY = [
     {
         "id": "claude-v2-379-straight",
@@ -58,6 +79,7 @@ REGISTRY = [
         "min_rounds": 1000,
         "threshold_p": 0.01,
         "fn": claude_v2_straight,
+        "steps": claude_v2_steps,
     },
 ]
 
