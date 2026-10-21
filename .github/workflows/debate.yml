@@ -1,0 +1,76 @@
+name: AI討論を実行
+
+# 任意の議題で3つのAIに討論させる。GitHubの画面から手動で実行する。
+# APIキーは GitHub Secrets から渡すので、PCにキーを置く必要がない。
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: '議題（例: 重み付けをやめて完全な一様抽選にすべきか）'
+        required: true
+        type: string
+      context:
+        description: '補足情報（任意。この議題に固有の数値などがあれば）'
+        required: false
+        default: ''
+        type: string
+
+# 定期更新と同時に走るとプッシュが衝突するため、同じグループで直列化する
+concurrency:
+  group: numbers3-update
+  cancel-in-progress: false
+
+jobs:
+  debate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: リポジトリを取得
+        uses: actions/checkout@v4
+
+      - name: Pythonをセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 議題は利用者の入力なので、シェルに直接埋め込まず環境変数で渡す
+      - name: 討論を実行
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TZ: Asia/Tokyo
+          TOPIC: ${{ inputs.topic }}
+          EXTRA: ${{ inputs.context }}
+        run: python3 tools/debate.py "$TOPIC" "$EXTRA"
+
+      - name: 結果をGitHubに保存
+        env:
+          TOPIC: ${{ inputs.topic }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff --staged --quiet && { echo "変更なし"; exit 0; }
+          git commit -m "AI討論: ${TOPIC}"
+          git push
+
+      - name: ロリポップにFTPアップロード
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./
+          server-dir: /numbers/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/tools/**
+            **/__pycache__/**
+            **/data/sources/**
+            **/data/NUMBERS3_ALL.csv
+            **/.env
