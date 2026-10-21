@@ -3,9 +3,9 @@
   Require all denied
 </FilesMatch>
 # 運用メモはサーバーには上がるが外部には見せない
-<Files "運用メモ.md">
+<FilesMatch "^(運用メモ|はじめに)\.md$">
   Require all denied
-</Files>
+</FilesMatch>
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
 </IfModule>
