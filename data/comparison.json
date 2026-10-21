@@ -1,29 +1,23 @@
 {
- "generated_at": "2026-10-14T11:13:47+09:00",
+ "generated_at": "2026-10-21T10:14:41+09:00",
  "span": [
   201,
   7091
  ],
- "mode": "pos",
- "uniform_space": 14400,
+ "mode": "legacy",
+ "uniform_space": 210,
  "rows": [
   {
    "label": "ミニ的中率",
    "key": "mini_rate",
    "unit": "%",
-   "base": "9.0%"
+   "base": "16.0%"
   },
   {
-   "label": "十の位が当たった率",
-   "key": "ten_rate",
-   "unit": "%",
-   "base": "30.0%"
-  },
-  {
-   "label": "一の位が当たった率",
-   "key": "one_rate",
-   "unit": "%",
-   "base": "30.0%"
+   "label": "平均カバー桁数",
+   "key": "mean_covered",
+   "unit": "",
+   "base": "1.200"
   },
   {
    "label": "採用回数のχ²",
@@ -35,56 +29,54 @@
    "label": "連続回の数字の重複",
    "key": "overlap",
    "unit": "",
-   "base": "1.80"
+   "base": "1.60"
   },
   {
    "label": "有効候補数",
    "key": "effective_combos",
    "unit": "",
-   "base": "14,400"
+   "base": "210"
   },
   {
    "label": "最多採用率",
    "key": "rate_max",
    "unit": "%",
-   "base": "30.0%"
+   "base": "40.0%"
   }
  ],
- "note": "重み付け版と一様版を、同じ乱数の種・同じ全履歴で比較した。十の位・一の位それぞれ3数字を選ぶ現行方式での比較。",
+ "note": "重み付け版と一様版を、同じ乱数の種・同じ全履歴で比較した。4数字を1組選ぶ旧方式での比較。",
  "variants": [
   {
    "weight": 0.2,
    "n": 6891,
-   "mini_rate": 8.62,
-   "ten_rate": 29.78,
-   "one_rate": 29.15,
-   "chi2": 1.6,
-   "overlap": 1.793,
-   "unique_sets": 5509,
-   "rate_max": 30.3,
-   "rate_min": 29.7,
-   "effective_combos": 12328.7,
+   "mini_rate": 16.47,
+   "mean_covered": 1.2078,
+   "chi2": 3.8,
+   "overlap": 1.596,
+   "unique_sets": 210,
+   "rate_max": 40.7,
+   "rate_min": 39.4,
+   "effective_combos": 196.3,
    "label": "重み0.2（現行）"
   },
   {
    "weight": 0.0,
    "n": 6891,
-   "mini_rate": 9.49,
-   "ten_rate": 30.72,
-   "one_rate": 30.31,
-   "chi2": 5.0,
-   "overlap": 1.805,
-   "unique_sets": 5455,
-   "rate_max": 30.5,
-   "rate_min": 29.4,
-   "effective_combos": 14400.0,
+   "mini_rate": 15.82,
+   "mean_covered": 1.1898,
+   "chi2": 8.0,
+   "overlap": 1.597,
+   "unique_sets": 210,
+   "rate_max": 40.7,
+   "rate_min": 38.9,
+   "effective_combos": 210.0,
    "label": "重みなし（一様）"
   }
  ],
  "diff": {
-  "mini_rate": -0.87,
-  "se": 0.488,
-  "z": -1.78,
+  "mini_rate": 0.65,
+  "se": 0.625,
+  "z": 1.04,
   "verdict": "差なし"
  }
 }

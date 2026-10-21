@@ -1,6 +1,6 @@
 {
- "logic_version": "4.0.0-mini-pos",
- "generated_at": "2026-10-21T03:52:06+09:00",
+ "logic_version": "4.1.0-mini",
+ "generated_at": "2026-10-21T10:15:06+09:00",
  "target_round": 7097,
  "candidates": [
   "2",
@@ -220,7 +220,7 @@
  },
  "ai": {
   "mode": "pre-committed-rules",
-  "decided_at": "2026-10-21T03:52:06+09:00",
+  "decided_at": "2026-10-21T10:15:07+09:00",
   "picks": {
    "gpt": {
     "label": "ChatGPT",
