@@ -144,6 +144,10 @@
     "basis": {
      "round": 7097,
      "number": "725"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -218,6 +222,10 @@
     "basis": {
      "round": 7097,
      "number": "725"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -257,6 +265,10 @@
     "basis": {
      "round": 7097,
      "number": "725"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -274,5 +286,64 @@
    "prediction": "923",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "645",
+  "date": "2026-10-22",
+  "mini_prize": 8100
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "45",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 0,
+  "digits": [],
+  "all3": false,
+  "label": "下2桁「45」はどちらも候補外だった",
+  "detail": {
+   "sum": 15,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "4",
+    "5",
+    "6"
+   ],
+   "mini_tickets": [
+    "00",
+    "01",
+    "02",
+    "03",
+    "10",
+    "11",
+    "12",
+    "13",
+    "20",
+    "21",
+    "22",
+    "23",
+    "30",
+    "31",
+    "32",
+    "33"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "gpt": {
+   "label": "ChatGPT",
+   "text": "判定は外れ。本件は16%の的中事象が今回は起きなかったという記録で、選出方法の良否は示さない。"
+  },
+  "claude": {
+   "label": "Claude",
+   "text": "第7098回は外れ。3AIの本命(51/94/33)もいずれも不的中であり、これは単純に16%程度の的中率の事象が外れ側に振れたに過ぎない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7098回の抽選結果は外れでした。ナンバーズ3ミニにおいて特定の数字が選ばれる確率は常に一定であり、今回の結果は数ある組み合わせの一つが抽出されたに過ぎません。"
+  }
+ }
 }
