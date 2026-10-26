@@ -154,6 +154,10 @@
     "basis": {
      "round": 7099,
      "number": "216"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -228,6 +232,10 @@
     "basis": {
      "round": 7099,
      "number": "216"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -267,6 +275,10 @@
     "basis": {
      "round": 7099,
      "number": "216"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -284,5 +296,61 @@
    "prediction": "674",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "825",
+  "date": "2026-10-26",
+  "mini_prize": 7300
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "25",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "2"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「2」は候補にあったが、一の位の「5」が候補外だった",
+  "detail": {
+   "sum": 15,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "5",
+    "8"
+   ],
+   "mini_tickets": [
+    "00",
+    "01",
+    "02",
+    "03",
+    "10",
+    "11",
+    "12",
+    "13",
+    "20",
+    "21",
+    "22",
+    "23",
+    "30",
+    "31",
+    "32",
+    "33"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "gpt": {
+   "label": "ChatGPT",
+   "text": "今回は対象外で外れ。16通り購入の成否は確率上の一結果で、選出方法の良否を示すものではありません。"
+  },
+  "claude": {
+   "label": "Claude",
+   "text": "第7100回は候補4数字(0,1,2,3)による16通りの買い目、および3AIの本命いずれも当選番号25を含まず外れ。1/210程度の的中確率であり、今回外れたこと自体に特段の意味はない。"
+  }
+ }
 }
