@@ -149,6 +149,10 @@
     "basis": {
      "round": 7100,
      "number": "825"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -223,6 +227,10 @@
     "basis": {
      "round": 7100,
      "number": "825"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -262,6 +270,10 @@
     "basis": {
      "round": 7100,
      "number": "825"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -279,5 +291,64 @@
    "prediction": "556",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "912",
+  "date": "2026-10-27",
+  "mini_prize": 6800
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "12",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 0,
+  "digits": [],
+  "all3": false,
+  "label": "下2桁「12」はどちらも候補外だった",
+  "detail": {
+   "sum": 12,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "1",
+    "2",
+    "9"
+   ],
+   "mini_tickets": [
+    "00",
+    "03",
+    "04",
+    "08",
+    "30",
+    "33",
+    "34",
+    "38",
+    "40",
+    "43",
+    "44",
+    "48",
+    "80",
+    "83",
+    "84",
+    "88"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "gpt": {
+   "label": "ChatGPT",
+   "text": "今回はサイト候補・各AI本命とも的中なし。確率上起こる通常の結果で、選出方法の優劣を示すものではありません。"
+  },
+  "claude": {
+   "label": "Claude",
+   "text": "第7101回は候補4数字・本命3者ともに外れ。これは16%(候補)および各約0.5%(本命)の事象が起きなかっただけで、選出方法の妥当性とは無関係。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7101回の抽選が終了しました。今回の結果は全210通りの組み合わせのうちの一つが選ばれた事象であり、的中・不的中にかかわらず、統計的に見て確率の範囲内であることに変わりありません。特筆すべき点はありません。"
+  }
+ }
 }
