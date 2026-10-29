@@ -144,6 +144,10 @@
     "basis": {
      "round": 7102,
      "number": "952"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -218,6 +222,10 @@
     "basis": {
      "round": 7102,
      "number": "952"
+    },
+    "outcome": {
+     "covered": 3,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -257,6 +265,10 @@
     "basis": {
      "round": 7102,
      "number": "952"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -274,5 +286,61 @@
    "prediction": "081",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "617",
+  "date": "2026-10-29",
+  "mini_prize": 7900
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "17",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "1"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「1」は候補にあったが、一の位の「7」が候補外だった",
+  "detail": {
+   "sum": 14,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "6",
+    "7"
+   ],
+   "mini_tickets": [
+    "00",
+    "01",
+    "03",
+    "05",
+    "10",
+    "11",
+    "13",
+    "15",
+    "30",
+    "31",
+    "33",
+    "35",
+    "50",
+    "51",
+    "53",
+    "55"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7103回は候補16通り・3AIの本命いずれも外れ。下2桁は000〜99の一様抽選に近く、今回外れたこと自体は16%程度の的中確率からすれば自然な範囲内の結果。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7103回の抽選結果を確認しました。今回の下2桁「17」は、ミニの全210通りから選ばれた一事象であり、的中・外れともに確率的な発生に過ぎません。特筆すべき点はありません。"
+  }
+ }
 }
