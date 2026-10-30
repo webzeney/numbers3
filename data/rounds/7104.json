@@ -144,6 +144,10 @@
     "basis": {
      "round": 7103,
      "number": "617"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -218,6 +222,10 @@
     "basis": {
      "round": 7103,
      "number": "617"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -257,6 +265,10 @@
     "basis": {
      "round": 7103,
      "number": "617"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -274,5 +286,61 @@
    "prediction": "217",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "061",
+  "date": "2026-10-30",
+  "mini_prize": 12200
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "61",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "1"
+  ],
+  "all3": false,
+  "label": "下2桁のうち一の位の「1」は候補にあったが、十の位の「6」が候補外だった",
+  "detail": {
+   "sum": 7,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "0",
+    "6"
+   ],
+   "mini_tickets": [
+    "11",
+    "13",
+    "17",
+    "19",
+    "31",
+    "33",
+    "37",
+    "39",
+    "71",
+    "73",
+    "77",
+    "79",
+    "91",
+    "93",
+    "97",
+    "99"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7104回は外れ。下2桁61は候補4数字1,3,7,9のいずれにも含まれず、本命3点もすべて外れ。特筆すべき点はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7104回の抽選結果は061でした。ミニの対象である下2桁の61は、当選確率約16.7%の事象として記録されます。特筆すべき点はない。"
+  }
+ }
 }
