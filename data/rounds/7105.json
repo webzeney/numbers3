@@ -144,6 +144,10 @@
     "basis": {
      "round": 7104,
      "number": "061"
+    },
+    "outcome": {
+     "covered": 3,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -218,6 +222,10 @@
     "basis": {
      "round": 7104,
      "number": "061"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -257,6 +265,10 @@
     "basis": {
      "round": 7104,
      "number": "061"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -274,5 +286,60 @@
    "prediction": "574",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "110",
+  "date": "2026-11-02",
+  "mini_prize": 7400
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "10",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "0"
+  ],
+  "all3": false,
+  "label": "下2桁のうち一の位の「0」は候補にあったが、十の位の「1」が候補外だった【ダブル発生】",
+  "detail": {
+   "sum": 2,
+   "pattern": "ダブル",
+   "missed": [
+    "1"
+   ],
+   "mini_tickets": [
+    "00",
+    "02",
+    "04",
+    "06",
+    "20",
+    "22",
+    "24",
+    "26",
+    "40",
+    "42",
+    "44",
+    "46",
+    "60",
+    "62",
+    "64",
+    "66"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7105回は外れ。候補4数字から作る16通りの下2桁的中確率は約7.6%であり、3AIの本命3点を含めても外れは確率上起こり得る範囲の事象である。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7105回の抽選結果は外れでした。ナンバーズ3ミニにおいて特定の数字が選出される確率は1/100であり、今回の結果は統計的な偶然の範囲内です。特筆すべき点はありません。"
+  }
+ }
 }
