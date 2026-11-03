@@ -124,6 +124,10 @@
     "basis": {
      "round": 7105,
      "number": "110"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -198,6 +202,10 @@
     "basis": {
      "round": 7105,
      "number": "110"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -237,6 +245,10 @@
     "basis": {
      "round": 7105,
      "number": "110"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    }
   },
@@ -254,5 +266,57 @@
    "prediction": "936",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "753",
+  "date": "2026-11-03",
+  "mini_prize": 3700
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "53",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "3"
+  ],
+  "all3": false,
+  "label": "下2桁のうち一の位の「3」は候補にあったが、十の位の「5」が候補外だった",
+  "detail": {
+   "sum": 15,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "5",
+    "7"
+   ],
+   "mini_tickets": [
+    "33",
+    "36",
+    "38",
+    "39",
+    "63",
+    "66",
+    "68",
+    "69",
+    "83",
+    "86",
+    "88",
+    "89",
+    "93",
+    "96",
+    "98",
+    "99"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7106回は外れ。3AIの本命(70・94・33)もいずれも下2桁「53」とは異なり、210通りの一様抽選において個別事象が外れただけで、特筆すべき点はない。"
+  }
+ }
 }
