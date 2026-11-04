@@ -1,11 +1,11 @@
 [
  {
-  "round": 7107,
-  "generated_at": "2026-11-04",
+  "round": 7108,
+  "generated_at": "2026-11-05",
   "candidates": [
    "0",
-   "3",
-   "8",
+   "2",
+   "5",
    "9"
   ],
   "candidates_ten": null,
@@ -17,6 +17,25 @@
   "cost": null,
   "prize": null,
   "profit": null
+ },
+ {
+  "round": 7107,
+  "generated_at": "2026-11-04",
+  "candidates": [
+   "0",
+   "3",
+   "8",
+   "9"
+  ],
+  "candidates_ten": null,
+  "candidates_one": null,
+  "result": "533",
+  "covered": 2,
+  "label": "下2桁「33」は候補16通りの中にあった（ミニ的中）【ダブル発生】",
+  "mini_hit": true,
+  "cost": 3200,
+  "prize": 10000,
+  "profit": 6800
  },
  {
   "round": 7106,

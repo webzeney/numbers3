@@ -144,6 +144,10 @@
     "basis": {
      "round": 7106,
      "number": "753"
+    },
+    "outcome": {
+     "covered": 3,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -218,6 +222,10 @@
     "basis": {
      "round": 7106,
      "number": "753"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -257,6 +265,10 @@
     "basis": {
      "round": 7106,
      "number": "753"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    }
   },
@@ -274,5 +286,60 @@
    "prediction": "824",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "533",
+  "date": "2026-11-04",
+  "mini_prize": 10000
+ },
+ "outcome": {
+  "mini_hit": true,
+  "last2": "33",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 2,
+  "digits": [
+   "3"
+  ],
+  "all3": false,
+  "label": "下2桁「33」は候補16通りの中にあった（ミニ的中）【ダブル発生】",
+  "detail": {
+   "sum": 11,
+   "pattern": "ダブル",
+   "missed": [
+    "5"
+   ],
+   "mini_tickets": [
+    "00",
+    "03",
+    "08",
+    "09",
+    "30",
+    "33",
+    "38",
+    "39",
+    "80",
+    "83",
+    "88",
+    "89",
+    "90",
+    "93",
+    "98",
+    "99"
+   ]
+  },
+  "prize": 10000,
+  "profit": 6800
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7107回はミニ的中、3者の本命のうちGeminiの33が一致。これは候補4数字から選べる16通りのうちの1通りが結果と合致した事象であり、確率16%の範囲内の出来事として捉えるべきもの。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7107回の結果、下2桁は33でした。本命として挙げた33が抽選結果と一致しましたが、これは全210通りの選択肢の中から確率的に生じた事象であり、選定プロセスの有効性を示すものではありません。"
+  }
+ }
 }
