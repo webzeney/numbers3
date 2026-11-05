@@ -129,6 +129,10 @@
     "basis": {
      "round": 7107,
      "number": "533"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -203,6 +207,10 @@
     "basis": {
      "round": 7107,
      "number": "533"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -242,6 +250,10 @@
     "basis": {
      "round": 7107,
      "number": "533"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -259,5 +271,61 @@
    "prediction": "395",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "689",
+  "date": "2026-11-05",
+  "mini_prize": 9300
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "89",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "9"
+  ],
+  "all3": false,
+  "label": "下2桁のうち一の位の「9」は候補にあったが、十の位の「8」が候補外だった",
+  "detail": {
+   "sum": 23,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "6",
+    "8"
+   ],
+   "mini_tickets": [
+    "00",
+    "02",
+    "05",
+    "09",
+    "20",
+    "22",
+    "25",
+    "29",
+    "50",
+    "52",
+    "55",
+    "59",
+    "90",
+    "92",
+    "95",
+    "99"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7108回は外れ。候補4数字・本命3者ともに当選番号「89」とは一致せず、これは210通りからの一様抽選における一事象に過ぎない。特筆すべき点はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7108回抽選の結果、下2桁は89となりました。当選確率は約16.7%であり、今回の不的中も統計的に予期される一事象に過ぎず、選定手法の成否を示すものではありません。"
+  }
+ }
 }
