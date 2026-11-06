@@ -149,6 +149,10 @@
     "basis": {
      "round": 7108,
      "number": "689"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -223,6 +227,10 @@
     "basis": {
      "round": 7108,
      "number": "689"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -262,6 +270,10 @@
     "basis": {
      "round": 7108,
      "number": "689"
+    },
+    "outcome": {
+     "covered": 3,
+     "straight_hit": false
     }
    }
   },
@@ -279,5 +291,61 @@
    "prediction": "750",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "947",
+  "date": "2026-11-06",
+  "mini_prize": 6500
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "47",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "4"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「4」は候補にあったが、一の位の「7」が候補外だった",
+  "detail": {
+   "sum": 20,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "7",
+    "9"
+   ],
+   "mini_tickets": [
+    "11",
+    "14",
+    "15",
+    "18",
+    "41",
+    "44",
+    "45",
+    "48",
+    "51",
+    "54",
+    "55",
+    "58",
+    "81",
+    "84",
+    "85",
+    "88"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7109回は候補・本命とも外れ。16通りの買い目でも的中率は組合せ数に応じた確率に過ぎず、外れは起こるべくして起こる範囲の事象である。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7109回の抽選の結果、当選番号の下2桁は47でした。今回の外れは16%の確率で発生する事象の結果であり、算出アルゴリズムの良し悪しとは無関係です。"
+  }
+ }
 }
