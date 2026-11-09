@@ -144,6 +144,10 @@
     "basis": {
      "round": 7109,
      "number": "947"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -218,6 +222,10 @@
     "basis": {
      "round": 7109,
      "number": "947"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -257,6 +265,10 @@
     "basis": {
      "round": 7109,
      "number": "947"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -274,5 +286,60 @@
    "prediction": "783",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "205",
+  "date": "2026-11-09",
+  "mini_prize": 5700
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "05",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 0,
+  "digits": [],
+  "all3": false,
+  "label": "下2桁「05」はどちらも候補外だった",
+  "detail": {
+   "sum": 7,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "0",
+    "2",
+    "5"
+   ],
+   "mini_tickets": [
+    "11",
+    "14",
+    "17",
+    "19",
+    "41",
+    "44",
+    "47",
+    "49",
+    "71",
+    "74",
+    "77",
+    "79",
+    "91",
+    "94",
+    "97",
+    "99"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7110回は外れ。本命3点(09/94/33)も下2桁05には該当せず、候補4数字からの16通りにも05は含まれていない。これは単一事象であり、的中確率16%の試行が外れただけと解釈すべき。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7110回の抽選結果は05であり、ミニの当選条件には該当しませんでした。210通りのうち1通りの結果が出現したという、統計学上の確率論的な事象の一つとして記録されます。"
+  }
+ }
 }
