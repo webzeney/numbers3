@@ -149,6 +149,10 @@
     "basis": {
      "round": 7110,
      "number": "205"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -223,6 +227,10 @@
     "basis": {
      "round": 7110,
      "number": "205"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -262,6 +270,10 @@
     "basis": {
      "round": 7110,
      "number": "205"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -279,5 +291,57 @@
    "prediction": "716",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "641",
+  "date": "2026-11-10",
+  "mini_prize": 11100
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "41",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "1"
+  ],
+  "all3": false,
+  "label": "下2桁のうち一の位の「1」は候補にあったが、十の位の「4」が候補外だった",
+  "detail": {
+   "sum": 11,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "4",
+    "6"
+   ],
+   "mini_tickets": [
+    "11",
+    "13",
+    "15",
+    "17",
+    "31",
+    "33",
+    "35",
+    "37",
+    "51",
+    "53",
+    "55",
+    "57",
+    "71",
+    "73",
+    "75",
+    "77"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7111回は外れ。候補4数字による16通りの買い目にも、3AIの本命(36/94/33)にも当選番号41は含まれず、いずれも的中しなかった事象として記録される。"
+  }
+ }
 }
