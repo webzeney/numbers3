@@ -144,6 +144,10 @@
     "basis": {
      "round": 7111,
      "number": "641"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -218,6 +222,10 @@
     "basis": {
      "round": 7111,
      "number": "641"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -257,6 +265,10 @@
     "basis": {
      "round": 7111,
      "number": "641"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -274,5 +286,60 @@
    "prediction": "001",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "660",
+  "date": "2026-11-11",
+  "mini_prize": 8200
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "60",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 2,
+  "digits": [
+   "6"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「6」は候補にあったが、一の位の「0」が候補外だった【ダブル発生】",
+  "detail": {
+   "sum": 12,
+   "pattern": "ダブル",
+   "missed": [
+    "0"
+   ],
+   "mini_tickets": [
+    "11",
+    "16",
+    "17",
+    "18",
+    "61",
+    "66",
+    "67",
+    "68",
+    "71",
+    "76",
+    "77",
+    "78",
+    "81",
+    "86",
+    "87",
+    "88"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7112回は外れ。3AIの本命(17・94・33)もいずれも対象外で、210通りからの抽選という性質上、これは単なる確率的結果であり特筆すべき点はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7112回の抽選において、ミニの当選番号下2桁は60でした。確率は1/100の事象であり、今回の外れは確率的な結果の一つに過ぎません。"
+  }
+ }
 }
