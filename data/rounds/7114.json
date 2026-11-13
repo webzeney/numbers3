@@ -134,6 +134,10 @@
     "basis": {
      "round": 7113,
      "number": "283"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -208,6 +212,10 @@
     "basis": {
      "round": 7113,
      "number": "283"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -247,6 +255,10 @@
     "basis": {
      "round": 7113,
      "number": "283"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -264,5 +276,61 @@
    "prediction": "001",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "605",
+  "date": "2026-11-13",
+  "mini_prize": 12400
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "05",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 2,
+  "digits": [
+   "0",
+   "6"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「0」は候補にあったが、一の位の「5」が候補外だった",
+  "detail": {
+   "sum": 11,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "5"
+   ],
+   "mini_tickets": [
+    "00",
+    "01",
+    "06",
+    "09",
+    "10",
+    "11",
+    "16",
+    "19",
+    "60",
+    "61",
+    "66",
+    "69",
+    "90",
+    "91",
+    "96",
+    "99"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7114回は候補4数字・本命3者ともに外れ。下2桁05は候補に含まれる0・6・9は一部一致するが組み合わせとして不成立であり、これは単に確率16%の事象が起きなかっただけと解釈すべき。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7114回の抽選が終了しました。今回の結果は1/100の確率で発生する事象であり、統計的に見て予測が介在する余地のない偶発的な数値です。特筆すべき点はない。"
+  }
+ }
 }
