@@ -134,6 +134,10 @@
     "basis": {
      "round": 7114,
      "number": "605"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -208,6 +212,10 @@
     "basis": {
      "round": 7114,
      "number": "605"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -247,6 +255,10 @@
     "basis": {
      "round": 7114,
      "number": "605"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -264,5 +276,61 @@
    "prediction": "350",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "693",
+  "date": "2026-11-16",
+  "mini_prize": 6700
+ },
+ "outcome": {
+  "mini_hit": true,
+  "last2": "93",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 2,
+  "digits": [
+   "3",
+   "9"
+  ],
+  "all3": false,
+  "label": "下2桁「93」は候補16通りの中にあった（ミニ的中）",
+  "detail": {
+   "sum": 18,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "6"
+   ],
+   "mini_tickets": [
+    "11",
+    "13",
+    "18",
+    "19",
+    "31",
+    "33",
+    "38",
+    "39",
+    "81",
+    "83",
+    "88",
+    "89",
+    "91",
+    "93",
+    "98",
+    "99"
+   ]
+  },
+  "prize": 6700,
+  "profit": 3500
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7115回はミニ的中。ただし3AIの本命(44/94/33)はいずれも外れており、的中は候補4数字から作る16通りの買い目に含まれていたことによるものです。本命的中とは区別して記録すべき事象です。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7115回の抽選結果を確認しました。本数字の下2桁が「93」である確率は約6.25％であり、今回の的中は確率論の範囲内で発生した事象です。"
+  }
+ }
 }
