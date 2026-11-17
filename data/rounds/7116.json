@@ -139,6 +139,10 @@
     "basis": {
      "round": 7115,
      "number": "693"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -213,6 +217,10 @@
     "basis": {
      "round": 7115,
      "number": "693"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -252,6 +260,10 @@
     "basis": {
      "round": 7115,
      "number": "693"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -269,5 +281,61 @@
    "prediction": "493",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "069",
+  "date": "2026-11-17",
+  "mini_prize": 7600
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "69",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 2,
+  "digits": [
+   "0",
+   "6"
+  ],
+  "all3": false,
+  "label": "下2桁のうち十の位の「6」は候補にあったが、一の位の「9」が候補外だった",
+  "detail": {
+   "sum": 15,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "9"
+   ],
+   "mini_tickets": [
+    "00",
+    "01",
+    "05",
+    "06",
+    "10",
+    "11",
+    "15",
+    "16",
+    "50",
+    "51",
+    "55",
+    "56",
+    "60",
+    "61",
+    "65",
+    "66"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7116回は外れ。3AIの本命(93/74/83)も当選番号69とは一致せず、これは候補群16通り・本命3通りいずれも210通り中の一事象に過ぎない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7116回の抽選は、全210通りの組み合わせから等確率で選出された結果です。的中は確率約16%の事象が実現したに過ぎず、今回の外れを含め、各AIの予測値との関連性について統計学的な特筆すべき点はありません。"
+  }
+ }
 }
