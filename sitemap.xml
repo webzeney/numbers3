@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://numbers.ota9.site/</loc><lastmod>2026-11-18</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://numbers.ota9.site/</loc><lastmod>2026-11-19</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://numbers.ota9.site/?round=7118</loc><lastmod>2026-11-19</lastmod><priority>0.6</priority></url>
   <url><loc>https://numbers.ota9.site/?round=7117</loc><lastmod>2026-11-18</lastmod><priority>0.6</priority></url>
   <url><loc>https://numbers.ota9.site/?round=7116</loc><lastmod>2026-11-17</lastmod><priority>0.6</priority></url>
   <url><loc>https://numbers.ota9.site/?round=7115</loc><lastmod>2026-11-14</lastmod><priority>0.6</priority></url>

@@ -154,6 +154,10 @@
     "basis": {
      "round": 7116,
      "number": "069"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -228,6 +232,10 @@
     "basis": {
      "round": 7116,
      "number": "069"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -267,6 +275,10 @@
     "basis": {
      "round": 7116,
      "number": "069"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    }
   },
@@ -284,5 +296,60 @@
    "prediction": "798",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "534",
+  "date": "2026-11-18",
+  "mini_prize": 11900
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "34",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 0,
+  "digits": [],
+  "all3": false,
+  "label": "下2桁「34」はどちらも候補外だった",
+  "detail": {
+   "sum": 12,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "3",
+    "4",
+    "5"
+   ],
+   "mini_tickets": [
+    "00",
+    "06",
+    "07",
+    "09",
+    "60",
+    "66",
+    "67",
+    "69",
+    "70",
+    "76",
+    "77",
+    "79",
+    "90",
+    "96",
+    "97",
+    "99"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7117回は外れ。候補4数字・本命3点とも当選番号34とは一致せず、210通りからの一様抽選という前提に照らせば想定範囲内の結果である。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7117回の抽選が終了しました。今回の結果は確率的分布における1つの事象に過ぎず、各AIの予測結果と当選番号との間に統計的な関連性はありません。"
+  }
+ }
 }
