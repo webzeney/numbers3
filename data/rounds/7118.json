@@ -134,6 +134,10 @@
     "basis": {
      "round": 7117,
      "number": "534"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -208,6 +212,10 @@
     "basis": {
      "round": 7117,
      "number": "534"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -247,6 +255,10 @@
     "basis": {
      "round": 7117,
      "number": "534"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -264,5 +276,60 @@
    "prediction": "394",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "229",
+  "date": "2026-11-19",
+  "mini_prize": 11500
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "29",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "9"
+  ],
+  "all3": false,
+  "label": "下2桁のうち一の位の「9」は候補にあったが、十の位の「2」が候補外だった【ダブル発生】",
+  "detail": {
+   "sum": 13,
+   "pattern": "ダブル",
+   "missed": [
+    "2"
+   ],
+   "mini_tickets": [
+    "11",
+    "16",
+    "17",
+    "19",
+    "61",
+    "66",
+    "67",
+    "69",
+    "71",
+    "76",
+    "77",
+    "79",
+    "91",
+    "96",
+    "97",
+    "99"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7118回は外れ。3AIの本命(01/78/88)も当選番号29とは一致せず、これは単一事象であり選出方法の優劣を示すものではない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7118回の抽選が終了しました。今回の結果は下2桁が29であり、選定された16通りの組み合わせはいずれも当選に該当しませんでした。"
+  }
+ }
 }
