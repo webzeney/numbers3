@@ -159,6 +159,10 @@
     "basis": {
      "round": 7119,
      "number": "934"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -233,6 +237,10 @@
     "basis": {
      "round": 7119,
      "number": "934"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -272,6 +280,10 @@
     "basis": {
      "round": 7119,
      "number": "934"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -289,5 +301,60 @@
    "prediction": "716",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "762",
+  "date": "2026-11-23",
+  "mini_prize": 10600
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "62",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 0,
+  "digits": [],
+  "all3": false,
+  "label": "下2桁「62」はどちらも候補外だった",
+  "detail": {
+   "sum": 15,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "2",
+    "6",
+    "7"
+   ],
+   "mini_tickets": [
+    "00",
+    "03",
+    "04",
+    "08",
+    "30",
+    "33",
+    "34",
+    "38",
+    "40",
+    "43",
+    "44",
+    "48",
+    "80",
+    "83",
+    "84",
+    "88"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7120回は候補4数字・本命3点とも当選番号62を含まず外れ。210通りからの一様抽選において単発の結果に傾向を見出すことはできず、特筆すべき点はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7120回の抽選が終了しました。今回の結果は確率的に起こりうる事象の一つであり、外れたこと自体に特定の傾向や意味を見出すことはできません。特筆すべき点はない。"
+  }
+ }
 }
