@@ -139,6 +139,10 @@
     "basis": {
      "round": 7120,
      "number": "762"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -213,6 +217,10 @@
     "basis": {
      "round": 7120,
      "number": "762"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -252,6 +260,10 @@
     "basis": {
      "round": 7120,
      "number": "762"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    }
   },
@@ -269,5 +281,61 @@
    "prediction": "239",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "863",
+  "date": "2026-11-24",
+  "mini_prize": 3600
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "63",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "3"
+  ],
+  "all3": false,
+  "label": "下2桁のうち一の位の「3」は候補にあったが、十の位の「6」が候補外だった",
+  "detail": {
+   "sum": 17,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "6",
+    "8"
+   ],
+   "mini_tickets": [
+    "00",
+    "01",
+    "03",
+    "05",
+    "10",
+    "11",
+    "13",
+    "15",
+    "30",
+    "31",
+    "33",
+    "35",
+    "50",
+    "51",
+    "53",
+    "55"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7121回は候補16通り・本命3件のいずれも当選番号63を含まず外れ。210通り中16通りの的中確率約16%の試行として、外れ自体に特筆すべき点はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7121回抽選の結果、ミニの対象は63でした。全210通りの組み合わせからランダムに選出する当サイトの仕組みにおいて、今回の結果は確率的に起こりうる事象のひとつに過ぎません。"
+  }
+ }
 }
