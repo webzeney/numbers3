@@ -748,7 +748,11 @@
   "triple_rate": 0.79,
   "sum_mean": 13.549
  },
- "stale": null,
+ "stale": {
+  "kind": "awaiting",
+  "reason": "第7121回は2026-11-24 18:45に抽選済み。結果の取り込み待ち（抽選から0.8時間経過 / 手元の最新は第7120回 2026-11-23）",
+  "checked_at": "2026-11-24T19:33:24+09:00"
+ },
  "hypotheses": [
   {
    "id": "claude-v2-379-straight",
