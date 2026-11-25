@@ -1,12 +1,12 @@
 [
  {
-  "round": 7122,
-  "generated_at": "2026-11-25",
+  "round": 7123,
+  "generated_at": "2026-11-26",
   "candidates": [
-   "1",
-   "3",
-   "4",
-   "5"
+   "0",
+   "5",
+   "7",
+   "8"
   ],
   "candidates_ten": null,
   "candidates_one": null,
@@ -17,6 +17,25 @@
   "cost": null,
   "prize": null,
   "profit": null
+ },
+ {
+  "round": 7122,
+  "generated_at": "2026-11-25",
+  "candidates": [
+   "1",
+   "3",
+   "4",
+   "5"
+  ],
+  "candidates_ten": null,
+  "candidates_one": null,
+  "result": "611",
+  "covered": 2,
+  "label": "下2桁「11」は候補16通りの中にあった（ミニ的中）【ダブル発生】",
+  "mini_hit": true,
+  "cost": 3200,
+  "prize": 7800,
+  "profit": 4600
  },
  {
   "round": 7121,

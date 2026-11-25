@@ -149,6 +149,10 @@
     "basis": {
      "round": 7121,
      "number": "863"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -223,6 +227,10 @@
     "basis": {
      "round": 7121,
      "number": "863"
+    },
+    "outcome": {
+     "covered": 3,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -262,6 +270,10 @@
     "basis": {
      "round": 7121,
      "number": "863"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    }
   },
@@ -279,5 +291,60 @@
    "prediction": "649",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "611",
+  "date": "2026-11-25",
+  "mini_prize": 7800
+ },
+ "outcome": {
+  "mini_hit": true,
+  "last2": "11",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 2,
+  "digits": [
+   "1"
+  ],
+  "all3": false,
+  "label": "下2桁「11」は候補16通りの中にあった（ミニ的中）【ダブル発生】",
+  "detail": {
+   "sum": 8,
+   "pattern": "ダブル",
+   "missed": [
+    "6"
+   ],
+   "mini_tickets": [
+    "11",
+    "13",
+    "14",
+    "15",
+    "31",
+    "33",
+    "34",
+    "35",
+    "41",
+    "43",
+    "44",
+    "45",
+    "51",
+    "53",
+    "54",
+    "55"
+   ]
+  },
+  "prize": 7800,
+  "profit": 4600
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7122回はミニ的中。ただし本命として宣言された下2桁(41/78/70)はいずれも当選番号11とは異なり、的中は候補4数字の組み合わせ16通りの中で生じたもの。この的中を選定方法の優劣と結びつける根拠はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7122回の抽選にて、ミニの対象数字が11となりました。これは全210通りの組み合わせからランダムに選ばれた結果であり、統計的に確率1/100の事象が発生したに過ぎません。"
+  }
+ }
 }
