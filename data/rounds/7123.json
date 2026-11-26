@@ -134,6 +134,10 @@
     "basis": {
      "round": 7122,
      "number": "611"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -208,6 +212,10 @@
     "basis": {
      "round": 7122,
      "number": "611"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -247,6 +255,10 @@
     "basis": {
      "round": 7122,
      "number": "611"
+    },
+    "outcome": {
+     "covered": 1,
+     "straight_hit": false
     }
    }
   },
@@ -264,5 +276,60 @@
    "prediction": "102",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "412",
+  "date": "2026-11-26",
+  "mini_prize": 8400
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "12",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 0,
+  "digits": [],
+  "all3": false,
+  "label": "下2桁「12」はどちらも候補外だった",
+  "detail": {
+   "sum": 7,
+   "pattern": "3桁すべて異なる",
+   "missed": [
+    "1",
+    "2",
+    "4"
+   ],
+   "mini_tickets": [
+    "00",
+    "05",
+    "07",
+    "08",
+    "50",
+    "55",
+    "57",
+    "58",
+    "70",
+    "75",
+    "77",
+    "78",
+    "80",
+    "85",
+    "87",
+    "88"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7123回は外れ。本命3点を含む16通りの買い目はいずれも的中せず、下2桁12は候補外でした。210通りからの一様抽選である以上、この結果は確率的に見て起こり得る範囲内であり、特筆すべき点はない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7123回の抽選結果を確認しました。本抽選は210通りの選択肢から抽出される確率16.6%の事象であり、今回の外れも事前の候補選出の有効性とは無関係な偶然の結果です。"
+  }
+ }
 }
