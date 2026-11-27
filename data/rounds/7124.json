@@ -139,6 +139,10 @@
     "basis": {
      "round": 7123,
      "number": "412"
+    },
+    "outcome": {
+     "covered": 0,
+     "straight_hit": false
     }
    },
    "claude": {
@@ -213,6 +217,10 @@
     "basis": {
      "round": 7123,
      "number": "412"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    },
    "gemini": {
@@ -252,6 +260,10 @@
     "basis": {
      "round": 7123,
      "number": "412"
+    },
+    "outcome": {
+     "covered": 2,
+     "straight_hit": false
     }
    }
   },
@@ -269,5 +281,60 @@
    "prediction": "612",
    "formula": "百=(前回の百の位×3+回号) mod 10 / 十=(×7) / 一=(×9)"
   }
- ]
+ ],
+ "result": {
+  "number": "277",
+  "date": "2026-11-27",
+  "mini_prize": 10400
+ },
+ "outcome": {
+  "mini_hit": false,
+  "last2": "77",
+  "pos_mode": false,
+  "tickets": 16,
+  "cost": 3200,
+  "covered": 1,
+  "digits": [
+   "2"
+  ],
+  "all3": false,
+  "label": "下2桁「77」はどちらも候補外だった【ダブル発生】",
+  "detail": {
+   "sum": 16,
+   "pattern": "ダブル",
+   "missed": [
+    "7"
+   ],
+   "mini_tickets": [
+    "00",
+    "02",
+    "05",
+    "08",
+    "20",
+    "22",
+    "25",
+    "28",
+    "50",
+    "52",
+    "55",
+    "58",
+    "80",
+    "82",
+    "85",
+    "88"
+   ]
+  },
+  "prize": 0,
+  "profit": -3200
+ },
+ "ai_comments": {
+  "claude": {
+   "label": "Claude",
+   "text": "第7124回は外れ。Geminiの本命77が当選番号と一致したが、これは3通りの宣言のうち1つが16%の確率事象に合致しただけであり、選出精度を示すものではない。"
+  },
+  "gemini": {
+   "label": "Gemini",
+   "text": "第7124回の抽選において、Geminiの提示した下2桁が当選番号と一致しました。これは1/100の確率で生じる独立した事象であり、選定アルゴリズムの有効性を示す根拠とはなりません。"
+  }
+ }
 }

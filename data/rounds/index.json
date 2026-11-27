@@ -1,12 +1,12 @@
 [
  {
-  "round": 7124,
-  "generated_at": "2026-11-27",
+  "round": 7125,
+  "generated_at": "2026-11-28",
   "candidates": [
    "0",
-   "2",
-   "5",
-   "8"
+   "3",
+   "4",
+   "7"
   ],
   "candidates_ten": null,
   "candidates_one": null,
@@ -17,6 +17,25 @@
   "cost": null,
   "prize": null,
   "profit": null
+ },
+ {
+  "round": 7124,
+  "generated_at": "2026-11-27",
+  "candidates": [
+   "0",
+   "2",
+   "5",
+   "8"
+  ],
+  "candidates_ten": null,
+  "candidates_one": null,
+  "result": "277",
+  "covered": 1,
+  "label": "下2桁「77」はどちらも候補外だった【ダブル発生】",
+  "mini_hit": false,
+  "cost": 3200,
+  "prize": 0,
+  "profit": -3200
  },
  {
   "round": 7123,
